@@ -229,9 +229,9 @@ input, select, textarea {
 /* ==============================
    CONFIGURACIÓN FIREBASE
 ================================ */
-
+// --- CONFIGURACIÓN FIREBASE (Usa tus propias credenciales) ---
 const firebaseConfig = {
-  apiKey: "AIzaSyBSf8ApTwoAYlMNaZqmyobGj2Bl0Gu8uY",
+    apiKey: "AIzaSyBSf8ApTwoAYlMNaZqmyobGj2Bl0Gu8uY",
   authDomain: "gremio-de-aventureros-89953.firebaseapp.com",
   databaseURL: "https://gremio-de-aventureros-89953-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "gremio-de-aventureros-89953",
@@ -239,10 +239,18 @@ const firebaseConfig = {
   messagingSenderId: "840884270965",
   appId: "1:840884270965:web:08eade3dd2996326af10fc"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+let usuarioActual = localStorage.getItem("vampiro_sesion") || null;
+let esAdminUser = false;
+
+// Función para verificar si es administrador
+function checkAdmin(nombre) {
+    const admins = ["Admin", "Lider", "TuNombre"]; // Agrega aquí los nombres admin
+    return admins.includes(nombre);
+       }
+      
 /* ==============================
    VARIABLES GLOBALES
 ================================ */
