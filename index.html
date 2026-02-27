@@ -346,33 +346,53 @@ function formatBlood(amount){
    LOGIN
 ================================ */
 
-function manejarLogin(){
-    const nombre = document.getElementById("reg-nombre").value.trim();
-    const codigo = document.getElementById("reg-codigo").value.trim();
+function entrar() {
+    const nombre = document.getElementById('login-nombre').value.trim();
+    const codigo = document.getElementById('login-codigo').value.trim();
 
-    if(!nombre) return alert("Introduce tu Nombre Nocturno");
+    if (!nombre || !codigo) return alert("Ingresa nombre y código.");
 
-    const adminMatch = ADMINS.find(a => a.user === nombre && a.pass === codigo);
-    if(adminMatch){
-        usuarioActual = nombre;
-        localStorage.setItem("linaje_sesion", nombre);
-        mostrarContenido();
-        return;
-    }
-
-    db.ref("vampiros").once("value", snap=>{
+    db.ref("vampiros").once("value", snap => {
         const data = snap.val() || {};
-        const usuario = Object.values(data).find(u=>u.nombre===nombre && u.codigo===codigo);
+        const userKey = Object.keys(data).find(k => data[k].nombre === nombre);
 
-        if(usuario){
-            usuarioActual = nombre;
-            localStorage.setItem("linaje_sesion", nombre);
-            mostrarContenido();
-        }else{
-            document.getElementById("bloque-registro").style.display="block";
+        if (userKey) {
+            if (data[userKey].codigo === codigo) {
+                iniciarSesion(nombre, userKey);
+            } else {
+                alert("Código de linaje incorrecto.");
+            }
+        } else {
+            // Si no existe, mostrar bloque de registro
+            document.getElementById('bloque-registro').style.display = 'block';
+            document.getElementById('reg-nombre').value = nombre;
+            document.getElementById('reg-codigo').value = codigo;
+            alert("No perteneces a ningún linaje. Regístrate.");
         }
     });
 }
+
+function registrarNuevoVampiro() {
+    const nombre = document.getElementById('reg-nombre').value;
+    const codigo = document.getElementById('reg-codigo').value;
+    const casta = document.getElementById('reg-casta').value; // Raza/Casta
+
+    const nuevo = {
+        nombre: nombre,
+        codigo: codigo,
+        casta: casta,
+        esencias: 100, // Moneda inicial
+        puntos: 0,
+        rango: "Recién Nacido",
+        foto: ""
+    };
+
+    db.ref("vampiros").push(nuevo).then(() => {
+        alert("Linaje iniciado.");
+        location.reload();
+    });
+}
+
 
 function cerrarSesion(){
     localStorage.removeItem("linaje_sesion");
