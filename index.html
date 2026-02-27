@@ -639,10 +639,24 @@ function renderTorneos(){
     });
 }
 
-function unirseTorneo(id){
-    registrarLog(usuarioActual, `Se unió al torneo ${id}`);
-    alert("Has aceptado el duelo nocturno.");
+function unirseTorneo(torneoId) {
+    if (!usuarioActual) return;
+
+    db.ref(`torneos/${torneoId}/participantes`).once("value", snap => {
+        let participantes = snap.val() || [];
+        if (participantes.includes(usuarioActual)) {
+            alert("Ya estás inscrito en este duelo.");
+        } else {
+            participantes.push(usuarioActual);
+            db.ref(`torneos/${torneoId}/participantes`).set(participantes).then(() => {
+                registrarLog(usuarioActual, `Se ha unido al torneo: ${torneoId}`);
+                alert("Has aceptado el duelo nocturno. ¡Prepárate!");
+                renderTorneos();
+            });
+        }
+    });
 }
+
 
 /* ==============================
    CARGA INICIAL COMPLETA
