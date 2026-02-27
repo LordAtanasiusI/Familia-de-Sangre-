@@ -1,676 +1,249 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Linaje Carmesí | Clan Vampírico</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linaje Carmesí | Clan Vampírico</title>
 
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
-<style>
+    <style>
+        /* --- ESTÉTICA VAMPÍRICA --- */
+        body { 
+            background-color: #0a0005; 
+            background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
+            color: #f2dede; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
 
-/* ==============================
-   ESTÉTICA VAMPÍRICA SUPREMA
-================================ */
+        #pantalla-login { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.95)); 
+            display: flex; justify-content: center; align-items: center; z-index: 1000; 
+        }
 
-body { 
-    background-color: #0a0005; 
-    background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
-    color: #f2dede; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    margin: 0; padding: 0; overflow-x: hidden;
-}
+        header { 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), #0a0005); 
+            border-bottom: 5px solid #8b0000; 
+            padding: 50px 20px; text-align: center; 
+        }
 
-/* LOGIN */
+        h1 { margin: 0; font-size: 3em; color: #b30000; text-transform: uppercase; text-shadow: 0 0 20px rgba(179, 0, 0, 0.8); }
 
-#pantalla-login { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.95)); 
-    display: flex; justify-content: center; align-items: center; z-index: 1000; 
-}
+        nav { 
+            background: #140000; display: flex; justify-content: center; 
+            position: sticky; top: 0; z-index: 100; border-bottom: 3px solid #5a0000;
+        }
 
-/* HEADER */
+        nav button { 
+            background: #1c0000; color: #c9a0a0; border: none; padding: 15px; 
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
 
-header { 
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), #0a0005); 
-    border-bottom: 5px solid #8b0000; 
-    padding: 50px 20px; text-align: center; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-}
+        nav button.activo { background: #5a0000; color: #fff; border-bottom: 4px solid #b30000; }
 
-h1 { 
-    margin: 0; font-size: 3em; color: #b30000; 
-    text-transform: uppercase; letter-spacing: 4px; 
-    text-shadow: 3px 3px 0 #000, 0 0 20px rgba(179, 0, 0, 0.8); 
-}
+        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+        section { display: none; }
+        section.active { display: block; }
 
-/* NAVEGACIÓN */
-
-nav { 
-    background: #140000; display: flex; justify-content: center; flex-wrap: wrap; 
-    position: sticky; top: 0; z-index: 100; 
-    border-bottom: 3px solid #5a0000;
-}
-
-nav button { 
-    background: #1c0000; color: #c9a0a0; border: none; 
-    padding: 15px 20px; font-weight: bold; text-transform: uppercase; 
-    font-size: 0.9em; letter-spacing: 1px;
-    cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 170px;
-}
-
-nav button:hover, nav button.activo { 
-    background: #5a0000; color: #ffffff; 
-    border-bottom: 4px solid #b30000;
-}
-
-/* CONTENEDOR */
-
-.container { 
-    max-width: 1300px; margin: 40px auto; 
-    padding: 0 20px; padding-bottom: 100px; 
-}
-
-/* SECCIONES */
-
-section { display: none; animation: fadeIn 0.5s ease-out; }
-section.active { display: block; }
-
-/* TARJETAS */
-
-.card { 
-    background: #1a0004; 
-    border: 2px solid #5a0000; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    padding: 30px; margin-bottom: 30px; 
-    border-radius: 6px; 
-}
-
-h2 { 
-    color: #b30000; 
-    border-bottom: 2px solid #5a0000; 
-    padding-bottom: 15px; margin-top: 0; 
-    font-size: 2em; 
-}
-
-h3 { 
-    color: #ff4d4d; 
-    margin-top: 0; font-size: 1.4em; 
-}
-
-/* MONEDAS → ESENCIAS */
-
-.curr-num { color: #ffffff; font-weight: 900; } 
-.curr-a { color: #8b0000; font-weight: bold; } 
-.curr-n { color: #b30000; font-weight: bold; }
-.curr-f { color: #ff4d4d; font-weight: bold; } 
-.curr-c { color: #d46a6a; font-weight: bold; }
-
-/* CONTROLES */
-
-input, select, textarea { 
-    background: #0f0003; 
-    border: 1px solid #5a0000; 
-    color: #fff; padding: 12px; 
-    width: 95%; margin-bottom: 15px; 
-    border-radius: 4px; font-size: 1em; 
-}
-
-.btn { 
-    background: linear-gradient(to bottom, #8b0000, #5a0000); 
-    color: #fff; border: 1px solid #3d0000; 
-    padding: 12px 25px; font-weight: 900; 
-    cursor: pointer; text-transform: uppercase; 
-    border-radius: 4px; width: 100%; 
-}
-
-.btn:hover { filter: brightness(1.2); }
-
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
-
-</style>
+        .card { background: #1a0004; border: 2px solid #5a0000; padding: 20px; margin-bottom: 20px; border-radius: 6px; }
+        .btn { background: #8b0000; color: #fff; border: none; padding: 10px 20px; cursor: pointer; width: 100%; border-radius: 4px; font-weight: bold; }
+        input { background: #0f0003; border: 1px solid #5a0000; color: #fff; padding: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        
+        .curr-num { color: #fff; font-weight: bold; }
+        .curr-c { color: #ff4d4d; margin-left: 5px; }
+    </style>
 </head>
 <body>
 
-<!-- =========================
-        LOGIN
-========================= -->
-
 <div id="pantalla-login">
-<div class="card" style="width: 400px; text-align: center; border: 3px solid #8b0000; padding: 40px;">
-<h2 style="margin:0 0 20px 0;">🩸 El Linaje Carmesí te observa</h2>
-<input type="text" id="reg-nombre" placeholder="Nombre Nocturno">
-<input type="password" id="reg-codigo" placeholder="Sello de Sangre">
-<div id="bloque-registro" style="display:none; background:#140000; padding:15px; margin-top:15px;">
-<p style="color:#ff4d4d; font-weight:bold;">Nueva Cría detectada…</p>
-<input type="text" id="reg-raza" placeholder="Clan de Origen">
-<input type="text" id="reg-faccion" placeholder="Vampiro Progenitor">
-</div>
-<button class="btn" onclick="manejarLogin()" style="margin-top:20px;">Entrar al Linaje</button>
-</div>
+    <div class="card" style="width: 350px; text-align: center;">
+        <h2>🩸 El Linaje</h2>
+        <input type="text" id="login-nombre" placeholder="Nombre Nocturno">
+        <input type="password" id="login-codigo" placeholder="Sello de Sangre">
+        
+        <div id="bloque-registro" style="display:none; border-top: 1px solid #5a0000; padding-top: 10px; margin-top: 10px;">
+            <p style="color:#ff4d4d; font-size: 0.8em;">No estás en los registros. Únete al clan:</p>
+            <input type="text" id="reg-casta" placeholder="Clan de Origen (Nosferatu, etc)">
+            <button class="btn" onclick="registrarNuevoVampiro()">Ritual de Conversión</button>
+        </div>
+        
+        <button class="btn" id="btn-login-main" onclick="manejarLogin()" style="margin-top:10px;">Entrar</button>
+    </div>
 </div>
 
 <div id="contenido-web" style="display:none;">
+    <header>
+        <h1>🩸 Linaje Carmesí</h1>
+        <p id="stats-header">Esencia: <span id="header-puntos">0</span> EC</p>
+    </header>
 
-<header>
-<h1>🩸 Linaje Carmesí</h1>
-<p style="color:#ff9999; font-size: 1.1em; font-style:italic;">
-"La noche nos pertenece. La sangre nos une."
-</p>
-</header>
+    <nav>
+        <button onclick="navegar('inicio')" class="activo">Cripta</button>
+        <button onclick="navegar('ranking')">Salón Ancianos</button>
+        <button onclick="navegar('torneos')">Duelos</button>
+        <button onclick="navegar('mercado')">Mercado</button>
+        <button onclick="cerrarSesion()">Salir</button>
+    </nav>
 
-<nav>
-<button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
-<button onclick="navegar('perfil')" id="btn-perfil">Mi Linaje</button>
-<button onclick="navegar('misiones')" id="btn-misiones">Cacerías</button>
-<button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none;">Consejo Oscuro</button>
-<button onclick="navegar('torneos')" id="btn-torneos">Duelo Nocturno</button>
-<button onclick="navegar('precios')" id="btn-precios">Mercado Oscuro</button>
-<button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
-<button onclick="navegar('ranking')" id="btn-ranking">Salón de Ancianos</button>
-<button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none;">Cámara de Sangre</button>
-<button onclick="navegar('registro')" id="btn-registro" style="display:none;">Ritual de Conversión</button>
-<button onclick="navegar('seguimiento')" id="btn-seguimiento" style="display:none;">Vigilancia Nocturna</button>
-<button onclick="navegar('admin')" id="btn-admin" style="display:none;">Trono del Ancestro</button>
-<button onclick="cerrarSesion()" style="margin-left:auto; background:none; border:none; max-width:80px; color:#aaa; font-size:0.8em;">Salir</button>
-</nav>
+    <div class="container">
+        <section id="sec-inicio" class="active">
+            <div class="card">
+                <h2>Bienvenido, <span id="user-display">Vástago</span></h2>
+                <p>La noche es joven y la sangre reclama su lugar.</p>
+            </div>
+        </section>
 
-<div class="container">
+        <section id="sec-ranking">
+            <h2>🏆 Jerarquía del Clan</h2>
+            <div id="lista-ranking"></div>
+        </section>
 
-<section id="sec-inicio" class="active">
-<div class="card" style="text-align:center;">
-<h2>Bienvenido, Vástago</h2>
-<p>Desde las sombras eternas, el Linaje Carmesí domina la noche.</p>
-</div>
-</section>
+        <section id="sec-torneos">
+            <h2>⚔ Duelos Nocturnos</h2>
+            <div id="lista-torneos"></div>
+        </section>
 
-<section id="sec-perfil">
-<h2>🧛 Expediente de Sangre</h2>
-<div id="render-perfil"></div>
-</section>
-
-<section id="sec-misiones">
-<h2>🩸 Presas Disponibles</h2>
-<div id="lista-misiones"></div>
-</section>
-
-<section id="sec-misiones-gremio">
-<h2>📜 Designios del Consejo Oscuro</h2>
-<div id="lista-misiones-gremio"></div>
-</section>
-
-<section id="sec-torneos">
-<h2>⚔ Duelo bajo la Luna Roja</h2>
-<div id="lista-torneos"></div>
-</section>
-
-<section id="sec-precios">
-<h2>💰 Mercado Oscuro</h2>
-<div id="lista-precios"></div>
-</section>
-
-<section id="sec-ranking">
-<h2>🏆 Salón de los Ancianos</h2>
-<div id="lista-ranking"></div>
-</section>
-
-<section id="sec-admin">
-<h2>🩸 Trono del Ancestro Supremo</h2>
-</section>
-
-</div>
+        <section id="sec-mercado">
+            <h2>💰 Mercado Oscuro</h2>
+            <div id="lista-precios"></div>
+        </section>
     </div>
-    <script>
+</div>
 
-/* ==============================
-   CONFIGURACIÓN FIREBASE
-================================ */
-// --- CONFIGURACIÓN FIREBASE (Usa tus propias credenciales) ---
+<script>
+// --- CONFIGURACIÓN ---
 const firebaseConfig = {
     apiKey: "AIzaSyBSf8ApTwoAYlMNaZqmyobGj2Bl0Gu8uY",
-  authDomain: "gremio-de-aventureros-89953.firebaseapp.com",
-  databaseURL: "https://gremio-de-aventureros-89953-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "gremio-de-aventureros-89953",
-  storageBucket: "gremio-de-aventureros-89953.firebasestorage.app",
-  messagingSenderId: "840884270965",
-  appId: "1:840884270965:web:08eade3dd2996326af10fc"
+    authDomain: "gremio-de-aventureros-89953.firebaseapp.com",
+    databaseURL: "https://gremio-de-aventureros-89953-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "gremio-de-aventureros-89953",
+    storageBucket: "gremio-de-aventureros-89953.firebasestorage.app",
+    messagingSenderId: "840884270965",
+    appId: "1:840884270965:web:08eade3dd2996326af10fc"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let usuarioActual = localStorage.getItem("vampiro_sesion") || null;
-let esAdminUser = false;
+let usuarioActual = localStorage.getItem("linaje_sesion") || null;
 
-// Función para verificar si es administrador
-function checkAdmin(nombre) {
-    const admins = ["Admin", "Lider", "TuNombre"]; // Agrega aquí los nombres admin
-    return admins.includes(nombre);
-       }
-      
-/* ==============================
-   VARIABLES GLOBALES
-================================ */
+// --- SISTEMA DE LOGIN ---
+function manejarLogin() {
+    const nombre = document.getElementById("login-nombre").value.trim();
+    const codigo = document.getElementById("login-codigo").value.trim();
 
-let usuarioActual = localStorage.getItem('linaje_sesion');
-let USUARIOS_CACHE = {};
-let CACERIAS_CACHE = {};
-let TORNEOS_CACHE = {};
-let TESORO_SANGRE = 0;
-let STOCK_CACHE = {};
+    if (!nombre || !codigo) return alert("Completa tus datos");
 
-/* ==============================
-   ADMINISTRADORES
-================================ */
-
-const ADMINS = [
-    { user: "ANCESTRO", pass: "0683843" },
-    { user: "PRIMOGENITO", pass: "9928125" },
-    { user: "ARCHIVAMPIRO", pass: "7741039" }
-];
-
-const ANCIANOS = ["Kevinasecas", "Gusitavo"];
-
-const ROLES_ESPECIALES = [
-    "Señor Vampírico",
-    "Alto Acechador",
-    "Ministro de Sangre"
-];
-
-const isAdmin = (name) => ADMINS.some(a => a.user === name);
-
-/* ==============================
-   RANGOS VAMPÍRICOS
-================================ */
-
-const RANGOS = [
-    {n:"Primogénito", p:3000, c:"bg-heroe"},
-    {n:"Ancestro", p:1500, c:"bg-mitico"},
-    {n:"Sangre Antigua", p:950, c:"bg-mithril"},
-    {n:"Señor de la Noche", p:650, c:"bg-platino"},
-    {n:"Bebedor Carmesí", p:350, c:"bg-oro"},
-    {n:"Acechador", p:200, c:"bg-plata"},
-    {n:"Neonato", p:100, c:"bg-bronce"},
-    {n:"Cría", p:0, c:"bg-registro"}
-];
-
-const NIVEL_NUM = {
-    "Cría":0,
-    "Neonato":1,
-    "Acechador":2,
-    "Bebedor Carmesí":3,
-    "Señor de la Noche":4,
-    "Sangre Antigua":5,
-    "Ancestro":6,
-    "Primogénito":7
-};
-
-const DIFICULTAD_NIVEL = {
-    "humano": 0,
-    "guerrero": 2,
-    "paladin": 4,
-    "cazador": 5
-};
-
-function getRango(pts){
-    return RANGOS.find(r => pts >= r.p) || RANGOS[RANGOS.length-1];
-}
-
-function getVisualRango(u){
-    if (ANCIANOS.includes(u.nombre))
-        return { n:"Anciano Supremo", c:"bg-maestro" };
-    return getRango(u.puntos || 0);
-}
-
-/* ==============================
-   GENERADOR DE SELLO DE SANGRE
-================================ */
-
-function generarCodigoAleatorio(){
-    return 'BLOOD-' + Math.floor(1000 + Math.random() * 9000);
-}
-
-/* ==============================
-   FORMATO ESENCIA
-================================ */
-
-function formatBlood(amount){
-    if(!amount) return '<span class="curr-num">0</span><span class="curr-c"> EC</span>';
-    return '<span class="curr-num">'+amount+'</span><span class="curr-c"> EC</span>';
-}
-
-/* ==============================
-   LOGIN
-================================ */
-
-function manejarLogin(){
-    const nombre = document.getElementById("reg-nombre").value.trim();
-    const codigo = document.getElementById("reg-codigo").value.trim();
-
-    if(!nombre) return alert("Introduce tu Nombre Nocturno");
-
-    const adminMatch = ADMINS.find(a => a.user === nombre && a.pass === codigo);
-    if(adminMatch){
-        usuarioActual = nombre;
-        localStorage.setItem("linaje_sesion", nombre);
-        mostrarContenido();
-        return;
-    }
-
-    db.ref("vampiros").once("value", snap=>{
+    db.ref("vampiros").once("value", snap => {
         const data = snap.val() || {};
-        const usuario = Object.values(data).find(u=>u.nombre===nombre && u.codigo===codigo);
+        const userKey = Object.keys(data).find(k => data[k].nombre === nombre);
 
-        if(usuario){
-            usuarioActual = nombre;
-            localStorage.setItem("linaje_sesion", nombre);
-            mostrarContenido();
-        }else{
-            document.getElementById("bloque-registro").style.display="block";
+        if (userKey) {
+            if (data[userKey].codigo === codigo) {
+                iniciarSesion(nombre);
+            } else {
+                alert("Código de sangre incorrecto.");
+            }
+        } else {
+            document.getElementById("bloque-registro").style.display = "block";
+            document.getElementById("btn-login-main").style.display = "none";
         }
     });
 }
 
-function cerrarSesion(){
+function registrarNuevoVampiro() {
+    const nombre = document.getElementById("login-nombre").value.trim();
+    const codigo = document.getElementById("login-codigo").value.trim();
+    const casta = document.getElementById("reg-casta").value.trim();
+
+    const nuevo = {
+        nombre: nombre,
+        codigo: codigo,
+        casta: casta || "Neonato",
+        puntos: 100,
+        fecha: Date.now()
+    };
+
+    db.ref("vampiros").push(nuevo).then(() => {
+        alert("Te has unido al Linaje.");
+        iniciarSesion(nombre);
+    });
+}
+
+function iniciarSesion(nombre) {
+    localStorage.setItem("linaje_sesion", nombre);
+    usuarioActual = nombre;
+    location.reload();
+}
+
+function cerrarSesion() {
     localStorage.removeItem("linaje_sesion");
     location.reload();
 }
 
-function mostrarContenido(){
-    document.getElementById("pantalla-login").style.display="none";
-    document.getElementById("contenido-web").style.display="block";
+// --- NAVEGACIÓN ---
+function navegar(sec) {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("activo"));
+    
+    const target = document.getElementById("sec-" + sec);
+    if(target) target.classList.add("active");
+    if(event) event.target.classList.add("activo");
 }
 
-/* ==============================
-   NAVEGACIÓN
-================================ */
-
-function navegar(sec){
-    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("activo"));
-    document.getElementById("sec-"+sec).classList.add("active");
-    event.target.classList.add("activo");
+// --- RENDERS ---
+function formatBlood(amount) {
+    return `<span class="curr-num">${amount || 0}</span><span class="curr-c"> EC</span>`;
 }
 
-/* ==============================
-   SISTEMA DE CACERÍAS
-================================ */
+function cargarDatos() {
+    document.getElementById("pantalla-login").style.display = "none";
+    document.getElementById("contenido-web").style.display = "block";
+    document.getElementById("user-display").innerText = usuarioActual;
 
-function crearMision(){
-    const nom = document.getElementById("m-nom").value;
-    const desc = document.getElementById("m-desc").value;
-    const prem = document.getElementById("m-prem").value;
-
-    if(!nom) return alert("Nombre requerido");
-
-    db.ref("cacerias").push({
-        nombre: nom,
-        descripcion: desc,
-        recompensa: prem,
-        fecha: Date.now()
-    });
-
-    alert("Cacería publicada bajo la luna.");
-}
-
-/* ==============================
-   SISTEMA TESORO DE SANGRE
-================================ */
-
-function modifyTreasury(amount){
-    const valor = parseInt(document.getElementById("tre-o")?.value || 0);
-    if(!valor) return alert("Introduce cantidad");
-
-    TESORO_SANGRE += valor * amount;
-    db.ref("tesoro").set(TESORO_SANGRE);
-}
-
-/* ==============================
-   RENDER RANKING
-================================ */
-
-function renderRanking(){
-    db.ref("vampiros").once("value", snap=>{
+    // Cargar Ranking
+    db.ref("vampiros").on("value", snap => {
         const data = snap.val() || {};
-        const arr = Object.values(data).sort((a,b)=>b.puntos-a.puntos);
-        let html="";
-        arr.forEach((u,i)=>{
-            const r = getVisualRango(u);
-            html+=`
-            <div class="card">
-                <strong>#${i+1} ${u.nombre}</strong>
-                <span class="rango-badge">${r.n}</span>
-                <div>${formatBlood(u.puntos)}</div>
-            </div>
-            `;
+        const lista = Object.values(data).sort((a, b) => b.puntos - a.puntos);
+        
+        // Actualizar header del usuario logueado
+        const yo = lista.find(u => u.nombre === usuarioActual);
+        if(yo) document.getElementById("header-puntos").innerText = yo.puntos;
+
+        let html = "";
+        lista.forEach((u, i) => {
+            html += `<div class="card"><strong>#${i+1} ${u.nombre}</strong> - ${formatBlood(u.puntos)}</div>`;
         });
-        document.getElementById("lista-ranking").innerHTML=html;
+        document.getElementById("lista-ranking").innerHTML = html;
     });
-}
 
-/* ==============================
-   INICIO AUTOMÁTICO
-================================ */
-
-if(usuarioActual){
-    mostrarContenido();
-    renderRanking();
-}
-
-    </script>
-    /* ==============================
-   ICONOGRAFÍA VAMPÍRICA (iconMap 1:1)
-================================ */
-
-const iconMap = {
-    "Espada": "🗡️",
-    "Armadura": "🩸",
-    "Poción": "🧪",
-    "Pergamino": "📜",
-    "Reliquia": "🕯️",
-    "Sangre Antigua": "🔴",
-    "Sangre Noble": "🩸",
-    "Sangre Fresca": "🧫",
-    "Sangre Común": "🩶",
-    "Colmillos": "🦷",
-    "Murciélago": "🦇",
-    "Capa Nocturna": "🧥",
-    "Grimorio": "📕",
-    "Cáliz Carmesí": "🍷",
-    "Amuleto Sombrío": "📿"
-};
-
-/* ==============================
-   MERCADO OSCURO
-================================ */
-
-function renderMercado(){
-    db.ref("mercado").once("value", snap=>{
+    // Cargar Torneos
+    db.ref("torneos").on("value", snap => {
         const data = snap.val() || {};
-        let html="";
-        Object.entries(data).forEach(([id,item])=>{
-            const icon = iconMap[item.tipo] || "🩸";
-            html+=`
-            <div class="card">
-                <h3>${icon} ${item.nombre}</h3>
-                <p>${item.descripcion}</p>
-                <div><strong>Costo:</strong> ${formatBlood(item.precio)}</div>
-                <button class="btn" onclick="comprarItem('${id}', ${item.precio})">
-                    Absorber
-                </button>
-            </div>
-            `;
-        });
-        document.getElementById("lista-precios").innerHTML = html;
-    });
-}
-
-function comprarItem(id, precio){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===usuarioActual);
-        if(!key) return;
-
-        const user = data[key];
-        if((user.puntos || 0) < precio){
-            return alert("No posees suficiente esencia.");
-        }
-
-        user.puntos -= precio;
-        if(!user.inventario) user.inventario = [];
-        user.inventario.push(id);
-
-        db.ref("vampiros/"+key).set(user);
-        alert("Objeto adquirido del Mercado Oscuro.");
-        renderMercado();
-    });
-}
-
-/* ==============================
-   SISTEMA DE STOCK
-================================ */
-
-function renderStock(){
-    db.ref("stock").once("value", snap=>{
-        STOCK_CACHE = snap.val() || {};
-        let html="";
-        Object.entries(STOCK_CACHE).forEach(([id,item])=>{
-            html+=`
-            <div class="card">
-                <strong>${iconMap[item.tipo]||"🩸"} ${item.nombre}</strong>
-                <div>Cantidad: ${item.cantidad}</div>
-            </div>
-            `;
-        });
-        document.getElementById("lista-stock").innerHTML = html;
-    });
-}
-
-function modificarStock(id, delta){
-    if(!STOCK_CACHE[id]) return;
-    STOCK_CACHE[id].cantidad += delta;
-    db.ref("stock/"+id).set(STOCK_CACHE[id]);
-}
-
-/* ==============================
-   SEGUIMIENTO NOCTURNO
-================================ */
-
-function renderSeguimiento(){
-    db.ref("logs").once("value", snap=>{
-        const data = snap.val() || {};
-        let html="";
-        Object.values(data).reverse().forEach(log=>{
-            html+=`
-            <div class="card">
-                <strong>${log.usuario}</strong>
-                <div>${log.accion}</div>
-                <small>${new Date(log.fecha).toLocaleString()}</small>
-            </div>
-            `;
-        });
-        document.getElementById("lista-seguimiento").innerHTML = html;
-    });
-}
-
-function registrarLog(usuario, accion){
-    db.ref("logs").push({
-        usuario,
-        accion,
-        fecha: Date.now()
-    });
-}
-
-/* ==============================
-   ADMIN AVANZADO
-================================ */
-
-function otorgarEsencia(nombre, cantidad){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===nombre);
-        if(!key) return alert("Vampiro no encontrado");
-
-        data[key].puntos = (data[key].puntos||0) + cantidad;
-        db.ref("vampiros/"+key).set(data[key]);
-
-        registrarLog(usuarioActual, `Otorgó ${cantidad} EC a ${nombre}`);
-        alert("Esencia transferida.");
-    });
-}
-
-function cambiarRangoManual(nombre, rangoNombre){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===nombre);
-        if(!key) return;
-
-        data[key].rangoManual = rangoNombre;
-        db.ref("vampiros/"+key).set(data[key]);
-
-        registrarLog(usuarioActual, `Ascendió a ${nombre} al rango ${rangoNombre}`);
-    });
-}
-
-/* ==============================
-   SISTEMA DE TORNEOS
-================================ */
-
-function renderTorneos(){
-    db.ref("torneos").once("value", snap=>{
-        const data = snap.val() || {};
-        let html="";
-        Object.entries(data).forEach(([id,t])=>{
-            html+=`
-            <div class="card">
+        let html = "";
+        Object.entries(data).forEach(([id, t]) => {
+            html += `<div class="card">
                 <h3>⚔ ${t.nombre}</h3>
                 <p>${t.descripcion}</p>
-                <div>Recompensa: ${formatBlood(t.recompensa)}</div>
-                <button class="btn" onclick="unirseTorneo('${id}')">
-                    Participar
-                </button>
-            </div>
-            `;
+                <button class="btn" onclick="unirseTorneo('${id}')">Participar (${t.recompensa} EC)</button>
+            </div>`;
         });
-        document.getElementById("lista-torneos").innerHTML = html;
+        document.getElementById("lista-torneos").innerHTML = html || "No hay duelos activos.";
     });
 }
 
-function unirseTorneo(torneoId) {
-    if (!usuarioActual) return;
-
-    db.ref(`torneos/${torneoId}/participantes`).once("value", snap => {
-        let participantes = snap.val() || [];
-        if (participantes.includes(usuarioActual)) {
-            alert("Ya estás inscrito en este duelo.");
-        } else {
-            participantes.push(usuarioActual);
-            db.ref(`torneos/${torneoId}/participantes`).set(participantes).then(() => {
-                registrarLog(usuarioActual, `Se ha unido al torneo: ${torneoId}`);
-                alert("Has aceptado el duelo nocturno. ¡Prepárate!");
-                renderTorneos();
-            });
-        }
-    });
+function unirseTorneo(id) {
+    alert("Te has inscrito en el duelo: " + id);
+    // Aquí puedes añadir la lógica de push a Firebase para los participantes
 }
 
-
-/* ==============================
-   CARGA INICIAL COMPLETA
-================================ */
-
-function cargarTodo(){
-    renderRanking();
-    renderMercado();
-    renderStock();
-    renderSeguimiento();
-    renderTorneos();
+// --- AUTO-INICIO ---
+if (usuarioActual) {
+    cargarDatos();
 }
-
-if(usuarioActual){
-    cargarTodo();
-}
-                                  
+</script>
+</body>
+</html>
