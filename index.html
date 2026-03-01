@@ -41,62 +41,64 @@
         }
 
         /* NAVEGACIÓN */
-        nav { 
-            background: #140000; display: flex; justify-content: center; flex-wrap: wrap; gap: 0; 
-            padding: 0; position: sticky; top: 0; z-index: 100; 
-            border-bottom: 3px solid #5a0000; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        nav button { 
-            background: #1c0000; color: #c9a0a0; border: none; border-right: 1px solid #3e2723;
-            padding: 15px 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px;
-            cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 160px;
-        }
-        nav button:hover, nav button.activo { 
-            background: #5a0000; color: #ffffff; text-shadow: 0 0 8px #daa520; border-bottom: 4px solid #b30000;
-        }
+        /* NAVEGACIÓN */
+nav { 
+    background: #140000; display: flex; justify-content: center; flex-wrap: wrap; gap: 0; 
+    padding: 0; position: sticky; top: 0; z-index: 100; 
+    border-bottom: 3px solid #5a0000; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+nav button { 
+    background: #1c0000; color: #c9a0a0; border: none; 
+    border-right: 1px solid #2a1b19; /* Marrón más profundo y oscuro */
+    padding: 15px 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px;
+    cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 160px;
+}
+nav button:hover, nav button.activo { 
+    background: #5a0000; color: #ffffff; 
+    text-shadow: 0 0 8px #b8860b; /* Dorado envejecido (DarkGoldenRod) */
+    border-bottom: 4px solid #b30000;
+}
 
-        /* CONTENEDOR */
-        .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; padding-bottom: 100px; }
+/* TARJETAS */
+.card { 
+    background: #1a0004; 
+    /* Degradado de marrón cuero a negro profundo */
+    background-image: linear-gradient(to bottom right, #231a16, #0d0907);
+    border: 2px solid #5a0000; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    padding: 30px; margin-bottom: 30px; 
+    border-radius: 6px; position: relative;
+}
 
-        /* SECCIONES */
-        section { display: none; animation: fadeIn 0.5s ease-out; }
-        section.active { display: block; }
+/* DECORACIÓN */
+.ornament { 
+    text-align: center; 
+    color: #4e342e; /* Marrón umbría, más gótico */
+    font-size: 1.5em; margin: 20px 0; letter-spacing: 5px; 
+}
+.hero-banner {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://hytale.com/static/images/media/screenshots/4.jpg');
+    background-size: cover; background-position: center;
+    border: 2px solid #a67c00; /* Oro mate, menos saturado que el original */
+    border-radius: 5px; padding: 40px; margin-bottom: 30px;
+    box-shadow: inset 0 0 50px #000;
+}
 
-        /* TARJETAS */
-        .card { 
-            background: #1a0004; 
-            background-image: linear-gradient(to bottom right, #2b2018, #1a120e);
-            border: 2px solid #5a0000; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            padding: 30px; margin-bottom: 30px; 
-            border-radius: 6px; position: relative;
-        }
-
-        h2 { color: #b30000; border-bottom: 2px solid #5a0000; padding-bottom: 15px; margin-top: 0; font-size: 2em; }
-        h3 { color: #ff4d4d; margin-top: 0; font-size: 1.4em; }
-
-        /* DECORACIÓN */
-        .ornament { text-align: center; color: #5d4037; font-size: 1.5em; margin: 20px 0; letter-spacing: 5px; }
-        .hero-banner {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://hytale.com/static/images/media/screenshots/4.jpg');
-            background-size: cover; background-position: center;
-            border: 2px solid #daa520; border-radius: 5px; padding: 40px; margin-bottom: 30px;
-            box-shadow: inset 0 0 50px #000;
-        }
-
-        /* GRID */
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 25px; }
-
-        /* PERGAMINOS */
-        .pergamino { 
-            background-color: #d7cbb5; background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
-            color: #2c1e12; padding: 25px; border: 6px solid #8b5a2b; border-radius: 3px;
-            box-shadow: 8px 8px 15px rgba(0,0,0,0.6); text-align: left; position: relative; transition: transform 0.2s;
-        }
-        .pergamino:hover { transform: translateY(-3px); }
-        .pergamino h3 { color: #5d4037; border-bottom: 2px solid #8d6e63; padding-bottom: 10px; font-weight: 800; }
-        .pergamino-gremio { background-color: #e1bee7; border-color: #8e44ad; }
-        .pergamino-gremio h3 { color: #4a148c; border-color: #9b59b6; }
+/* PERGAMINOS */
+.pergamino { 
+    background-color: #c5b398; /* Beige ceniza (más antiguo, menos amarillento) */
+    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
+    color: #1f140d; /* Marrón casi negro para el texto */
+    padding: 25px; 
+    border: 6px solid #6d4c41; /* Marrón madera quemada */
+    border-radius: 3px;
+    box-shadow: 8px 8px 15px rgba(0,0,0,0.6); text-align: left; position: relative; transition: transform 0.2s;
+}
+.pergamino h3 { 
+    color: #3e2723; /* Marrón café profundo */
+    border-bottom: 2px solid #8d6e63; 
+    padding-bottom: 10px; font-weight: 800; 
+}
 
         /* TORNEOS */
         .torneo-card {
