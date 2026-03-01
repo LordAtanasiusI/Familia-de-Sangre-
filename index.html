@@ -1,695 +1,1933 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Linaje Carmesí | Clan Vampírico</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Familia de Sangre| Hytale Spain</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        /* --- ESTÉTICA VAMPIRICA --- */
+        body { 
+            background-color: #0a0005; 
+            background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');
+            color: #f2dede; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
 
-<style>
+        /* LOGIN */
+        #pantalla-login { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://raw.githubusercontent.com/Kevinasecas/gremio-aventureros-hyspain/main/Gremio%20nuevo.jpg'); 
+            background-size: cover; background-position: center; 
+            display: flex; justify-content: center; align-items: center; z-index: 1000; 
+        }
 
-/* ==============================
-   ESTÉTICA VAMPÍRICA SUPREMA
-================================ */
+        /* HEADER */
+        header { 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #0a0005), url('https://hytale.com/static/images/media/screenshots/1.jpg'); 
+            background-size: cover; background-position: center 30%; 
+            border-bottom: 5px solid #8b0000; 
+            padding: 50px 20px; text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        h1 { 
+            margin: 0; font-size: 3em; color: #b30000; 
+            text-transform: uppercase; letter-spacing: 4px; 
+            text-shadow: 3px 3px 0 #000, 0 0 15px rgba(218, 165, 32, 0.6); 
+        }
 
-body { 
-    background-color: #0a0005; 
-    background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
-    color: #f2dede; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    margin: 0; padding: 0; overflow-x: hidden;
-}
+        /* NAVEGACIÓN */
+        nav { 
+            background: #140000; display: flex; justify-content: center; flex-wrap: wrap; gap: 0; 
+            padding: 0; position: sticky; top: 0; z-index: 100; 
+            border-bottom: 3px solid #5a0000; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        nav button { 
+            background: #1c0000; color: #c9a0a0; border: none; border-right: 1px solid #3e2723;
+            padding: 15px 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 160px;
+        }
+        nav button:hover, nav button.activo { 
+            background: #5a0000; color: #ffffff; text-shadow: 0 0 8px #daa520; border-bottom: 4px solid #b30000;
+        }
 
-/* LOGIN */
+        /* CONTENEDOR */
+        .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; padding-bottom: 100px; }
 
-#pantalla-login { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.95)); 
-    display: flex; justify-content: center; align-items: center; z-index: 1000; 
-}
+        /* SECCIONES */
+        section { display: none; animation: fadeIn 0.5s ease-out; }
+        section.active { display: block; }
 
-/* HEADER */
+        /* TARJETAS */
+        .card { 
+            background: #1a0004; 
+            background-image: linear-gradient(to bottom right, #2b2018, #1a120e);
+            border: 2px solid #5a0000; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            padding: 30px; margin-bottom: 30px; 
+            border-radius: 6px; position: relative;
+        }
 
-header { 
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), #0a0005); 
-    border-bottom: 5px solid #8b0000; 
-    padding: 50px 20px; text-align: center; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-}
+        h2 { color: #b30000; border-bottom: 2px solid #5a0000; padding-bottom: 15px; margin-top: 0; font-size: 2em; }
+        h3 { color: #ff4d4d; margin-top: 0; font-size: 1.4em; }
 
-h1 { 
-    margin: 0; font-size: 3em; color: #b30000; 
-    text-transform: uppercase; letter-spacing: 4px; 
-    text-shadow: 3px 3px 0 #000, 0 0 20px rgba(179, 0, 0, 0.8); 
-}
+        /* DECORACIÓN */
+        .ornament { text-align: center; color: #5d4037; font-size: 1.5em; margin: 20px 0; letter-spacing: 5px; }
+        .hero-banner {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://hytale.com/static/images/media/screenshots/4.jpg');
+            background-size: cover; background-position: center;
+            border: 2px solid #daa520; border-radius: 5px; padding: 40px; margin-bottom: 30px;
+            box-shadow: inset 0 0 50px #000;
+        }
 
-/* NAVEGACIÓN */
+        /* GRID */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 25px; }
 
-nav { 
-    background: #140000; display: flex; justify-content: center; flex-wrap: wrap; 
-    position: sticky; top: 0; z-index: 100; 
-    border-bottom: 3px solid #5a0000;
-}
+        /* PERGAMINOS */
+        .pergamino { 
+            background-color: #d7cbb5; background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
+            color: #2c1e12; padding: 25px; border: 6px solid #8b5a2b; border-radius: 3px;
+            box-shadow: 8px 8px 15px rgba(0,0,0,0.6); text-align: left; position: relative; transition: transform 0.2s;
+        }
+        .pergamino:hover { transform: translateY(-3px); }
+        .pergamino h3 { color: #5d4037; border-bottom: 2px solid #8d6e63; padding-bottom: 10px; font-weight: 800; }
+        .pergamino-gremio { background-color: #e1bee7; border-color: #8e44ad; }
+        .pergamino-gremio h3 { color: #4a148c; border-color: #9b59b6; }
 
-nav button { 
-    background: #1c0000; color: #c9a0a0; border: none; 
-    padding: 15px 20px; font-weight: bold; text-transform: uppercase; 
-    font-size: 0.9em; letter-spacing: 1px;
-    cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 170px;
-}
+        /* TORNEOS */
+        .torneo-card {
+            background: #1a0f0f; border: 2px solid #c0392b; border-radius: 5px; overflow: hidden;
+            box-shadow: 0 0 15px rgba(192, 57, 43, 0.2); transition: 0.3s; position: relative;
+        }
+        .torneo-card:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(192, 57, 43, 0.4); }
+        .torneo-img { width: 100%; height: 300px; object-fit: cover; border-bottom: 2px solid #c0392b; background: #000; }
+        .torneo-info { padding: 20px; }
+        .torneo-info h3 { color: #e74c3c; margin-bottom: 10px; font-size: 1.6em; text-transform: uppercase; text-shadow: 2px 2px 0 #000; }
 
-nav button:hover, nav button.activo { 
-    background: #5a0000; color: #ffffff; 
-    border-bottom: 4px solid #b30000;
-}
+        /* ESTILOS MERCADO */
+        .item-card {
+            background: #231a14; border: 1px solid #5d4037; border-radius: 5px; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transition: 0.2s;
+        }
+        .item-card:hover { border-color: #daa520; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(218, 165, 32, 0.1); }
 
-/* CONTENEDOR */
+        /* Editado por Willy */
 
-.container { 
-    max-width: 1300px; margin: 40px auto; 
-    padding: 0 20px; padding-bottom: 100px; 
-}
+        .item-icon { 
+            width: 50px; /* Ajusta el tamaño según tus imágenes */
+            height: 50px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; /* Para recortar si es necesario */
+        }
+        .item-icon img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Asegura que la imagen se ajuste sin distorsión */
+            border-radius: 5px; /* Opcional: redondea las esquinas para un look RPG */
+        }
 
-/* SECCIONES */
+        /* Fin Editado por Willy */
 
-section { display: none; animation: fadeIn 0.5s ease-out; }
-section.active { display: block; }
 
-/* TARJETAS */
+        .price-tag { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 10px; font-size: 0.9em; border-top: 1px solid #3e2723; padding-top: 10px; }
+        .price-sell-label { color: #e74c3c; font-weight: bold; } 
+        .price-buy-label { color: #2ecc71; font-weight: bold; } 
+        
+        /* MONEDAS */
+        .curr-num { color: #ffffff; font-weight: 900; } 
+        #treasury-balance .curr-num, #stock-balance .curr-num { color: #2d2d2d; }
+        .curr-c { color: #d35400; font-weight: bold; } .curr-p { color: #bdc3c7; font-weight: bold; }
+        .curr-o { color: #f1c40f; font-weight: bold; } .curr-pl { color: #00d2d3; font-weight: bold; text-shadow: 0 0 5px rgba(0, 210, 211, 0.5); }
 
-.card { 
-    background: #1a0004; 
-    border: 2px solid #5a0000; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    padding: 30px; margin-bottom: 30px; 
-    border-radius: 6px; 
-}
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-bar input, .search-bar select { margin-bottom: 0; }
 
-h2 { 
-    color: #b30000; 
-    border-bottom: 2px solid #5a0000; 
-    padding-bottom: 15px; margin-top: 0; 
-    font-size: 2em; 
-}
+        /* RANKING */
+        .ranking-wrapper { display: flex; gap: 30px; flex-wrap: wrap; }
+        .regentes-col { flex: 1; min-width: 300px; max-width: 400px; }
+        .fama-col { flex: 2; min-width: 300px; }
+        .rank-card { display: flex; align-items: center; gap: 25px; padding: 25px; background: #2b2018; border-bottom: 1px solid #4e342e; transition: 0.2s; }
+        .rank-card:hover { background: #35281e; transform: scale(1.01); }
+        .top-1 { border-left: 8px solid #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.15), transparent); }
+        .top-2 { border-left: 8px solid #c0c0c0; background: linear-gradient(90deg, rgba(192,192,192,0.15), transparent); }
+        .top-3 { border-left: 8px solid #cd7f32; background: linear-gradient(90deg, rgba(205,127,50,0.15), transparent); }
+        .regente-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            background: #1a0f0f; border: 2px solid #daa520; margin-bottom: 20px; padding: 20px;
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.2); position: relative;
+        }
+        .regente-card::before { content: '👑'; font-size: 2em; position: absolute; top: 10px; left: 10px; }
+        
+        /* BADGES */
+        .rango-badge { padding: 4px 10px; border-radius: 3px; font-size: 0.8em; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+        .bg-bronce { background: #cd7f32; } .bg-plata { background: #7f8c8d; } .bg-oro { background: #f1c40f; color:#3e2723; }
+        .bg-platino { background: #00cec9; color:#000; } .bg-mithril { background: #9b59b6; } .bg-mitico { background: #8e44ad; } 
+        .bg-heroe { background: #c0392b; border: 1px solid red; } .bg-registro { background: #555; }
+        .bg-maestro { background: #42200b; color: #daa520; border: 1px solid #daa520; }
+        
+        /* ROLES */
+        .badge-lider { background: #0d2b36; color: #4dd0e1; border: 1px solid #4dd0e1; margin-left: 8px; vertical-align: text-bottom; }
+        .badge-oficial { background: #3e0d0d; color: #e74c3c; border: 1px solid #e74c3c; margin-left: 8px; vertical-align: text-bottom; }
+        .badge-ministro { background: #0d3e18; color: #2ecc71; border: 1px solid #2ecc71; margin-left: 8px; vertical-align: text-bottom; }
 
-h3 { 
-    color: #ff4d4d; 
-    margin-top: 0; font-size: 1.4em; 
-}
+        .rank-num { font-size: 2.5em; font-weight: 900; width: 60px; text-align: center; color: #5d4037; }
+        .foto-perfil { width: 140px; height: 140px; object-fit: cover; border: 4px solid #daa520; display: block; margin: 0 auto; background: #000; }
+        .foto-mini { width: 80px; height: 80px; object-fit: cover; border: 3px solid #5d4037; border-radius: 50%; }
 
-/* MONEDAS → ESENCIAS */
+        /* LOGS & TABLES */
+        .log-entry { padding: 12px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 0.9em; align-items: center; }
+        .log-in { color: #2ecc71; font-weight: bold; } .log-out { color: #e74c3c; font-weight: bold; } 
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a120e; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #3e2723; }
+        th { color: #daa520; font-size: 0.9em; text-transform: uppercase; background: #231a14; }
+        tr:hover { background: #2b2018; }
 
-.curr-num { color: #ffffff; font-weight: 900; } 
-.curr-a { color: #8b0000; font-weight: bold; } 
-.curr-n { color: #b30000; font-weight: bold; }
-.curr-f { color: #ff4d4d; font-weight: bold; } 
-.curr-c { color: #d46a6a; font-weight: bold; }
+        /* CONTROLES */
+        input, select, textarea { background: #0f0003; border: 1px solid #5a0000; color: #fff; padding: 12px; width: 95%; margin-bottom: 15px; border-radius: 4px; font-size: 1em; }
+        input[type="file"] { padding: 10px; background: #1e130c; }
+        .btn { background: linear-gradient(to bottom, #8b0000, #5a0000); color: #fff; border: 1px solid #3d0000; padding: 12px 25px; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px; width: 100%; }
+        .btn:hover { filter: brightness(1.1); }
+        .coin-inputs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 15px; }
+        .in-coin { flex: 1; min-width: 60px; text-align: center; background: #1a0f0f; }
 
-/* CONTROLES */
+        .codigo-oculto { background: #1a120e; padding: 10px 15px; border-radius: 4px; border: 2px dashed #5d4037; font-family: monospace; letter-spacing: 3px; color: #2ecc71; font-weight: bold; display: inline-flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; }
+        .btn-ojo { background: none; border: none; cursor: pointer; font-size: 1.2em; margin-left: 10px; }
 
-input, select, textarea { 
-    background: #0f0003; 
-    border: 1px solid #5a0000; 
-    color: #fff; padding: 12px; 
-    width: 95%; margin-bottom: 15px; 
-    border-radius: 4px; font-size: 1em; 
-}
-
-.btn { 
-    background: linear-gradient(to bottom, #8b0000, #5a0000); 
-    color: #fff; border: 1px solid #3d0000; 
-    padding: 12px 25px; font-weight: 900; 
-    cursor: pointer; text-transform: uppercase; 
-    border-radius: 4px; width: 100%; 
-}
-
-.btn:hover { filter: brightness(1.2); }
-
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
-
-</style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
-<!-- =========================
-        LOGIN
-========================= -->
-
 <div id="pantalla-login">
-<div class="card" style="width: 400px; text-align: center; border: 3px solid #8b0000; padding: 40px;">
-<h2 style="margin:0 0 20px 0;">🩸 El Linaje Carmesí te observa</h2>
-<input type="text" id="reg-nombre" placeholder="Nombre Nocturno">
-<input type="password" id="reg-codigo" placeholder="Sello de Sangre">
-<div id="bloque-registro" style="display:none; background:#140000; padding:15px; margin-top:15px;">
-<p style="color:#ff4d4d; font-weight:bold;">Nueva Cría detectada…</p>
-<input type="text" id="reg-raza" placeholder="Clan de Origen">
-<input type="text" id="reg-faccion" placeholder="Vampiro Progenitor">
-</div>
-<button class="btn" onclick="manejarLogin()" style="margin-top:20px;">Entrar al Linaje</button>
-</div>
+    <div class="card" style="width: 400px; text-align: center; border: 3px solid #daa520; padding: 40px;">
+        <h2 style="margin:0 0 20px 0; color:#daa520;">🩸 El Padre Carmesí te observa</h2>
+        <input type="text" id="reg-nombre" placeholder="Nombre de Vampiro">
+        <input type="password" id="reg-codigo" placeholder="Código de Acceso">
+        <div id="bloque-registro" style="display:none; background:#1a120e; padding:15px; margin-top:15px; border-radius:4px;">
+            <p style="color:#2ecc71; font-weight:bold; margin-top:0;">¡Nuevo hijo detectado!</p>
+            <input type="text" id="reg-raza" placeholder="Clan">
+            <input type="text" id="reg-faccion" placeholder="Progenitor">
+        </div>
+        <button class="btn" onclick="manejarLogin()" style="margin-top:20px;">Entrar a la Cripta</button>
+    </div>
 </div>
 
 <div id="contenido-web" style="display:none;">
+    <header>
+        <h1>🩸 Familia de Sangre</h1>
+        <p style="color:#d2b48c; font-size: 1.1em; letter-spacing: 1px; font-style:italic;">"La Sangre de nuestro Progenitor es Nuestra Sangre."</p>
+    </header>
 
-<header>
-<h1>🩸 Linaje Carmesí</h1>
-<p style="color:#ff9999; font-size: 1.1em; font-style:italic;">
-"La noche nos pertenece. La sangre nos une."
-</p>
-</header>
+    <nav>
+        <button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
+        <button onclick="navegar('perfil')" id="btn-perfil">Mi Linaje</button>
+        <button onclick="navegar('misiones')" id="btn-misiones">Misiones</button>
+        <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#ae80d6; border-color:#8e44ad;">M. Gremio</button>
+        <button onclick="navegar('torneos')" id="btn-torneos">Torneos</button>
+        <button onclick="navegar('precios')" id="btn-precios">Precios</button>
+        <button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
+        <button onclick="navegar('ranking')" id="btn-ranking">Ranking</button>
+        <button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none; color:#ffd700; border-color:#daa520;">🏛️ Cuentas</button> 
+        <button onclick="navegar('registro')" id="btn-registro" style="display:none; color:#2ecc71; border-color:#27ae60;">📝 Registro</button>
+        <button onclick="navegar('seguimiento')" id="btn-seguimiento" style="display:none; color:#3498db; border-color:#2980b9;">🔍 Seguimiento</button>
+        <button onclick="navegar('admin')" id="btn-admin" style="display:none; color:#e74c3c; border-right:none;">⚙️ Admin</button>
+        <button onclick="cerrarSesion()" style="margin-left:auto; background:none; border:none; max-width:80px; color:#7f8c8d; font-size:0.8em;">Salir 🚪</button>
+    </nav>
 
-<nav>
-<button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
-<button onclick="navegar('perfil')" id="btn-perfil">Mi Linaje</button>
-<button onclick="navegar('misiones')" id="btn-misiones">Cacerías</button>
-<button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none;">Consejo Oscuro</button>
-<button onclick="navegar('torneos')" id="btn-torneos">Duelo Nocturno</button>
-<button onclick="navegar('precios')" id="btn-precios">Mercado Oscuro</button>
-<button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
-<button onclick="navegar('ranking')" id="btn-ranking">Salón de Ancianos</button>
-<button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none;">Cámara de Sangre</button>
-<button onclick="navegar('registro')" id="btn-registro" style="display:none;">Ritual de Conversión</button>
-<button onclick="navegar('seguimiento')" id="btn-seguimiento" style="display:none;">Vigilancia Nocturna</button>
-<button onclick="navegar('admin')" id="btn-admin" style="display:none;">Trono del Ancestro</button>
-<button onclick="cerrarSesion()" style="margin-left:auto; background:none; border:none; max-width:80px; color:#aaa; font-size:0.8em;">Salir</button>
-</nav>
+    <div class="container">
+        
+        <section id="sec-inicio" class="active">
+            <div class="card" style="text-align: center; padding: 0; overflow: hidden; border: 4px solid #4e342e;">
+                <div class="hero-banner">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 20px auto; background: url('https://cdn-icons-png.flaticon.com/512/3050/3050525.png') no-repeat center/contain; opacity: 0.8;"></div>
+                    <h2 style="font-size: 3.5em; border: none; text-transform: uppercase; color: #daa520; text-shadow: 2px 2px 10px #000; margin-bottom: 10px;">La Familia te recibe Vástago</h2>
+                    <p style="font-size: 1.5em; color: #fff; font-weight: 300;">Desde las sombras eternas, La Familia domina la noche.</p>
+                </div>
+                <div style="padding: 20px 40px 60px 40px;">
+                    <div class="ornament">⚜️ • ⚜️ • ⚜️</div>
+                    <p style="font-size: 1.2em; color:#ccc; margin-bottom: 40px;">El tablón está lleno de oportunidades. La gloria espera a los valientes.</p>
+                    <div id="lista-anuncios"></div>
+                </div>
+            </div>
+        </section>
 
-<div class="container">
+        <section id="sec-perfil"><h2>🧛 Expediente Personal</h2><div id="render-perfil" style="min-height: 200px;"></div></section>
+        <section id="sec-misiones"><h2>⚔️ Contratos Disponibles</h2><div id="lista-misiones" class="grid-layout"></div></section>
+        
+        <section id="sec-misiones-gremio">
+            <h2 style="color:#ae80d6; border-color:#8e44ad;">📜 Misiones de Facción / Gremio</h2>
+            <div id="lista-misiones-gremio" class="grid-layout"></div>
+        </section>
 
-<section id="sec-inicio" class="active">
-<div class="card" style="text-align:center;">
-<h2>Bienvenido, Vástago</h2>
-<p>Desde las sombras eternas, el Linaje Carmesí domina la noche.</p>
-</div>
-</section>
+        <section id="sec-torneos"><h2 style="color:#e74c3c; border-color:#c0392b;">🩸 Arena de Combate</h2><div id="lista-torneos" class="grid-layout"></div></section>
 
-<section id="sec-perfil">
-<h2>🧛 Expediente de Sangre</h2>
-<div id="render-perfil"></div>
-</section>
+        <section id="sec-precios">
+            <h2>💰 Mercado Oficial</h2>
+            <div class="card" style="border-top: 4px solid #daa520;">
+                <div class="search-bar">
+                    <input type="text" id="search-item" onkeyup="renderMercado()" placeholder="🔍 Buscar objeto..." style="flex:2;">
+                    <select id="filter-cat" onchange="renderMercado()" style="flex:1;">
+                        <option value="all">📁 Todas las Categorías</option>
+                        <option value="Arma">⚔️ Armas</option>
+                        <option value="Armadura">🛡️ Armaduras</option>
+                        <option value="Material">🪵 Materiales</option>
+                        <option value="Pocion">🧪 Pociones</option>
+                        <option value="Alimentos">🍎 Alimentos</option>
+                        <option value="Herramienta">⛏️ Herramientas</option>
+                        <option value="Arcano">🔮 Arcano</option>
+                        <option value="Mejoras y Consumibles">📦 Mejoras y Consumibles</option>
+                    </select>
+                    <select id="sort-price" onchange="renderMercado()" style="flex:1;">
+                        <option value="none">⚖️ Ordenar por Precio</option>
+                        <option value="asc">⬆️ Menor a Mayor</option>
+                        <option value="desc">⬇️ Mayor a Menor</option>
+                    </select>
+                </div>
+                <div id="lista-precios" class="grid-layout"></div>
+            </div>
+        </section>
 
-<section id="sec-misiones">
-<h2>🩸 Presas Disponibles</h2>
-<div id="lista-misiones"></div>
-</section>
+        <section id="sec-cuentas">
+            <h2 style="color:#ffd700; border-bottom: 2px solid #ffd700;">🏛️ Tesorería y Almacén</h2>
+            
+            <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                <div class="card" style="flex:1; text-align:center;">
+                    <h3 style="color:#aaa;">Saldo Disponible</h3>
+                    <div id="treasury-balance" style="font-size:2em; font-family:monospace; margin-top:15px; border: 2px solid #daa520; padding:15px; background:#8b795e; border-radius:5px;">Cargando...</div>
+                </div>
+                <div class="card" style="flex:1;">
+                    <h3>💸 Operaciones Caja</h3>
+                    <div class="coin-inputs">
+                        <input type="number" id="tre-pl" placeholder="Pl" class="in-coin in-pl">
+                        <input type="number" id="tre-o" placeholder="O" class="in-coin in-o">
+                        <input type="number" id="tre-p" placeholder="P" class="in-coin in-p">
+                        <input type="number" id="tre-c" placeholder="C" class="in-coin in-c">
+                    </div>
+                    <input type="text" id="tre-desc" placeholder="Concepto (OBLIGATORIO)" style="margin-top:10px;">
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" style="background:#27ae60;" onclick="modifyTreasury(1)">➕ Ingresar</button>
+                        <button class="btn" style="background:#c0392b;" onclick="modifyTreasury(-1)">➖ Retirar</button>
+                    </div>
+                </div>
+            </div>
 
-<section id="sec-misiones-gremio">
-<h2>📜 Designios del Consejo Oscuro</h2>
-<div id="lista-misiones-gremio"></div>
-</section>
+            <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
+                <div class="card" style="flex:1; border: 2px solid #2ecc71;">
+                    <h3 style="color:#2ecc71;">📦 Banco de Stock</h3>
+                    <div style="background:#d7cbb5; padding:15px; border-radius:5px; text-align:center; margin-bottom:15px;">
+                        <span style="color:#555; font-weight:bold; font-size:0.9em;">VALOR TOTAL DEL INVENTARIO</span><br>
+                        <div id="stock-balance" style="font-size:1.5em; font-family:monospace; color:#2d2d2d;">0C</div>
+                    </div>
+                    <input type="text" id="stock-search" placeholder="🔍 Buscar objeto..." onkeyup="actualizarSelectStock(this.value)" style="margin-bottom: 5px;">
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <select id="stock-item-select" style="flex:2;"></select>
+                        <input type="number" id="stock-qty" placeholder="Cant." style="flex:1;">
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn" onclick="updateStock(1)" style="background:#27ae60;">📥 Ingresar</button>
+                        <button class="btn" onclick="updateStock(-1)" style="background:#c0392b;">📤 Retirar</button>
+                    </div>
+                </div>
+                <div class="card" style="flex:2; max-height:400px; overflow-y:auto;">
+                    <h3>📊 Inventario Actual</h3>
+                    <table style="width:100%;">
+                        <thead><tr><th>Objeto</th><th>Cantidad</th><th>Valor Total</th></tr></thead>
+                        <tbody id="stock-list-body"></tbody>
+                    </table>
+                </div>
+            </div>
 
-<section id="sec-torneos">
-<h2>⚔ Duelo bajo la Luna Roja</h2>
-<div id="lista-torneos"></div>
-</section>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><h3>📜 Historial Caja</h3><button class="btn" style="width:auto; font-size:0.8em;" onclick="copyAllLogs()">📑 Copiar</button></div>
+                <div id="treasury-logs" style="max-height:400px; overflow-y:auto; background:#1a0f0f; border:1px solid #333; margin-top:10px;"></div>
+            </div>
+        </section>
 
-<section id="sec-precios">
-<h2>💰 Mercado Oscuro</h2>
-<div id="lista-precios"></div>
-</section>
+        <section id="sec-registro">
+            <h2 style="color:#2ecc71;">📝 Registro de Nuevos Aventureros</h2>
+            <div class="card" style="max-width:600px; margin:0 auto;">
+                <h3>Nuevo Ingreso</h3>
+                <p style="color:#aaa; font-size:0.9em; margin-bottom:20px;">Utiliza este formulario para dar de alta a jugadores. El sistema generará una clave automáticamente.</p>
+                <input type="text" id="int-nombre" placeholder="Nombre del Aventurero">
+                <input type="text" id="int-raza" placeholder="Raza">
+                <input type="text" id="int-faccion" placeholder="Facción">
+                <button class="btn" style="background:#2ecc71; border-color:#27ae60;" onclick="registrarAventureroInterno()">📂 Generar Alta y Clave</button>
+            </div>
+        </section>
 
-<section id="sec-ranking">
-<h2>🏆 Salón de los Ancianos</h2>
-<div id="lista-ranking"></div>
-</section>
+        <section id="sec-seguimiento">
+            <h2 style="color:#3498db;">🔍 Seguimiento de Actividad</h2>
+            <div class="card">
+                <div class="search-bar" style="margin-bottom:15px;">
+                    <input type="text" id="search-seguimiento" onkeyup="renderSeguimiento()" placeholder="🔍 Buscar aventurero..." style="width:100%;">
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Aventurero</th>
+                                <th>Rango</th>
+                                <th>Misión Actual</th>
+                                <th>Historial</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-seguimiento">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="modal-asignar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; justify-content:center; align-items:center;">
+                <div class="card" style="width:400px; border:2px solid #3498db;">
+                    <h3 style="color:#3498db;">Asignar Misión</h3>
+                    <p id="asignar-nombre-usuario" style="color:#fff; font-weight:bold;"></p>
+                    <select id="select-mision-asignar" style="margin-top:10px;"></select>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button class="btn" onclick="confirmarAsignacion()" style="background:#27ae60;">Asignar</button>
+                        <button class="btn" onclick="document.getElementById('modal-asignar').style.display='none'" style="background:#c0392b;">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-editar-aventurero" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2001; justify-content:center; align-items:center;">
+                <div class="card" style="width:400px; border:2px solid #f39c12;">
+                    <h3 style="color:#f39c12;">✏️ Editar Datos</h3>
+                    <input type="hidden" id="edit-av-key">
+                    <input type="text" id="edit-av-nombre" placeholder="Nombre">
+                    <input type="text" id="edit-av-raza" placeholder="Raza">
+                    <input type="text" id="edit-av-faccion" placeholder="Facción">
+                    <label style="color:#aaa; font-size:0.8em; margin-top:10px; display:block;">Cargo / Etiqueta:</label>
+                    <select id="edit-av-etiqueta">
+                        <option value="">Ninguno</option>
+                        <option value="Líder de Facción">Líder de Facción</option>
+                        <option value="Oficial de Facción">Oficial de Facción</option>
+                        <option value="Ministro de Facción">Ministro de Facción</option>
+                    </select>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button class="btn" onclick="guardarEdicionAventurero()" style="background:#27ae60;">Guardar</button>
+                        <button class="btn" onclick="document.getElementById('modal-editar-aventurero').style.display='none'" style="background:#c0392b;">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<section id="sec-admin">
-<h2>🩸 Trono del Ancestro Supremo</h2>
-</section>
+        <section id="sec-ranking">
+            <h2>🏆 Salón de la Fama</h2>
+            <div class="ranking-wrapper">
+                <div class="regentes-col"><h3 style="color:#daa520; text-align:center;">👑 Regentes</h3><div id="lista-regentes"></div></div>
+                <div class="fama-col"><h3 style="color:#e0d0b0; text-align:center;">⚔️ Aventureros</h3><div class="card" style="padding:0; overflow:hidden;"><div id="lista-ranking"></div></div></div>
+            </div>
+        </section>
 
-</div>
+        <section id="sec-admin">
+            <h2 style="color:#e74c3c;">⚙️ Consola del Maestro</h2>
+            <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                
+                <div class="card" style="flex:1; min-width:300px;">
+                    <h3>📜 Nueva Misión / Edición</h3>
+                    <input type="text" id="m-nom" placeholder="Título">
+                    <select id="m-dif"><option value="facil">Fácil</option><option value="media">Media</option><option value="dificil">Difícil</option><option value="epica">Épica</option></select>
+                    <input type="text" id="m-req" placeholder="Requisitos">
+                    <textarea id="m-desc" placeholder="Descripción"></textarea>
+                    <input type="text" id="m-prem" placeholder="Recompensa">
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn" id="btn-publicar-mision" onclick="crearMision()">Publicar</button>
+                        <button class="btn" onclick="cancelarEdicionMision()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion">Cancelar</button>
+                    </div>
+                </div>
+
+                <div style="flex:1; min-width:300px;">
+                    <div class="card" style="border: 2px solid #8e44ad;">
+                        <h3 style="color:#ae80d6;">📜 Misiones de Gremio (Privadas)</h3>
+                        <p style="font-size:0.8em; color:#aaa;">Solo visibles por Admins, Líderes, Oficiales y Ministros.</p>
+                        <input type="text" id="mg-nom" placeholder="Título Misión Gremio">
+                        <input type="text" id="mg-req" placeholder="Requisitos">
+                        <textarea id="mg-desc" placeholder="Descripción"></textarea>
+                        <input type="text" id="mg-prem" placeholder="Recompensa">
+                        <button class="btn" onclick="crearMisionGremio()" style="background:#8e44ad; border-color:#6c3483;">Publicar Privada</button>
+                    </div>
+                </div>
+
+                <div style="flex:1; min-width:300px;">
+                    <div class="card" style="border: 2px solid #c0392b;">
+                        <h3 style="color:#e74c3c;">⚔️ Organizar / Editar Torneo</h3>
+                        <input type="text" id="t-nom" placeholder="Nombre">
+                        <input type="text" id="t-fac" placeholder="Facción">
+                        <input type="text" id="t-lug" placeholder="Lugar">
+                        <label style="color:#aaa; font-size:0.8em;">Portada (Opcional si editas):</label>
+                        <input type="file" id="t-foto-file" accept="image/*">
+                        <textarea id="t-desc" placeholder="Descripción"></textarea>
+                        <textarea id="t-prem" placeholder="Premios (Lista)" style="height:80px; white-space:pre-wrap;"></textarea>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn" id="btn-publicar-torneo" style="background:#c0392b; border-color:#922b21;" onclick="crearTorneo()">Publicar Torneo</button>
+                             <button class="btn" onclick="cancelarEdicionTorneo()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion-torneo">Cancelar</button>
+                        </div>
+                    </div>
+                    <div class="card" style="border: 2px solid #daa520;">
+                        <h3 style="color:#daa520;">📦 Gestión de Precios</h3>
+                        <input type="text" id="it-nom" placeholder="Nombre del Objeto">
+                        <select id="it-cat">
+                            <option value="Arma">Arma</option><option value="Armadura">Armadura</option>
+                            <option value="Material">Material</option><option value="Pocion">Poción</option>
+                            <option value="Alimentos">Alimentos</option><option value="Herramienta">Herramienta</option>
+                            <option value="Arcano">Arcano</option><option value="Mejoras y Consumibles">Mejoras y Consumibles</option>
+                        </select>
+                        <div style="display:flex; gap:10px;">
+                            <input type="number" id="it-compra" placeholder="Precio Compra">
+                            <input type="number" id="it-venta" placeholder="Precio Venta">
+                        </div>
+                        <button class="btn" onclick="crearItem()" style="background:#8b6914;">Añadir al Mercado</button>
+                        <h4 style="margin-top:20px; color:#aaa;">Editar Catálogo Actual</h4>
+                        <input type="text" id="search-admin-item" onkeyup="renderAdminMercado()" placeholder="🔍 Buscar para editar..." style="background:#1a0f0f; border:1px solid #5d4037;">
+                        <button class="btn" onclick="deleteAllItems()" style="background:#c0392b; border-color:#922b21; margin-top:10px; font-size:0.9em;">⚠️ BORRAR TODO EL CATÁLOGO</button>
+                        <button class="btn" onclick="cargarCatalogoBase()" style="background:#3498db; border-color:#2980b9; margin-top:10px; font-size:0.9em;">📦 Cargar Lista Completa</button>
+                        <div id="lista-admin-mercado" style="max-height:300px; overflow-y:auto; margin-top:10px;"></div>
+                    </div>
+                    <div class="card">
+                        <h3>📢 Nuevo Anuncio</h3>
+                        <input type="text" id="a-tit" placeholder="Título">
+                        <textarea id="a-msg" placeholder="Mensaje"></textarea>
+                        <button class="btn" style="background:#3498db; border-color:#2980b9;" onclick="crearAnuncio()">Publicar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="overflow-x:auto;">
+                <h3>👥 Gestión de Cuentas (Todos los Usuarios)</h3>
+                <table style="width:100%; text-align:left; border-collapse:collapse;">
+                    <thead><tr><th>Avatar</th><th>Nombre</th><th>Raza</th><th>Facción</th><th>Código</th><th>Rango</th><th>Pts</th><th>Acciones</th></tr></thead>
+                    <tbody id="tabla-usuarios-body"></tbody>
+                </table>
+            </div>
+        </section>
+
     </div>
-    <script>
+</div>
 
-/* ==============================
-   CONFIGURACIÓN FIREBASE
-================================ */
-// --- CONFIGURACIÓN FIREBASE (Usa tus propias credenciales) ---
-const firebaseConfig = {
-    apiKey: "AIzaSyBSf8ApTwoAYlMNaZqmyobGj2Bl0Gu8uY",
-  authDomain: "gremio-de-aventureros-89953.firebaseapp.com",
-  databaseURL: "https://gremio-de-aventureros-89953-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "gremio-de-aventureros-89953",
-  storageBucket: "gremio-de-aventureros-89953.firebasestorage.app",
-  messagingSenderId: "840884270965",
-  appId: "1:840884270965:web:08eade3dd2996326af10fc"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-let usuarioActual = localStorage.getItem("vampiro_sesion") || null;
-let esAdminUser = false;
-
-// Función para verificar si es administrador
-function checkAdmin(nombre) {
-    const admins = ["Admin", "Lider", "TuNombre"]; // Agrega aquí los nombres admin
-    return admins.includes(nombre);
-       }
-      
-/* ==============================
-   VARIABLES GLOBALES
-================================ */
-
-let usuarioActual = localStorage.getItem('linaje_sesion');
-let USUARIOS_CACHE = {};
-let CACERIAS_CACHE = {};
-let TORNEOS_CACHE = {};
-let TESORO_SANGRE = 0;
-let STOCK_CACHE = {};
-
-/* ==============================
-   ADMINISTRADORES
-================================ */
-
-const ADMINS = [
-    { user: "ANCESTRO", pass: "0683843" },
-    { user: "PRIMOGENITO", pass: "9928125" },
-    { user: "ARCHIVAMPIRO", pass: "7741039" }
-];
-
-const ANCIANOS = ["Kevinasecas", "Gusitavo"];
-
-const ROLES_ESPECIALES = [
-    "Señor Vampírico",
-    "Alto Acechador",
-    "Ministro de Sangre"
-];
-
-const isAdmin = (name) => ADMINS.some(a => a.user === name);
-
-/* ==============================
-   RANGOS VAMPÍRICOS
-================================ */
-
-const RANGOS = [
-    {n:"Primogénito", p:3000, c:"bg-heroe"},
-    {n:"Ancestro", p:1500, c:"bg-mitico"},
-    {n:"Sangre Antigua", p:950, c:"bg-mithril"},
-    {n:"Señor de la Noche", p:650, c:"bg-platino"},
-    {n:"Bebedor Carmesí", p:350, c:"bg-oro"},
-    {n:"Acechador", p:200, c:"bg-plata"},
-    {n:"Neonato", p:100, c:"bg-bronce"},
-    {n:"Cría", p:0, c:"bg-registro"}
-];
-
-const NIVEL_NUM = {
-    "Cría":0,
-    "Neonato":1,
-    "Acechador":2,
-    "Bebedor Carmesí":3,
-    "Señor de la Noche":4,
-    "Sangre Antigua":5,
-    "Ancestro":6,
-    "Primogénito":7
-};
-
-const DIFICULTAD_NIVEL = {
-    "humano": 0,
-    "guerrero": 2,
-    "paladin": 4,
-    "cazador": 5
-};
-
-function getRango(pts){
-    return RANGOS.find(r => pts >= r.p) || RANGOS[RANGOS.length-1];
-}
-
-function getVisualRango(u){
-    if (ANCIANOS.includes(u.nombre))
-        return { n:"Anciano Supremo", c:"bg-maestro" };
-    return getRango(u.puntos || 0);
-}
-
-/* ==============================
-   GENERADOR DE SELLO DE SANGRE
-================================ */
-
-function generarCodigoAleatorio(){
-    return 'BLOOD-' + Math.floor(1000 + Math.random() * 9000);
-}
-
-/* ==============================
-   FORMATO ESENCIA
-================================ */
-
-function formatBlood(amount){
-    if(!amount) return '<span class="curr-num">0</span><span class="curr-c"> EC</span>';
-    return '<span class="curr-num">'+amount+'</span><span class="curr-c"> EC</span>';
-}
-
-/* ==============================
-   LOGIN
-================================ */
-
-function entrar() {
-    const nombre = document.getElementById('login-nombre').value.trim();
-    const codigo = document.getElementById('login-codigo').value.trim();
-
-    if (!nombre || !codigo) return alert("Ingresa nombre y código.");
-
-    db.ref("vampiros").once("value", snap => {
-        const data = snap.val() || {};
-        const userKey = Object.keys(data).find(k => data[k].nombre === nombre);
-
-        if (userKey) {
-            if (data[userKey].codigo === codigo) {
-                iniciarSesion(nombre, userKey);
-            } else {
-                alert("Código de linaje incorrecto.");
-            }
-        } else {
-            // Si no existe, mostrar bloque de registro
-            document.getElementById('bloque-registro').style.display = 'block';
-            document.getElementById('reg-nombre').value = nombre;
-            document.getElementById('reg-codigo').value = codigo;
-            alert("No perteneces a ningún linaje. Regístrate.");
-        }
-    });
-}
-
-function registrarNuevoVampiro() {
-    const nombre = document.getElementById('reg-nombre').value;
-    const codigo = document.getElementById('reg-codigo').value;
-    const casta = document.getElementById('reg-casta').value; // Raza/Casta
-
-    const nuevo = {
-        nombre: nombre,
-        codigo: codigo,
-        casta: casta,
-        esencias: 100, // Moneda inicial
-        puntos: 0,
-        rango: "Recién Nacido",
-        foto: ""
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBSf8ApTwoAYlMNaZqmyobGj2Bl0Gu8uY",
+      authDomain: "gremio-de-aventureros-89953.firebaseapp.com",
+      databaseURL: "https://gremio-de-aventureros-89953-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "gremio-de-aventureros-89953",
+      storageBucket: "gremio-de-aventureros-89953.firebasestorage.app",
+      messagingSenderId: "840884270965",
+      appId: "1:840884270965:web:08eade3dd2996326af10fc"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    db.ref("vampiros").push(nuevo).then(() => {
-        alert("Linaje iniciado.");
-        location.reload();
-    });
-}
-
-
-function cerrarSesion(){
-    localStorage.removeItem("linaje_sesion");
-    location.reload();
-}
-
-function mostrarContenido(){
-    document.getElementById("pantalla-login").style.display="none";
-    document.getElementById("contenido-web").style.display="block";
-}
-
-/* ==============================
-   NAVEGACIÓN
-================================ */
-
-function navegar(sec){
-    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("activo"));
-    document.getElementById("sec-"+sec).classList.add("active");
-    event.target.classList.add("activo");
-}
-
-/* ==============================
-   SISTEMA DE CACERÍAS
-================================ */
-
-function crearMision(){
-    const nom = document.getElementById("m-nom").value;
-    const desc = document.getElementById("m-desc").value;
-    const prem = document.getElementById("m-prem").value;
-
-    if(!nom) return alert("Nombre requerido");
-
-    db.ref("cacerias").push({
-        nombre: nom,
-        descripcion: desc,
-        recompensa: prem,
-        fecha: Date.now()
-    });
-
-    alert("Cacería publicada bajo la luna.");
-}
-
-/* ==============================
-   SISTEMA TESORO DE SANGRE
-================================ */
-
-function modifyTreasury(amount){
-    const valor = parseInt(document.getElementById("tre-o")?.value || 0);
-    if(!valor) return alert("Introduce cantidad");
-
-    TESORO_SANGRE += valor * amount;
-    db.ref("tesoro").set(TESORO_SANGRE);
-}
-
-/* ==============================
-   RENDER RANKING
-================================ */
-
-function renderRanking(){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const arr = Object.values(data).sort((a,b)=>b.puntos-a.puntos);
-        let html="";
-        arr.forEach((u,i)=>{
-            const r = getVisualRango(u);
-            html+=`
-            <div class="card">
-                <strong>#${i+1} ${u.nombre}</strong>
-                <span class="rango-badge">${r.n}</span>
-                <div>${formatBlood(u.puntos)}</div>
-            </div>
-            `;
-        });
-        document.getElementById("lista-ranking").innerHTML=html;
-    });
-}
-
-/* ==============================
-   INICIO AUTOMÁTICO
-================================ */
-
-if(usuarioActual){
-    mostrarContenido();
-    renderRanking();
-}
-
+    let usuarioActual = localStorage.getItem('gremio_sesion'); 
+    let ITEMS_CACHE = []; 
+    let STOCK_CACHE = {}; 
+    let TREASURY_BALANCE = 0;
     
+    // Variables para el sistema interno de seguimiento
+    let USUARIOS_CACHE = {}; // Unificación de usuarios y expedientes
+    let MISIONES_CACHE = {};
+    let selectedAdventurerKey = null;
+    let misionEditandoId = null; 
+    let torneoEditandoId = null;
+    let torneoFotoActual = "";
+
+// Editado por Willy
+
+    // Mapeo de imágenes para items (locales en carpeta 'icons/')
+    // Items específicos (usa nombres exactos del catálogo)
+    const iconMap = {
 
 
-const iconMap = {
-    "Espada": "🗡️",
-    "Armadura": "🩸",
-    "Poción": "🧪",
-    "Pergamino": "📜",
-    "Reliquia": "🕯️",
-    "Sangre Antigua": "🔴",
-    "Sangre Noble": "🩸",
-    "Sangre Fresca": "🧫",
-    "Sangre Común": "🩶",
-    "Colmillos": "🦷",
-    "Murciélago": "🦇",
-    "Capa Nocturna": "🧥",
-    "Grimorio": "📕",
-    "Cáliz Carmesí": "🍷",
-    "Amuleto Sombrío": "📿"
+    // Materiales
+    "Wood (Madera)": "icons/Wood.webp",
+    "Stone (Piedra)": "icons/Stone.webp",
+    "Dirt (Tierra)": "icons/Dirt.webp",
+    "Copper Ore (Mineral de Cobre)": "icons/Copper Ore.webp",
+    "Iron Ore (Mineral de Hierro)": "icons/Iron Ore.webp",
+    "Thorium Ore (Mineral de Torio)": "icons/Thorium Ore.webp",
+    "Cobalt Ore (Mineral de Cobalto)": "icons/Cobalt Ore.webp",
+    "Adamantite Ore (Mineral de Adamantita)": "icons/Adamantite Ore.webp",
+    "Sapphire (Zafiro)": "icons/Sapphire.webp",
+    "Ruby (Rubí)": "icons/Ruby.webp",
+    "Emerald (Esmeralda)": "icons/Emerald.webp",
+    "Light Leather (Cuero Ligero)": "icons/Light Leather.webp",
+    "Medium Leather (Cuero Medio)": "icons/Medium Leather.webp",
+    "Heavy Leather (Cuero Pesado)": "icons/Heavy Leather.webp",
+    "Venom Sac (Saco de Veneno)": "icons/Venom Sac.webp",
+    "Linen Scraps (Retales de Lino)": "icons/Linen Scraps.webp",
+    "Wool Scraps (Retales de Lana)": "icons/Wool Scraps.webp",
+    "Essence of Water (Esencia de Agua)": "icons/Essence of Water.webp",
+    "Essence of Life (Esencia de Vida)": "icons/Essence of Life.webp",
+    "Essence of Fire (Esencia de Fuego)": "icons/Essence of Fire.webp",
+    "Essence of Void (Esencia del Vacío)": "icons/Essence of Void.webp",
+    "Essence of Ice (Esencia de Hielo)": "icons/Essence of Ice.webp",
+    "Void Hearth (Corazón del Vacío)": "icons/Void Hearth.webp",
+    "Greater Essence of Life (Esencia Mayor de Vida)": "icons/Greater Essence of Life.webp",
+    "Bone Fragment (Fragmento de Hueso)": "icons/Bone Fragment.webp",
+    "Feather (Pluma)": "icons/Feather.webp",
+    "Plant Fiber (Fibra Vegetal)": "icons/Plant Fiber.webp",
+    "Any Ruble (Escombro)": "icons/Any Ruble.webp",
+    "Stick (Palo)": "icons/Stick.webp",
+    "Cindercloth Scraps (Retales de Tela de Ceniza)": "icons/Cindercloth Scraps.webp",
+    "Egg (Huevo)": "icons/Egg.webp",
+    "Shadoweave Scraps (Retales de Tejido de Sombras)": "icons/Shadoweave Scraps.webp",
+    "Red Crystal Shards (Fragmentos de Cristal Rojo)": "icons/Red Crystal Shards.webp",
+    "Yellow Crystal Shards (Fragmentos de Cristal Amarillo)": "icons/Yellow Crystal Shards.webp",
+    "Blue Crystal Shards (Fragmentos de Cristal Azul)": "icons/Blue Crystal Shards.webp",
+    "Blood Rose (Rosa de Sangre)": "icons/Blood Rose.webp",
+    "Blood Petals (Pétalos de Sangre)": "icons/Blood Petals.webp",
+    "Bloodcap Mushroom (Hongo Sombrero de Sangre)": "icons/Bloodcap Mushroom.webp",
+    "Storm Thistle (Cardo de Tormenta)": "icons/Storm Thistle.webp",
+    "Storm Petals (Pétalos de Tormenta)": "icons/Storm Petals.webp",
+    "Stormcap Mushroom (Hongo Sombrero de Tormenta)": "icons/Stormcap Mushroom.webp",
+    "Blue Glowing Mushroom (Hongo Azul Brillante)": "icons/Blue Glowing Mushroom.webp",
+    "Azure Cap Mushroom (Hongo Sombrero Azur)": "icons/Azure Cap Mushroom.webp",
+    "Blue Cave Weed (Hierba de Cueva Azul)": "icons/Blue Cave Weed.webp",
+    "Azure Petals (Pétalos Azur)": "icons/Azure Petals.webp",
+    "Azure Kelp (Alga Azur)": "icons/Azure Kelp.webp",
+    "Storm Leather": "icons/Storm Leather.webp",
+    "Silver Ore (Mineral de plata)": "icons/Silver Ore.webp",
+    "Mithril Ore (Mineral de mitril)": "icons/Mithril Ore.webp",
+    "Onyxium Ore (Mineral de onyxium)": "icons/Onyxium Ore.webp",
+    "Prisma Ingot (Lingote de prisma)": "icons/Prisma Ingot.webp",
+    "Gold Ore (Mineral de oro)": "icons/Gold Ore.webp",
+    "Storm Leather (Cuero de tormenta)": "icons/Storm Leather.webp",
+    "Prismatic Hide (Piel prismática)": "icons/Prismatic Hide.webp",
+    "Apex Sovereign Leather (Cuero soberano ápex)": "icons/Apex Sovereign Leather.webp",
+    "Purple Crystal Shards (Fragmentos de cristal púrpura)": "icons/Purple Crystal Shards.webp",
+    "Sturdy Chitin (Quitina resistente)": "icons/Sturdy Chitin.webp",
+    "Boom Powder": "icons/Boom Powder.webp",
+    "Dragon's Hearth (Corazón de dragón)": "icons/Dragons Hearth.webp",
+    "Moneda Oscura (Moneda oscura)": "icons/Moneda Oscura.webp",
+    "Empty Potion Bottle (Frasco de poción vacío)": "icons/Empty Potion Bottle.webp",
+
+
+    //Alimentos
+
+    "Wildberries (Bayas Silvestres)": "icons/Wildberries.webp",
+    "Raw Wildmeat (Carne Silvestre Cruda)": "icons/Raw Wildmeat.webp",
+    "Cooked Wildmeat (Carne Silvestre Cocinada)": "icons/Cooked Wildmeat.webp",
+    "Wheat (Trigo)": "icons/Wheat.webp",
+    "Sunflower (Girasol)": "icons/Sunflower.webp",
+    "Lettuce (Lechuga)": "icons/Lettuce.webp",
+    "Corn (Maíz)": "icons/Corn.webp",
+    "Carrot (Zanahoria)": "icons/Carrot.webp",
+    "Cauliflower (Coliflor)": "icons/Cauliflower.webp",
+    "Turnip (Nabo)": "icons/Turnip.webp",
+    "Pumpkin (Calabaza)": "icons/Pumpkin.webp",
+    "Aurbergine (Berenjena)": "icons/Aurbergine.webp",
+    "Tomato (Tomate)": "icons/Tomato.webp",
+    "Chilli (Chile)": "icons/Chilli.webp",
+    "Cotton (Algodón)": "icons/Cotton.webp",
+    "Rice (Arroz)": "icons/Rice.webp",
+    "Onion (Cebolla)": "icons/Onion.webp",
+    "Potato (Patata)": "icons/Potato.webp",
+    "Cheese (Queso)": "icons/Cheese.webp",
+    "Raw Fish (Pescado Crudo)": "icons/Raw Fish.webp",
+    "Dough (Masa)": "icons/Dough.webp",
+    "Flour (Harina)": "icons/Flour.webp",
+    "Salt (Sal)": "icons/Salt.webp",
+    "Spices (Especias)": "icons/Spices.webp",
+    "Bread (Pan)": "icons/Bread.webp",
+    "Popcorn (Palomitas)": "icons/Popcorn.webp",
+    "Apple pie x12 (Pastel de Manzana x12)": "icons/Apple Pie.webp",
+    "Apples (Manzanas)": "icons/Apples.webp",
+    "Meat Pie x12 (Pastel de Carne x12)": "icons/Meat Pie.webp",
+    "Pumpkin Pie x12 (Pastel de Calabaza x12)": "icons/Pumpkin Pie.webp",
+    "Mushroom Skewer (Brocheta de Champiñones)": "icons/Mushroom Skewer.webp",
+    "Fruit Skewer (Brocheta de Frutas)": "icons/Fruit Skewer.webp",
+    "Meat Skewer (Brocheta de Carne)": "icons/Meat Skewer.webp",
+    "Vegetable Skewer (Brocheta de Verduras)": "icons/Vegetable Skewer.webp",
+    "Mushroom Salad (Ensalada de Champiñones)": "icons/Mushroom Salad.webp",
+    "Wild Berry Salad (Ensalada de Bayas Silvestres)": "icons/Wild Berry Salad.webp",
+    "Caesar Salad (Ensalada César)": "icons/Caesar Salad.webp",
+
+    // Herramientas
+
+    "Crude Pickaxe (Pico Rudimentario)": "icons/Crude Pickaxe.webp",
+    "Copper Pickaxe (Pico de Cobre)": "icons/Copper Pickaxe.webp",
+    "Iron Pickaxe (Pico de Hierro)": "icons/Iron Pickaxe.webp",
+    "Thorium Pickaxe (Pico de Torio)": "icons/Thorium Pickaxe.webp",
+    "Cobalt Pickaxe (Pico de Cobalto)": "icons/Cobalt Pickaxe.webp",
+    "Adamantite Pickaxe (Pico de Adamantita)": "icons/Adamantite Pickaxe.webp",
+    "Crude Hatchet (Hacha Rudimentaria)": "icons/Crude Hatchet.webp",
+    "Copper Hatchet (Hacha de Cobre)": "icons/Copper Hatchet.webp",
+    "Iron Hatchet (Hacha de Hierro)": "icons/Iron Hatchet.webp",
+    "Thorium Hatchet (Hacha de Torio)": "icons/Thorium Hatchet.webp",
+    "Cobalt Hatchet (Hacha de Cobalto)": "icons/Cobalt Hatchet.webp",
+    "Adamantite Hatchet (Hacha de Adamantita)": "icons/Adamantite Hatchet.webp",
+    "Crude Builder´s Hammer (Martillo Rudimentario)": "icons/Crude Builders Hammer.webp",
+    "Iron Builder´s Hammer (Martillo de Hierro)": "icons/Iron Builders Hammer.webp",
+    "Iron Shovel (Pala de Hierro)": "icons/Iron Shovel.webp",
+    "Cobalt shovel": "icons/Cobalt Shovel.webp",
+    "Thorium shovel": "icons/Thorium Shovel.webp",
+    "Crude diving mask": "icons/Crude Diving Mask.webp",
+    "Crude diving suit": "icons/Crude Diving Suit.webp",
+    "Crude diving gloves": "icons/Crude Diving Gloves.webp",
+    "Crude diving flippers": "icons/Crude Diving Flippers.webp",
+    "Mithril Pickaxe (Pico de mitril)": "icons/Mithril Pickaxe.webp",
+    "Mithril Hatchet (Hacha de mitril)": "icons/Mithril Hatchet.webp",
+    "Onyxium Pickaxe (Pico de onyxium)": "icons/Onyxium Pickaxe.webp",
+    "Onyxium Hatchet (Hacha de onyxium)": "icons/Onyxium Hatchet.webp",
+    "Prisma Pickaxe (Pico de prisma)": "icons/Prisma Pickaxe.webp",
+
+    //Armas    
+
+    "Crude Sword (Espada Rudimentaria)": "icons/Crude Sword.webp",
+    "Crude Daggers (Dagas Rudimentarias)": "icons/Crude Daggers.webp",
+    "Crude Battleaxe (Hacha de Batalla Rudimentaria)": "icons/Crude Battleaxe.webp",
+    "Crude Mace (Maza Rudimentaria)": "icons/Crude Mace.webp",
+    "Copper Sword (Espada de Cobre)": "icons/Copper Sword.webp",
+    "Iron Sword (Espada de Hierro)": "icons/Iron Sword.webp",
+    "Thorium Sword (Espada de Torio)": "icons/Thorium Sword.webp",
+    "Cobalt Sword (Espada de Cobalto)": "icons/Cobalt Sword.webp",
+    "Adamantite Sword (Espada de Adamantita)": "icons/Adamantite Sword.webp",
+    "Copper Battleaxe (Hacha de Batalla de Cobre)": "icons/Copper Battleaxe.webp",
+    "Iron Battleaxe (Hacha de Batalla de Hierro)": "icons/Iron Battleaxe.webp",
+    "Thorium Battleaxe (Hacha de Batalla de Torio)": "icons/Thorium Battleaxe.webp",
+    "Cobalt Battleaxe (Hacha de Batalla de Cobalto)": "icons/Cobalt Battleaxe.webp",
+    "Adamantite Battleaxe (Hacha de Batalla de Adamantita)": "icons/Adamantite Battleaxe.webp",
+    "Copper Daggers (Dagas de Cobre)": "icons/Copper Daggers.webp",
+    "Iron Daggers (Dagas de Hierro)": "icons/Iron Daggers.webp",
+    "Thorium Daggers (Dagas de Torio)": "icons/Thorium Daggers.webp",
+    "Cobalt Daggers (Dagas de Cobalto)": "icons/Cobalt Daggers.webp",
+    "Adamantite Daggers (Dagas de Adamantita)": "icons/Adamantite Daggers.webp",
+    "Copper Mace (Maza de Cobre)": "icons/Copper Mace.webp",
+    "Iron Mace (Maza de Hierro)": "icons/Iron Mace.webp",
+    "Thorium Mace (Maza de Torio)": "icons/Thorium Mace.webp",
+    "Cobalt Mace (Maza de Cobalto)": "icons/Cobalt Mace.webp",
+    "Adamantite Mace (Maza de Adamantita)": "icons/Adamantite Mace.webp",
+    "Crude Shortbow (Arco Corto Rudimentario)": "icons/Crude Shortbow.webp",
+    "Iron Shortbow (Arco Corto de Hierro)": "icons/Iron Shortbow.webp",
+    "Thorium Shortbow (Arco Corto de Torio)": "icons/Thorium Shortbow.webp",
+    "Cobalt Shortbow (Arco Corto de Cobalto)": "icons/Cobalt Shortbow.webp",
+    "Adamantite Shortbow (Arco Corto de Adamantita)": "icons/Adamantite Shortbow.webp",
+    "Copper Shortbow (Arco Corto de Cobre)": "icons/Copper Shortbow.webp",
+    "Iron Hand Crossbow (Ballesta de Mano de Hierro)": "icons/Iron Hand Crossbow.webp",
+    "Ancient Steelhand Crossbow (Ballesta de Mano de Acero Antiguo)": "icons/Ancient Steelhand Crossbow.webp",
+    "Copper Longsword (Espadón de cobre)": "icons/Copper Longsword.webp",
+    "Iron Longsword (Espadón de hierro)": "icons/Iron Longsword.webp",
+    "Thorium Longsword (Espadón de torio)": "icons/Thorium Longsword.webp",
+    "Cobalt Longsword (Espadón de cobalto)": "icons/Cobalt Longsword.webp",
+    "Adamantite Longsword (Espadón de adamantita)": "icons/Adamantite Longsword.webp",
+    "Mithril Longsword (Espadón de mitril)": "icons/Mithril Longsword.webp",
+    "Onyxium Longsword (Espadón de onyxium)": "icons/Onyxium Longsword.webp",
+    "Crude Spear (Lanza rudimentaria)": "icons/Crude Spear.webp",
+    "Copper Spear (Lanza de cobre)": "icons/Copper Spear.webp",
+    "Iron Spear (Lanza de hierro)": "icons/Iron Spear.webp",
+    "Thorium Spear (Lanza de torio)": "icons/Thorium Spear.webp",
+    "Cobalt Spear (Lanza de cobalto)": "icons/Cobalt Spear.webp",
+    "Admantite Spear (Lanza de adamantita)": "icons/Admantite Spear.webp",
+    "Mithril Spear (Lanza de mitril)": "icons/Mithril Spear.webp",
+    "Onyxium Spear (Lanza de onyxium)": "icons/Onyxium Spear.webp",
+    "Copper Staff (Bastón de cobre)": "icons/Copper Staff.webp",
+    "Iron Staff (Bastón de hierro)": "icons/Iron Staff.webp",
+    "Thorium Staff (Bastón de torio)": "icons/Thorium Staff.webp",
+    "Cobalt Staff (Bastón de cobalto)": "icons/Cobalt Staff.webp",
+    "Adamantite Staff (Bastón de adamantita)": "icons/Adamantite Staff.webp",
+    "Mithril Staff (Bastón de mitril)": "icons/Mithril Staff.webp",
+    "Onyxium Staff (Bastón de onyxium)": "icons/Onyxium Staff.webp",
+    "Knockback Crossbow (Ballesta de empuje)": "icons/Knockback Crossbow.webp",
+    "Automatic Crossbow (Ballesta automática)": "icons/Automatic Crossbow.webp",
+    "Explosive Bow (Arco explosivo)": "icons/Explosive Bow.webp",
+    "Mithril Shortbow (Arco corto de mitril)": "icons/Mithril Shortbow.webp",
+    "Onyxium Shortbow (Arco corto de onyxium)": "icons/Onyxium Shortbow.webp",
+    "Mithril Sword (Espada de mitril)": "icons/Mithril Sword.webp",
+    "Mithril Mace (Maza de mitril)": "icons/Mithril Mace.webp",
+    "Mithril Battleaxe (Hacha de batalla de mitril)": "icons/Mithril Battleaxe.webp",
+    "Mithril Daggers (Dagas de mitril)": "icons/Mithril Daggers.webp",
+    "Onyxium Mace (Maza de onyxium)": "icons/Onyxium Mace.webp",
+    "Onyxium Battleaxe (Hacha de batalla de onyxium)": "icons/Onyxium Battleaxe.webp",
+    "Onyxium Daggers (Dagas de onyxium)": "icons/Onyxium Daggers.webp",
+    "Prisma Daggers (Dagas de prisma)": "icons/Prisma Daggers.webp",
+    
+    // Katanas
+    "Katana Iron (Katana de Hierro)": "icons/Katana Iron.webp",
+    "Katana Thorium (Katana de Torio)": "icons/Katana Thorium.webp",
+    "Katana Cobalt (Katana de Cobalto)": "icons/Katana Cobalt.webp",
+    "Katana Adamantite (Katana de Adamantita)": "icons/Katana Adamantite.webp",
+    
+    // Armaduras    
+
+    "Copper Helm (Yelmo de Cobre)": "icons/Copper Helm.webp",
+    "Iron Helm (Yelmo de Hierro)": "icons/Iron Helm.webp",
+    "Thorium Helm (Yelmo de Torio)": "icons/Thorium Helm.webp",
+    "Cobalt Helm (Yelmo de Cobalto)": "icons/Cobalt Helm.webp",
+    "Adamantite Helm (Yelmo de Adamantita)": "icons/Adamantite Helm.webp",
+    "Copper Cuirass (Coraza de Cobre)": "icons/Copper Cuirass.webp",
+    "Iron Cuirass (Coraza de Hierro)": "icons/Iron Cuirass.webp",
+    "Thorium Cuirass (Coraza de Torio)": "icons/Thorium Cuirass.webp",
+    "Cobalt Cuirass (Coraza de Cobalto)": "icons/Cobalt Cuirass.webp",
+    "Adamantite Cuirass (Coraza de Adamantita)": "icons/Adamantite Cuirass.webp",
+    "Copper Gauntlets (Guanteletes de Cobre)": "icons/Copper Gauntlets.webp",
+    "Iron Gauntlets (Guanteletes de Hierro)": "icons/Iron Gauntlets.webp",
+    "Thorium Gauntlets (Guanteletes de Torio)": "icons/Thorium Gauntlets.webp",
+    "Cobalt Gauntlets (Guanteletes de Cobalto)": "icons/Cobalt Gauntlets.webp",
+    "Adamantite Gauntlets (Guanteletes de Adamantita)": "icons/Adamantite Gauntlets.webp",
+    "Copper Greaves (Grebas de Cobre)": "icons/Copper Greaves.webp",
+    "Iron Greaves (Grebas de Hierro)": "icons/Iron Greaves.webp",
+    "Thorium Greaves (Grebas de Torio)": "icons/Thorium Greaves.webp",
+    "Cobalt Greaves (Grebas de Cobalto)": "icons/Cobalt Greaves.webp",
+    "Adamantite Greaves (Grebas de Adamantita)": "icons/Adamantite Greaves.webp",
+    "Archer Hood (Capucha de arquero)": "icons/Archer Hood.webp",
+    "Archer Tunic (Túnica de arquero)": "icons/Archer Tunic.webp",
+    "Archer Gloves (Guantes de arquero)": "icons/Archer Gloves.webp",
+    "Archer Pants (Pantalones de arquero)": "icons/Archer Pants.webp",
+    "Crude Diving Mask (Máscara de buceo rudimentaria)": "icons/Crude Diving Mask.webp",
+    "Crude Diving Suit (Traje de buceo rudimentario)": "icons/Crude Diving Suit.webp",
+    "Crude Diving Gloves (Guantes de buceo rudimentarios)": "icons/Crude Diving Gloves.webp",
+    "Crude Diving Flippers (Aletas de buceo rudimentarias)": "icons/Crude Diving Flippers.webp",
+    "Mithril Helm (Casco de mitril)": "icons/Mithril Helm.webp",
+    "Mithril Cuirass (Coraza de mitril)": "icons/Mithril Cuirass.webp",
+    "Mithril Greaves (Grebas de mitril)": "icons/Mithril Greaves.webp",
+    "Mithril Gauntlets (Guanteletes de mitril)": "icons/Mithril Gauntlets.webp",
+    "Onyxium Helm (Casco de onyxium)": "icons/Onyxium Helm.webp",
+    "Onyxium Cuirass (Coraza de onyxium)": "icons/Onyxium Cuirass.webp",
+    "Onyxium Greaves (Grebas de onyxium)": "icons/Onyxium Greaves.webp",
+    "Onyxium Gauntlets (Guanteletes de onyxium)": "icons/Onyxium Gauntlets.webp",
+    "Prisma Helm (Casco de prisma)": "icons/Prisma Helm.webp",
+    "Prisma Cuirass (Coraza de prisma)": "icons/Prisma Cuirass.webp",
+    "Prisma Greaves (Grebas de prisma)": "icons/Prisma Greaves.webp",
+    "Prisma Gauntlets (Guanteletes de prisma)": "icons/Prisma Gauntlets.webp",
+    "Froggy Boots (Botas de ranita)": "icons/Froggy Boots.webp",
+    "Mega Speed Boots (Botas de mega velocidad)": "icons/Mega Speed Boots.webp",
+    "Void Boots (Botas del vacío)": "icons/Void Boots.webp",
+
+    // Escudos
+
+    "Copper Shield (Escudo de Cobre)": "icons/Copper Shield.webp",
+    "Iron Shield (Escudo de Hierro)": "icons/Iron Shield.webp",
+    "Cobalt Shield (Escudo de Cobalto)": "icons/Cobalt Shield.webp",
+    "Thorium Shield (Escudo de Torio)": "icons/Thorium Shield.webp",
+    "Adamantite Shield (Escudo de Adamantita)": "icons/Adamantite Shield.webp",
+    "Mithril Shield (Escudo de mitril)": "icons/Mithril Shield.webp",
+    "Onyxium Shield (Escudo de onyxium)": "icons/Onyxium Shield.webp",
+
+    // Arcano
+
+    "Teleporter x2 (Teletransportador)": "icons/Teleporter.webp",
+    "Ancient gateway (Portal Antiguo)": "icons/Ancient Gateway.webp",
+    "Fragment: Orbis - Dragonspire weald": "icons/Fragment Orbis.webp",
+    "Fragment: Orbis - The dread wade": "icons/Fragment Orbis.webp",
+    "Fragment: Orbis - Windrider valley": "icons/Fragment Orbis.webp",
+    "Healing Totem (Tótem de Curación)": "icons/Healing Totem.webp",
+    "Slowing Totem (Tótem de Ralentización)": "icons/Slowing Totem.webp",
+    "Flame Crystal Staff (Bastón de Cristal de Llama)": "icons/Flame Crystal Staff.webp",
+    "Ice crystal staff (Bastón de Cristal de Hielo)": "icons/Ice Crystal Staff.webp",
+
+    // Mejoras y Consumibles
+
+    "Antidote (Antídoto)": "icons/Antidote.webp",
+    "Lesser Health Potion x6 (Poción de Salud Menor)": "icons/Lesser Health Potion.webp",
+    "Lesser Stamina Potion x6 (Poción de Aguante Menor)": "icons/Lesser Stamina Potion.webp",
+    "Lesser Energy Potion x6 (Poción de Energía Menor)": "icons/Lesser Energy Potion.webp",
+    "Greater Health Potion x6 (Poción de Salud Mayor)": "icons/Greater Health Potion.webp",
+    "Greater Stamina Potion x6 (Poción de Aguante Mayor)": "icons/Greater Stamina Potion.webp",
+    "Greater Energy Potion x6 (Poción de Energía Mayor)": "icons/Greater Energy Potion.webp",
+    "Unlock Backpack (Desbloquear mochila)": "icons/Unlock Backpack.webp",
+    "Backpack Upgrade I (Mejora de mochila I)": "icons/Backpack Upgrade.webp",
+    "Backpack Upgrade II (Mejora de mochila II)": "icons/Backpack Upgrade.webp",
+    "Endgame Backpack Upgrade I (Mejora mochila final I)": "icons/Endgame Backpack Upgrade.webp",
+    "Endgame Backpack Upgrade II (Mejora mochila final II)": "icons/Endgame Backpack Upgrade.webp",
+    "Endgame Backpack Upgrade III (Mejora mochila final III)": "icons/Endgame Backpack Upgrade.webp",
+    "Small Potion of Mana (Poción de maná pequeña)": "icons/Small Potion of Mana.webp",
+    "Potion of Mana (Poción de maná)": "icons/Potion of Mana.webp",
+    "Large Potion of Mana (Poción de maná grande)": "icons/Large Potion of Mana.webp",
+    "Small Potion of Mana Regen (Poción regen. maná peq.)": "icons/Small Potion of Mana Regen.webp",
+    "Potion of Mana Regen (Poción regen. maná)": "icons/Potion of Mana Regen.webp",
+    "Large Potion of Mana Regen (Poción regen. maná grande)": "icons/Large Potion of Mana Regen.webp",
+    "Popberry Bomb (Bomba de bayas explosivas)": "icons/Popberry Bomb.webp",
+    "Coin Punch (Bolsa de monedas)": "icons/Coin Punch.webp",
+
+
+    // ... Agrega más para todos los items de cargarCatalogoBase() si tienes imágenes únicas.
+    // Si no, usa el fallback por categoría abajo.
+
+
+// Fin Editado por Willy
 };
 
-/* ==============================
-   MERCADO OSCURO
-================================ */
 
-function renderMercado(){
-    db.ref("mercado").once("value", snap=>{
-        const data = snap.val() || {};
-        let html="";
-        Object.entries(data).forEach(([id,item])=>{
-            const icon = iconMap[item.tipo] || "🩸";
-            html+=`
-            <div class="card">
-                <h3>${icon} ${item.nombre}</h3>
-                <p>${item.descripcion}</p>
-                <div><strong>Costo:</strong> ${formatBlood(item.precio)}</div>
-                <button class="btn" onclick="comprarItem('${id}', ${item.precio})">
-                    Absorber
-                </button>
-            </div>
-            `;
+
+    // LISTA DE ADMINS (Multi-cuenta)
+    const ADMINS = [
+        { user: "ADMIN", pass: "0683843" },
+        { user: "ADMIN_2", pass: "9928125" },
+        { user: "ADMIN_3", pass: "7741039" }
+    ];
+    // Helper para saber si un usuario es admin
+    const isAdmin = (name) => ADMINS.some(a => a.user === name);
+
+    const MAESTROS = ["Kevinasecas", "Gusitavo"];
+    const ROLES_ESPECIALES = ["Líder de Facción", "Oficial de Facción", "Ministro de Facción"];
+
+    const RANGOS = [
+        {n:"Heroe", p:3000, c:"bg-heroe"}, {n:"Mitico", p:1500, c:"bg-mitico"}, 
+        {n:"Mithril", p:950, c:"bg-mithril"}, {n:"Platino", p:650, c:"bg-platino"},
+        {n:"Oro", p:350, c:"bg-oro"}, {n:"Plata", p:200, c:"bg-plata"},
+        {n:"Bronce", p:100, c:"bg-bronce"}, {n:"Registro", p:0, c:"bg-registro"}
+    ];
+    const NIVEL_NUM = { "Registro":0, "Bronce":1, "Plata":2, "Oro":3, "Platino":4, "Mithril":5, "Mitico":6, "Heroe":7 };
+    const DIFICULTAD_NIVEL = { "facil": 0, "media": 2, "dificil": 4, "epica": 5 };
+
+    function getRango(pts) { return RANGOS.find(r => pts >= r.p) || RANGOS[RANGOS.length-1]; }
+    function getVisualRango(u) {
+        if (MAESTROS.includes(u.nombre)) return { n: "Maestro de Gremio", c: "bg-maestro" };
+        return getRango(u.puntos || 0);
+    }
+    
+    // --- ETIQUETAS NUEVAS ---
+    function getExtraTag(u) {
+        if (!u.etiqueta) return "";
+        if (u.etiqueta === "Líder de Facción") return '<span class="rango-badge badge-lider">🎖️ Líder</span>';
+        if (u.etiqueta === "Oficial de Facción") return '<span class="rango-badge badge-oficial">🎖️ Oficial</span>';
+        if (u.etiqueta === "Ministro de Facción") return '<span class="rango-badge badge-ministro">🎖️ Ministro</span>';
+        return "";
+    }
+
+    // --- GENERADOR DE CÓDIGOS ---
+    function generarCodigoAleatorio() {
+        return 'HYT-' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    // --- CONVERSOR MONEDAS ---
+    function formatMoney(amount) {
+        if (!amount) return '<span class="curr-num">0</span><span class="curr-c">C</span>';
+        let n = parseInt(amount);
+        let pl = Math.floor(n / 1000000); n %= 1000000;
+        let o = Math.floor(n / 10000); n %= 10000;
+        let p = Math.floor(n / 100);
+        let c = n % 100;
+        let html = "";
+        const nStyle = 'class="curr-num"';
+        if(pl) html += `<span ${nStyle}>${pl}</span><span class="curr-pl">Pl</span> `;
+        if(o) html += `<span ${nStyle}>${o}</span><span class="curr-o">O</span> `;
+        if(p) html += `<span ${nStyle}>${p}</span><span class="curr-p">P</span> `;
+        if(c) html += `<span ${nStyle}>${c}</span><span class="curr-c">C</span>`;
+        return html.trim();
+    }
+    function formatMoneyPlain(amount) {
+        if (!amount) return '0C';
+        let n = parseInt(amount);
+        let pl = Math.floor(n / 1000000); n %= 1000000;
+        let o = Math.floor(n / 10000); n %= 10000;
+        let p = Math.floor(n / 100);
+        let c = n % 100;
+        let txt = "";
+        if(pl) txt += `${pl}Pl `; if(o) txt += `${o}O `; if(p) txt += `${p}P `; if(c) txt += `${c}C`;
+        return txt.trim();
+    }
+
+    function navegar(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('activo'));
+        document.getElementById('sec-' + id).classList.add('active');
+        const btn = document.getElementById('btn-' + id);
+        if(btn) btn.classList.add('activo');
+    }
+
+    function manejarLogin() {
+        const nom = document.getElementById('reg-nombre').value.trim();
+        const cod = document.getElementById('reg-codigo').value.trim();
+        
+        // CHECK MULTI-ADMIN
+        const adminAccount = ADMINS.find(a => a.user === nom && a.pass === cod);
+        if (adminAccount) { setSesion(adminAccount.user); return; }
+
+        db.ref('usuarios/'+nom).once('value', snap => {
+            if(snap.val()) {
+                if(snap.val().codigo === cod) { setSesion(nom); } else alert("Código incorrecto.");
+            } else {
+                const blq = document.getElementById('bloque-registro');
+                if(blq.style.display === "none") {
+                    blq.style.display = "block";
+                    alert("Usuario no encontrado. Completa el registro.");
+                } else {
+                    const r = document.getElementById('reg-raza').value;
+                    const f = document.getElementById('reg-faccion').value;
+                    if(r && f) {
+                        db.ref('usuarios/'+nom).set({ nombre:nom, codigo:cod, raza:r, faccion:f, puntos:0, rango:"Registro", foto:"", misionActiva:"Ninguna", dificActiva:"" });
+                        setSesion(nom);
+                    }
+                }
+            }
         });
-        document.getElementById("lista-precios").innerHTML = html;
-    });
-}
+    }
 
-function comprarItem(id, precio){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===usuarioActual);
-        if(!key) return;
+    function setSesion(nom) {
+        usuarioActual = nom;
+        localStorage.setItem('gremio_sesion', nom);
+        entrar();
+    }
 
-        const user = data[key];
-        if((user.puntos || 0) < precio){
-            return alert("No posees suficiente esencia.");
+    function entrar() {
+        if(!usuarioActual) return;
+        document.getElementById('pantalla-login').style.display='none';
+        document.getElementById('contenido-web').style.display='block';
+        if(isAdmin(usuarioActual)) {
+            document.getElementById('btn-admin').style.display='block';
+            document.getElementById('btn-cuentas').style.display='block';
+            document.getElementById('btn-registro').style.display='block';
+            document.getElementById('btn-seguimiento').style.display='block';
         }
+        
+        // --- BASE DE DATOS UNIFICADA (usuarios = todos) ---
+        db.ref('usuarios').on('value', snap => {
+            const data = snap.val() || {};
+            USUARIOS_CACHE = data;
 
-        user.puntos -= precio;
-        if(!user.inventario) user.inventario = [];
-        user.inventario.push(id);
+            // Renderizar Perfil o Admin
+            if(isAdmin(usuarioActual)) {
+                renderAdmin(data); 
+                document.getElementById('render-perfil').innerHTML = "<div class='card' style='text-align:center'><h3>🛡️ Perfil de Administrador</h3><p>El maestro del gremio no tiene ficha de aventurero.</p></div>";
+            } else {
+                if(data[usuarioActual]) {
+                    // Check if user has special role to see Guild Missions
+                    const myRole = data[usuarioActual].etiqueta || "";
+                    if(ROLES_ESPECIALES.includes(myRole)) {
+                        document.getElementById('btn-misiones-gremio').style.display = "block";
+                    }
+                    renderPerfil(data[usuarioActual]);
+                }
+            }
+            if(isAdmin(usuarioActual)) {
+                // Admins always see guild missions
+                 document.getElementById('btn-misiones-gremio').style.display = "block";
+            }
 
-        db.ref("vampiros/"+key).set(user);
-        alert("Objeto adquirido del Mercado Oscuro.");
-        renderMercado();
-    });
-}
+            // Renderizar Ranking (ahora usa la misma fuente unificada)
+            renderRanking(data);
 
-/* ==============================
-   SISTEMA DE STOCK
-================================ */
-
-function renderStock(){
-    db.ref("stock").once("value", snap=>{
-        STOCK_CACHE = snap.val() || {};
-        let html="";
-        Object.entries(STOCK_CACHE).forEach(([id,item])=>{
-            html+=`
-            <div class="card">
-                <strong>${iconMap[item.tipo]||"🩸"} ${item.nombre}</strong>
-                <div>Cantidad: ${item.cantidad}</div>
-            </div>
-            `;
+            // Renderizar Seguimiento (si es Admin)
+            if(isAdmin(usuarioActual)) renderSeguimiento();
         });
-        document.getElementById("lista-stock").innerHTML = html;
-    });
-}
 
-function modificarStock(id, delta){
-    if(!STOCK_CACHE[id]) return;
-    STOCK_CACHE[id].cantidad += delta;
-    db.ref("stock/"+id).set(STOCK_CACHE[id]);
-}
-
-/* ==============================
-   SEGUIMIENTO NOCTURNO
-================================ */
-
-function renderSeguimiento(){
-    db.ref("logs").once("value", snap=>{
-        const data = snap.val() || {};
-        let html="";
-        Object.values(data).reverse().forEach(log=>{
-            html+=`
-            <div class="card">
-                <strong>${log.usuario}</strong>
-                <div>${log.accion}</div>
-                <small>${new Date(log.fecha).toLocaleString()}</small>
-            </div>
-            `;
+        db.ref('misiones').on('value', snap => {
+            MISIONES_CACHE = snap.val() || {};
+            renderMisiones(snap.val() ? Object.entries(snap.val()) : []);
         });
-        document.getElementById("lista-seguimiento").innerHTML = html;
-    });
-}
-
-function registrarLog(usuario, accion){
-    db.ref("logs").push({
-        usuario,
-        accion,
-        fecha: Date.now()
-    });
-}
-
-/* ==============================
-   ADMIN AVANZADO
-================================ */
-
-function otorgarEsencia(nombre, cantidad){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===nombre);
-        if(!key) return alert("Vampiro no encontrado");
-
-        data[key].puntos = (data[key].puntos||0) + cantidad;
-        db.ref("vampiros/"+key).set(data[key]);
-
-        registrarLog(usuarioActual, `Otorgó ${cantidad} EC a ${nombre}`);
-        alert("Esencia transferida.");
-    });
-}
-
-function cambiarRangoManual(nombre, rangoNombre){
-    db.ref("vampiros").once("value", snap=>{
-        const data = snap.val() || {};
-        const key = Object.keys(data).find(k=>data[k].nombre===nombre);
-        if(!key) return;
-
-        data[key].rangoManual = rangoNombre;
-        db.ref("vampiros/"+key).set(data[key]);
-
-        registrarLog(usuarioActual, `Ascendió a ${nombre} al rango ${rangoNombre}`);
-    });
-}
-
-/* ==============================
-   SISTEMA DE TORNEOS
-================================ */
-
-function renderTorneos(){
-    db.ref("torneos").once("value", snap=>{
-        const data = snap.val() || {};
-        let html="";
-        Object.entries(data).forEach(([id,t])=>{
-            html+=`
-            <div class="card">
-                <h3>⚔ ${t.nombre}</h3>
-                <p>${t.descripcion}</p>
-                <div>Recompensa: ${formatBlood(t.recompensa)}</div>
-                <button class="btn" onclick="unirseTorneo('${id}')">
-                    Participar
-                </button>
-            </div>
-            `;
+        // NUEVO LISTENER MISIONES GREMIO
+        db.ref('misiones_gremio').on('value', snap => {
+            renderMisionesGremio(snap.val() ? Object.entries(snap.val()) : []);
         });
-        document.getElementById("lista-torneos").innerHTML = html;
-    });
-}
 
-function unirseTorneo(torneoId) {
-    if (!usuarioActual) return;
+        db.ref('anuncios').on('value', snap => renderAnuncios(snap.val() ? Object.values(snap.val()) : []));
+        db.ref('torneos').on('value', snap => renderTorneos(snap.val() ? Object.entries(snap.val()) : []));
+        db.ref('items').on('value', snap => {
+            const items = snap.val() ? Object.entries(snap.val()) : [];
+            ITEMS_CACHE = items.map(([key, val]) => ({id: key, ...val}));
+            renderMercado();
+            if(isAdmin(usuarioActual)) {
+                renderAdminMercado();
+                actualizarSelectStock(); // Llenar el select del stock cuando carguen items
+            }
+        });
 
-    db.ref(`torneos/${torneoId}/participantes`).once("value", snap => {
-        let participantes = snap.val() || [];
-        if (participantes.includes(usuarioActual)) {
-            alert("Ya estás inscrito en este duelo.");
-        } else {
-            participantes.push(usuarioActual);
-            db.ref(`torneos/${torneoId}/participantes`).set(participantes).then(() => {
-                registrarLog(usuarioActual, `Se ha unido al torneo: ${torneoId}`);
-                alert("Has aceptado el duelo nocturno. ¡Prepárate!");
-                renderTorneos();
+        if(isAdmin(usuarioActual)) {
+            db.ref('treasury').on('value', snap => {
+                const data = snap.val() || {balance: 0, logs: {}};
+                TREASURY_BALANCE = data.balance || 0;
+                document.getElementById('treasury-balance').innerHTML = formatMoney(TREASURY_BALANCE);
+                const logs = data.logs ? Object.entries(data.logs).reverse() : [];
+                document.getElementById('treasury-logs').innerHTML = logs.map(([key, l]) => `
+                    <div class="log-entry">
+                        <div><span class="${l.amount >= 0 ? 'log-in' : 'log-out'}">${l.amount >= 0 ? '➕ Ingreso' : '➖ Retiro'}</span> <span style="margin-left:10px; font-weight:bold; color:#fff;">${l.desc}</span> <span class="log-date">${l.date}</span></div>
+                        <div style="text-align:right;"><span>${formatMoney(Math.abs(l.amount))}</span> <div class="log-actions"><button class="btn-log" onclick="copyLog('Movimiento: ${l.desc} | ${formatMoneyPlain(Math.abs(l.amount))}')">📋</button><button class="btn-log" onclick="deleteLog('${key}')">🗑️</button></div></div>
+                    </div>`).join('');
+            });
+
+            // ESCUCHAR STOCK
+            db.ref('stock').on('value', snap => {
+                STOCK_CACHE = snap.val() || {};
+                renderStock();
             });
         }
-    });
-}
+        navegar('inicio');
+    }
+
+    function cerrarSesion() { localStorage.removeItem('gremio_sesion'); location.reload(); }
+    if(usuarioActual) entrar();
+
+    // --- FUNCIONES STOCK ---
+    function actualizarSelectStock(filterText = "") {
+        const sel = document.getElementById('stock-item-select');
+        if(!sel) return;
+        sel.innerHTML = '<option value="">-- Seleccionar Objeto --</option>';
+        
+        // Filtrar y Ordenar
+        const filteredItems = ITEMS_CACHE.filter(i => i.name.toLowerCase().includes(filterText.toLowerCase()));
+        const itemsOrdenados = filteredItems.sort((a, b) => a.name.localeCompare(b.name));
+        
+        itemsOrdenados.forEach(i => {
+            sel.innerHTML += `<option value="${i.id}">${i.name}</option>`;
+        });
+    }
+
+    function updateStock(factor) {
+        const itemId = document.getElementById('stock-item-select').value;
+        const qty = parseInt(document.getElementById('stock-qty').value);
+
+        if(!itemId || !qty || qty <= 0) return alert("Selecciona objeto y cantidad válida.");
+
+        const currentQty = STOCK_CACHE[itemId] || 0;
+        let newQty = currentQty + (qty * factor);
+
+        if (newQty < 0) return alert("No hay suficiente stock para retirar.");
+        
+        if (newQty === 0) {
+            db.ref('stock/'+itemId).remove();
+        } else {
+            db.ref('stock/'+itemId).set(newQty);
+        }
+        document.getElementById('stock-qty').value = "";
+    }
+
+    function renderStock() {
+        const tbody = document.getElementById('stock-list-body');
+        if(!tbody) return;
+        tbody.innerHTML = "";
+        let totalValue = 0;
+
+        Object.entries(STOCK_CACHE).forEach(([itemId, qty]) => {
+            const itemData = ITEMS_CACHE.find(i => i.id === itemId);
+            if(itemData) {
+                // Valor calculado con el precio de VENTA (el más alto)
+                const unitPrice = Math.max(itemData.buy, itemData.sell);
+                const totalItemValue = unitPrice * qty;
+                totalValue += totalItemValue;
+
+                tbody.innerHTML += `
+                    <tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px;">${itemData.name}</td>
+                        <td style="padding:10px;">${qty}</td>
+                        <td style="padding:10px;">${formatMoney(totalItemValue)}</td>
+                    </tr>
+                `;
+            }
+        });
+        document.getElementById('stock-balance').innerHTML = formatMoney(totalValue);
+    }
+
+    // --- NUEVAS FUNCIONES REGISTRO Y SEGUIMIENTO (UNIFICADO) ---
+    function registrarAventureroInterno() {
+        const nom = document.getElementById('int-nombre').value.trim();
+        const raz = document.getElementById('int-raza').value.trim();
+        const fac = document.getElementById('int-faccion').value.trim();
+        if(!nom || !raz || !fac) return alert("Rellena todos los datos.");
+        
+        // Generar código de acceso
+        const newCode = generarCodigoAleatorio();
+
+        // Verificar si ya existe para no sobrescribir datos críticos
+        db.ref('usuarios/'+nom).once('value', snap => {
+            if (snap.exists()) {
+                // Si existe, actualizamos solo raza y facción (y aseguramos que tenga campos de seguimiento)
+                db.ref('usuarios/'+nom).update({ raza: raz, faccion: fac });
+                alert("Usuario existente actualizado.");
+            } else {
+                // Si no existe, creamos el perfil con el CÓDIGO GENERADO
+                const nuevoAventurero = {
+                    nombre: nom, raza: raz, faccion: fac, 
+                    codigo: newCode, // <--- CÓDIGO DE ACCESO
+                    puntos: 0, rango:"Registro",
+                    misionActiva: "Ninguna", misionActual: null, historialMisiones: [] 
+                };
+                db.ref('usuarios/'+nom).set(nuevoAventurero);
+                alert(`AVENTURERO CREADO.\n\nCÓDIGO DE ACCESO: ${newCode}\n\nEntrégaselo al jugador.`);
+            }
+            document.getElementById('int-nombre').value = ""; document.getElementById('int-raza').value = ""; document.getElementById('int-faccion').value = "";
+        });
+    }
+
+    function renderSeguimiento() {
+        const tbody = document.getElementById('tabla-seguimiento');
+        if(!tbody) return;
+        tbody.innerHTML = "";
+        
+        const searchTerm = document.getElementById('search-seguimiento') ? document.getElementById('search-seguimiento').value.toLowerCase() : "";
+
+        if (!USUARIOS_CACHE) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px; color:#777;'>Cargando...</td></tr>";
+            return;
+        }
+
+        let found = false;
+        Object.entries(USUARIOS_CACHE).forEach(([key, av]) => {
+            if (isAdmin(av.nombre)) return; // No mostramos al admin en seguimiento
+
+            // SAFETY CHECK: Ensure user has a name
+            const userName = av.nombre || "Desconocido";
+
+            if (userName.toLowerCase().includes(searchTerm)) {
+                found = true;
+                const rango = getRango(av.puntos || 0);
+                const misionNombre = av.misionActual ? av.misionActual.nombre : "Ninguna";
+                // SAFETY CHECK: Ensure history is an object/array
+                const historialCount = av.historialMisiones ? Object.keys(av.historialMisiones).length : 0;
+                
+                const btnCompletar = av.misionActual ? `<button onclick="finalizarMisionInterna('${key}')" style="background:#2ecc71; border:none; color:white; padding:5px; cursor:pointer; margin-right:5px;">✅ Completar</button>` : '';
+                const editPuntos = `<div style="display:flex; align-items:center; gap:5px;">${av.puntos || 0} <button onclick="editarPuntosInterno('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer; font-size:0.8em;">✏️</button></div>`;
+
+                tbody.innerHTML += `<tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px; color:#fff; font-weight:bold;">${userName}<br><span style="font-size:0.8em; color:#aaa;">${av.raza || "?"} | ${av.faccion || "?"}</span><br>${getExtraTag(av)}</td>
+                        <td style="padding:10px;"><span class="rango-badge ${rango.c}">${rango.n}</span><br>${editPuntos}</td>
+                        <td style="padding:10px; color:${av.misionActual?'#f1c40f':'#555'}">${misionNombre}</td>
+                        <td style="padding:10px; font-size:0.9em;">Completadas: ${historialCount}</td>
+                        <td style="padding:10px;">
+                            ${btnCompletar} 
+                            <button onclick="abrirAsignarMision('${key}')" style="background:#3498db; border:none; color:white; padding:5px; cursor:pointer;">📜 Asignar</button> 
+                            <button onclick="abrirEditarAventurero('${key}')" style="background:#f39c12; border:none; color:white; padding:5px; cursor:pointer;">✏️ Datos</button>
+                            <button onclick="resetearHistorial('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer;">🔄 Reset</button>
+                            <button onclick="borrarUser('${key}')" style="background:#c0392b; border:none; color:white; padding:5px; cursor:pointer;">🗑️</button>
+                        </td>
+                    </tr>`;
+            }
+        });
+
+        if(!found) {
+             tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px; color:#777;'>No se encontraron resultados.</td></tr>";
+        }
+    }
+
+    function resetearHistorial(key) {
+        if(confirm("¿Reiniciar historial de misiones y misión actual?\n(Los puntos no se borrarán)")) {
+            db.ref('usuarios/'+key).update({
+                misionActual: null,
+                misionActiva: "Ninguna",
+                historialMisiones: []
+            });
+        }
+    }
+
+    function abrirEditarAventurero(key) {
+        const av = USUARIOS_CACHE[key];
+        document.getElementById('edit-av-key').value = key;
+        document.getElementById('edit-av-nombre').value = av.nombre;
+        document.getElementById('edit-av-raza').value = av.raza;
+        document.getElementById('edit-av-faccion').value = av.faccion;
+        document.getElementById('edit-av-etiqueta').value = av.etiqueta || "";
+        document.getElementById('modal-editar-aventurero').style.display = 'flex';
+    }
+
+    function guardarEdicionAventurero() {
+        const key = document.getElementById('edit-av-key').value;
+        const nombre = document.getElementById('edit-av-nombre').value;
+        const raza = document.getElementById('edit-av-raza').value;
+        const faccion = document.getElementById('edit-av-faccion').value;
+        const etiqueta = document.getElementById('edit-av-etiqueta').value;
+
+        if(nombre && raza && faccion) {
+            db.ref('usuarios/'+key).update({
+                nombre: nombre,
+                raza: raza,
+                faccion: faccion,
+                etiqueta: etiqueta
+            });
+            alert("Datos actualizados.");
+            document.getElementById('modal-editar-aventurero').style.display = 'none';
+        } else {
+            alert("Rellena todos los campos.");
+        }
+    }
+
+    function editarPuntosInterno(key) {
+        const nuevos = prompt("Introduce nuevos puntos:");
+        if(nuevos !== null) db.ref('usuarios/'+key).update({ puntos: parseInt(nuevos)||0 });
+    }
+    
+    function abrirAsignarMision(key) {
+        selectedAdventurerKey = key;
+        const av = USUARIOS_CACHE[key];
+        document.getElementById('asignar-nombre-usuario').innerText = av.nombre;
+        const select = document.getElementById('select-mision-asignar');
+        select.innerHTML = '<option value="">-- Selecciona una misión --</option>';
+        Object.entries(MISIONES_CACHE).forEach(([mId, m]) => {
+            select.innerHTML += `<option value="${mId}">[${m.dificultad.toUpperCase()}] ${m.nombre}</option>`;
+        });
+        document.getElementById('modal-asignar').style.display = 'flex';
+    }
+    function confirmarAsignacion() {
+        const mId = document.getElementById('select-mision-asignar').value;
+        if(!mId) return alert("Selecciona una misión.");
+        const mision = MISIONES_CACHE[mId];
+        const aventurero = USUARIOS_CACHE[selectedAdventurerKey];
+        // SAFETY CHECK
+        const historial = aventurero.historialMisiones ? Object.values(aventurero.historialMisiones) : []; 
+
+        const rangoAv = getRango(aventurero.puntos || 0);
+        const nivelAv = NIVEL_NUM[rangoAv.n];
+        const nivelMision = DIFICULTAD_NIVEL[mision.dificultad];
+        
+        if (nivelMision > nivelAv) {
+            if(!confirm(`⚠️ ALERTA DE RANGO ⚠️\n\nEl aventurero es rango ${rangoAv.n.toUpperCase()} y la misión es ${mision.dificultad.toUpperCase()}.\nPodría ser mortal.\n\n¿Quieres asignarla de todos modos?`)) return;
+        }
+
+        if (historial.includes(mision.nombre)) {
+            const todasDeEsaDificultad = Object.values(MISIONES_CACHE).filter(m => m.dificultad === mision.dificultad).map(m => m.nombre);
+            const hechasDeEsaDificultad = historial.filter(hName => todasDeEsaDificultad.includes(hName));
+            const hechasUnicas = [...new Set(hechasDeEsaDificultad)];
+            
+            if (hechasUnicas.length < todasDeEsaDificultad.length) {
+                return alert(`⛔ BLOQUEO DE CICLO ⛔\n\nEste aventurero ya completó "${mision.nombre}".\n\nRegla: Debe completar TODAS las misiones de dificultad ${mision.dificultad.toUpperCase()} disponibles antes de poder repetir una.`);
+            } else {
+                if(!confirm(`♻️ CICLO COMPLETADO ♻️\n\nEl aventurero ha completado todas las misiones de este nivel. Se permite repetir "${mision.nombre}".\n¿Proceder?`)) return;
+            }
+        }
+        db.ref('usuarios/'+selectedAdventurerKey).update({
+            misionActual: { id: mId, nombre: mision.nombre, dificultad: mision.dificultad, premio: mision.premios },
+            misionActiva: mision.nombre // Para compatibilidad visual en perfil
+        });
+        document.getElementById('modal-asignar').style.display = 'none';
+        alert("Misión asignada correctamente.");
+    }
+    function finalizarMisionInterna(key) {
+        const av = USUARIOS_CACHE[key];
+        if(!av.misionActual) return;
+        if(confirm(`¿Confirmar que ${av.nombre} ha completado la misión "${av.misionActual.nombre}"?`)) {
+            db.ref('usuarios/'+key+'/historialMisiones').push(av.misionActual.nombre);
+            let rw = av.misionActual.dificultad==="facil"?15 : av.misionActual.dificultad==="media"?35 : av.misionActual.dificultad==="dificil"?80 : 200;
+            const nuevosPuntos = (av.puntos||0) + rw;
+            db.ref('usuarios/'+key).update({ misionActual: null, misionActiva: "Ninguna", puntos: nuevosPuntos });
+            alert(`¡Misión completada! Se han sumado ${rw} puntos.`);
+        }
+    }
+
+    // --- FUNCIONES RESTO DEL SISTEMA ---
+    function modifyTreasury(factor) {
+        const pl = parseInt(document.getElementById('tre-pl').value)||0, o = parseInt(document.getElementById('tre-o').value)||0, p = parseInt(document.getElementById('tre-p').value)||0, c = parseInt(document.getElementById('tre-c').value)||0;
+        const desc = document.getElementById('tre-desc').value.trim();
+        if(!desc) return alert("Concepto obligatorio");
+        const total = (pl*1000000)+(o*10000)+(p*100)+c;
+        const finalAmount = total * factor;
+        db.ref('treasury/balance').set(TREASURY_BALANCE + finalAmount);
+        db.ref('treasury/logs').push({amount:finalAmount, desc:desc, date:new Date().toLocaleString(), user:"ADMIN"});
+        document.getElementById('tre-pl').value = ""; document.getElementById('tre-o').value = ""; document.getElementById('tre-p').value = ""; document.getElementById('tre-c').value = ""; document.getElementById('tre-desc').value = "";
+    }
+    function deleteLog(key) { if(confirm("¿Eliminar registro?")) db.ref('treasury/logs/' + key).remove(); }
+    function copyAllLogs() { db.ref('treasury/logs').once('value', snap => { const logs=snap.val(); if(!logs)return; let t="📜 HISTORIAL\n"; Object.values(logs).reverse().forEach(l=>t+=`[${l.date}] ${l.amount>=0?'ING':'RET'}: ${formatMoneyPlain(Math.abs(l.amount))} | ${l.desc}\n`); navigator.clipboard.writeText(t); alert("Copiado"); }); }
+    function copyLog(text) { navigator.clipboard.writeText(text).then(() => alert("Copiado")); }
+    
+    function renderMercado() {
+        const txt = document.getElementById('search-item').value.toLowerCase();
+        const cat = document.getElementById('filter-cat').value;
+        const sort = document.getElementById('sort-price').value;
+        let lista = ITEMS_CACHE.filter(i => i.name.toLowerCase().includes(txt) && (cat === 'all' || i.cat === cat));
+        if (sort === 'asc') lista.sort((a,b) => Math.min(a.buy,a.sell) - Math.min(b.buy,b.sell));
+        if (sort === 'desc') lista.sort((a,b) => Math.min(b.buy,b.sell) - Math.min(a.buy,a.sell));
+        document.getElementById('lista-precios').innerHTML = lista.map(i => {
+        
+        // Editado por Willy
+            
+        // Determinar la imagen del icono (local)
+        let iconSrc = "icons/default.png"; // Imagen por defecto si no hay mapeo
+        if (iconMap[i.name]) {
+            iconSrc = iconMap[i.name]; // Mapeo específico por nombre
+        } else {
+            // Fallback por categoría (imágenes genéricas)
+            const categoryIcons = {
+                "Arma": "icons/images.jpg",
+                "Armadura": "icons/armadura.png",
+                "Pocion": "icons/pocion.png",
+                "Material": "icons/material.png",
+                "Alimentos": "icons/alimentos.png",
+                "Herramienta": "icons/herramienta.png",
+                "Arcano": "icons/arcano.png",
+                "Mejoras y Consumibles": "icons/Mejoras y Consumibles.png"
+            };
+            iconSrc = categoryIcons[i.cat] || "icons/Default.png";
+        }
 
 
-/* ==============================
-   CARGA INICIAL COMPLETA
-================================ */
 
-function cargarTodo(){
-    renderRanking();
-    renderMercado();
-    renderStock();
-    renderSeguimiento();
-    renderTorneos();
-}
+        
+            let vendemos = Math.max(i.buy, i.sell);
+            let compramos = Math.min(i.buy, i.sell);
+            return `<div class="item-card"><div class="item-icon"><img src="${iconSrc}" alt="${i.name}"></div><h3 style="margin:0; color:#fff; font-size:1.1em;">${i.name}</h3><span style="font-size:0.8em; color:#888;">${i.cat}</span><div class="price-tag"><span class="price-sell-label">Vendemos: ${formatMoney(vendemos)}</span><span class="price-buy-label">Compramos: ${formatMoney(compramos)}</span></div></div>`;
+        }).join('');
 
-if(usuarioActual){
-    cargarTodo();
-   </script>
-}
-                                  
+        // Fin Editado por Willy
+    }
+    
+    function renderAdminMercado() {
+        const term = document.getElementById('search-admin-item') ? document.getElementById('search-admin-item').value.toLowerCase() : "";
+        document.getElementById('lista-admin-mercado').innerHTML = ITEMS_CACHE.filter(i => i.name.toLowerCase().includes(term)).map(i => `
+            <div style="background:#1a0f0f; padding:10px; border-bottom:1px solid #333; margin-bottom:5px;">
+                <input id="en-${i.id}" type="text" value="${i.name}" style="font-weight:bold;">
+                <div style="display:flex; gap:5px;"><input id="eb-${i.id}" type="number" value="${i.buy}" placeholder="P1"><input id="es-${i.id}" type="number" value="${i.sell}" placeholder="P2"></div>
+                <div style="display:flex; justify-content:flex-end; gap:5px;"><button onclick="editItem('${i.id}')" style="background:#27ae60;">💾</button><button onclick="delItem('${i.id}')" style="background:#c0392b;">🗑️</button></div>
+            </div>`).join('');
+    }
+    function crearItem() { const i={name:document.getElementById('it-nom').value, cat:document.getElementById('it-cat').value, buy:parseInt(document.getElementById('it-compra').value)||0, sell:parseInt(document.getElementById('it-venta').value)||0}; if(i.name){db.ref('items').push(i); alert("Añadido");} }
+    function editItem(id) { db.ref('items/'+id).update({name:document.getElementById('en-'+id).value, buy:parseInt(document.getElementById('eb-'+id).value)||0, sell:parseInt(document.getElementById('es-'+id).value)||0}); alert("Guardado"); }
+    function delItem(id) { if(confirm("¿Borrar?")) db.ref('items/'+id).remove(); }
+    function deleteAllItems() { if(confirm("¿BORRAR TODO EL CATÁLOGO?")) db.ref('items').remove(); }
+    
+    // Editado por Willy
+    
+    function cargarCatalogoBase() {
+        const fullList = [
+
+            // Materiales
+
+            {name: "Wood (Madera)", cat: "Material", buy: 2, sell: 1}, 
+            {name: "Stone (Piedra)", cat: "Material", buy: 2, sell: 1}, 
+            {name: "Dirt (Tierra)", cat: "Material", buy: 1, sell: 0},
+            {name: "Copper Ore (Mineral de Cobre)", cat: "Material", buy: 20, sell: 10}, 
+            {name: "Iron Ore (Mineral de Hierro)", cat: "Material", buy: 30, sell: 15}, 
+            {name: "Thorium Ore (Mineral de Torio)", cat: "Material", buy: 70, sell: 38},
+            {name: "Cobalt Ore (Mineral de Cobalto)", cat: "Material", buy: 75, sell: 40}, 
+            {name: "Adamantite Ore (Mineral de Adamantita)", cat: "Material", buy: 100, sell: 80},
+            {name: "Sapphire (Zafiro)", cat: "Material", buy: 2000, sell: 1000}, 
+            {name: "Ruby (Rubí)", cat: "Material", buy: 2000, sell: 1000}, 
+            {name: "Emerald (Esmeralda)", cat: "Material", buy: 2000, sell: 1000},
+            {name: "Light Leather (Cuero Ligero)", cat: "Material", buy: 15, sell: 7}, 
+            {name: "Medium Leather (Cuero Medio)", cat: "Material", buy: 35, sell: 18}, 
+            {name: "Heavy Leather (Cuero Pesado)", cat: "Material", buy: 60, sell: 30},
+            {name: "Venom Sac (Saco de Veneno)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Linen Scraps (Retales de Lino)", cat: "Material", buy: 10, sell: 5}, 
+            {name: "Wool Scraps (Retales de Lana)", cat: "Material", buy: 30, sell: 15},
+            {name: "Essence of Water (Esencia de Agua)", cat: "Material", buy: 200, sell: 100}, 
+            {name: "Essence of Life (Esencia de Vida)", cat: "Material", buy: 2, sell: 1}, 
+            {name: "Essence of Fire (Esencia de Fuego)", cat: "Material", buy: 50, sell: 25},
+            {name: "Essence of Void (Esencia del Vacío)", cat: "Material", buy: 35, sell: 15}, 
+            {name: "Essence of Ice (Esencia de Hielo)", cat: "Material", buy: 70, sell: 35}, 
+            {name: "Void Hearth (Corazón del Vacío)", cat: "Material", buy: 500, sell: 250},
+            {name: "Greater Essence of Life (Esencia Mayor de Vida)", cat: "Material", buy: 200, sell: 100}, 
+            {name: "Bone Fragment (Fragmento de Hueso)", cat: "Material", buy: 5, sell: 2}, 
+            {name: "Feather (Pluma)", cat: "Material", buy: 8, sell: 4},
+            {name: "Plant Fiber (Fibra Vegetal)", cat: "Material", buy: 10, sell: 5}, 
+            {name: "Any Ruble (Escombro)", cat: "Material", buy: 5, sell: 2}, 
+            {name: "Stick (Palo)", cat: "Material", buy: 5, sell: 2},
+            {name: "Cindercloth Scraps (Retales de Tela de Ceniza)", cat: "Material", buy: 40, sell: 20}, 
+            {name: "Egg (Huevo)", cat: "Alimentos", buy: 300, sell: 150}, 
+            {name: "Shadoweave Scraps (Retales de Tejido de Sombras)", cat: "Material", buy: 50, sell: 25},
+            {name: "Red Crystal Shards (Fragmentos de Cristal Rojo)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Yellow Crystal Shards (Fragmentos de Cristal Amarillo)", cat: "Material", buy: 50, sell: 25}, {name: "Blue Crystal Shards (Fragmentos de Cristal Azul)", cat: "Material", buy: 30, sell: 15},
+            {name: "Blood Rose (Rosa de Sangre)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Blood Petals (Pétalos de Sangre)", cat: "Material", buy: 70, sell: 35}, 
+            {name: "Bloodcap Mushroom (Hongo Sombrero de Sangre)", cat: "Material", buy: 70, sell: 35},
+            {name: "Storm Thistle (Cardo de Tormenta)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Storm Petals (Pétalos de Tormenta)", cat: "Material", buy: 70, sell: 35}, 
+            {name: "Stormcap Mushroom (Hongo Sombrero de Tormenta)", cat: "Material", buy: 70, sell: 35},
+            {name: "Blue Glowing Mushroom (Hongo Azul Brillante)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Azure Cap Mushroom (Hongo Sombrero Azur)", cat: "Material", buy: 50, sell: 25}, 
+            {name: "Blue Cave Weed (Hierba de Cueva Azul)", cat: "Material", buy: 50, sell: 25},
+            {name: "Azure Petals (Pétalos Azur)", cat: "Material", buy: 70, sell: 35}, 
+            {name: "Azure Kelp (Alga Azur)", cat: "Material", buy: 150, sell: 75},
+
+
+            {name: "Silver Ore (Mineral de plata)", cat: "Material", buy: 120, sell: 60},
+            {name: "Mithril Ore (Mineral de mitril) ", cat: "Material", buy: 6400, sell: 3200}, 
+            {name: "Onyxium Ore (Mineral de onyxium)", cat: "Material", buy: 30000, sell: 15000}, 
+            {name: "Prisma Ingot (Lingote de prisma)", cat: "Material", buy: 47000, sell: 22000}, 
+            {name: "Gold Ore (Mineral de oro)", cat: "Material", buy: 150, sell: 75},
+            {name: "Storm Leather (Cuero de tormenta)", cat: "Material", buy: 120, sell: 60}, 
+            {name: "Prismatic Hide (Piel prismática)", cat: "Material", buy: 3200, sell: 1600}, 
+            {name: "Apex Sovereign Leather (Cuero soberano ápex)", cat: "Material", buy: 400, sell: 200},
+            {name: "Purple Crystal Shards (Fragmentos de cristal púrpura)", cat: "Material", buy: 80, sell: 40}, 
+            {name: "Sturdy Chitin (Quitina resistente)", cat: "Material", buy: 50, sell: 25},
+            {name: "Boom Powder", cat: "Material", buy: 50, sell: 25},
+            {name: "Dragon's Hearth (Corazón de dragón)", cat: "Material", buy: 10000, sell: 6000}, 
+            {name: "Moneda Oscura (Moneda oscura)", cat: "Material", buy: 2000, sell: 1000},
+            {name: "Empty Potion Bottle (Frasco de poción vacío)", cat: "Material", buy: 2, sell: 1}, 
+            // {name: "Essence of the Forest (Esencia del bosque)", cat: "Material", buy: 150, sell: 75},
+            // {name: "Herdera's Gem (Gema de Herdera) ", cat: "Material", buy: 120, sell: 75},
+
+
+            // Alimentos
+
+            {name: "Wildberries (Bayas Silvestres)", cat: "Alimentos", buy: 40, sell: 5}, 
+            {name: "Raw Wildmeat (Carne Silvestre Cruda)", cat: "Alimentos", buy: 5, sell: 1}, 
+            {name: "Cooked Wildmeat (Carne Silvestre Cocinada)", cat: "Alimentos", buy: 5, sell: 1},
+            {name: "Wheat (Trigo)", cat: "Alimentos", buy: 5, sell: 1}, 
+            {name: "Sunflower (Girasol)", cat: "Alimentos", buy: 20, sell: 8}, 
+            {name: "Lettuce (Lechuga)", cat: "Alimentos", buy: 20, sell: 8},
+            {name: "Corn (Maíz)", cat: "Alimentos", buy: 4, sell: 1}, 
+            {name: "Carrot (Zanahoria)", cat: "Alimentos", buy: 4, sell: 1}, 
+            {name: "Cauliflower (Coliflor)", cat: "Alimentos", buy: 6, sell: 1},
+            {name: "Turnip (Nabo)", cat: "Alimentos", buy: 6, sell: 1}, 
+            {name: "Pumpkin (Calabaza)", cat: "Alimentos", buy: 20, sell: 8}, 
+            {name: "Aurbergine (Berenjena)", cat: "Alimentos", buy: 8, sell: 1},
+            {name: "Tomato (Tomate)", cat: "Alimentos", buy: 10, sell: 1}, 
+            {name: "Chilli (Chile)", cat: "Alimentos", buy: 11, sell: 1}, 
+            {name: "Cotton (Algodón)", cat: "Alimentos", buy: 12, sell: 1},
+            {name: "Rice (Arroz)", cat: "Alimentos", buy: 12, sell: 1}, 
+            {name: "Onion (Cebolla)", cat: "Alimentos", buy: 14, sell: 1}, 
+            {name: "Potato (Patata)", cat: "Alimentos", buy: 14, sell: 1},
+            {name: "Cheese (Queso)", cat: "Alimentos", buy: 250, sell: 150}, 
+            {name: "Raw Fish (Pescado Crudo)", cat: "Alimentos", buy: 5, sell: 1}, 
+            {name: "Dough (Masa)", cat: "Alimentos", buy: 750, sell: 375},
+            {name: "Flour (Harina)", cat: "Alimentos", buy: 60, sell: 30}, 
+            {name: "Salt (Sal)", cat: "Alimentos", buy: 50, sell: 25}, 
+            {name: "Spices (Especias)", cat: "Alimentos", buy: 250, sell: 125},
+            {name: "Bread (Pan)", cat: "Alimentos", buy: 1000, sell: 500}, 
+            {name: "Popcorn (Palomitas)", cat: "Alimentos", buy: 150, sell: 75}, 
+            {name: "Apple pie x12 (Pastel de Manzana x12)", cat: "Alimentos", buy: 5000, sell: 2500},
+            {name: "Apples (Manzanas)", cat: "Alimentos", buy: 500, sell: 250}, 
+            {name: "Meat Pie x12 (Pastel de Carne x12)", cat: "Alimentos", buy: 2000, sell: 1000}, 
+            {name: "Pumpkin Pie x12 (Pastel de Calabaza x12)", cat: "Alimentos", buy: 2000, sell: 1000},
+            {name: "Mushroom Skewer (Brocheta de Champiñones)", cat: "Alimentos", buy: 250, sell: 125}, 
+            {name: "Fruit Skewer (Brocheta de Frutas)", cat: "Alimentos", buy: 250, sell: 125}, 
+            {name: "Meat Skewer (Brocheta de Carne)", cat: "Alimentos", buy: 250, sell: 125},
+            {name: "Vegetable Skewer (Brocheta de Verduras)", cat: "Alimentos", buy: 250, sell: 125}, 
+            {name: "Mushroom Salad (Ensalada de Champiñones)", cat: "Alimentos", buy: 250, sell: 125}, 
+            {name: "Wild Berry Salad (Ensalada de Bayas Silvestres)", cat: "Alimentos", buy: 250, sell: 125},
+            {name: "Caesar Salad (Ensalada César)", cat: "Alimentos", buy: 2000, sell: 1000},
+
+            // Herramientas
+
+            {name: "Crude Pickaxe (Pico Rudimentario)", cat: "Herramienta", buy: 45, sell: 0}, 
+            {name: "Copper Pickaxe (Pico de Cobre)", cat: "Herramienta", buy: 100, sell: 0}, 
+            {name: "Iron Pickaxe (Pico de Hierro)", cat: "Herramienta", buy: 220, sell: 0},
+            {name: "Thorium Pickaxe (Pico de Torio)", cat: "Herramienta", buy: 600, sell: 0}, 
+            {name: "Cobalt Pickaxe (Pico de Cobalto)", cat: "Herramienta", buy: 1000, sell: 0}, 
+            {name: "Adamantite Pickaxe (Pico de Adamantita)", cat: "Herramienta", buy: 1600, sell: 0},
+            {name: "Crude Hatchet (Hacha Rudimentaria)", cat: "Herramienta", buy: 45, sell: 0}, 
+            {name: "Copper Hatchet (Hacha de Cobre)", cat: "Herramienta", buy: 100, sell: 0}, 
+            {name: "Iron Hatchet (Hacha de Hierro)", cat: "Herramienta", buy: 220, sell: 0},
+            {name: "Thorium Hatchet (Hacha de Torio)", cat: "Herramienta", buy: 600, sell: 0}, 
+            {name: "Cobalt Hatchet (Hacha de Cobalto)", cat: "Herramienta", buy: 1000, sell: 0}, 
+            {name: "Adamantite Hatchet (Hacha de Adamantita)", cat: "Herramienta", buy: 1600, sell: 0},
+            {name: "Crude Builder´s Hammer (Martillo Rudimentario)", cat: "Herramienta", buy: 50, sell: 0}, 
+            {name: "Iron Builder´s Hammer (Martillo de Hierro)", cat: "Herramienta", buy: 230, sell: 0}, 
+            {name: "Iron Shovel (Pala de Hierro)", cat: "Herramienta", buy: 230, sell: 0},
+
+
+            {name: "Mithril Pickaxe (Pico de mitril)", cat: "Herramienta", buy: 58000, sell: 0}, 
+            {name: "Mithril Hatchet (Hacha de mitril)", cat: "Herramienta", buy: 58000, sell: 0},
+            {name: "Onyxium Pickaxe (Pico de onyxium)", cat: "Herramienta", buy: 272000, sell: 0}, 
+            {name: "Onyxium Hatchet (Hacha de onyxium)", cat: "Herramienta", buy: 272000, sell: 0}, 
+            {name: "Prisma Pickaxe (Pico de prisma)", cat: "Herramienta", buy: 50000, sell: 0}, 
+            // {name: "Endgame's Workbench (Mesa de trabajo final)", cat: "Herramienta", buy: 230, sell: 0},
+
+            // Armas
+
+            {name: "Crude Sword (Espada Rudimentaria)", cat: "Arma", buy: 45, sell: 0}, 
+            {name: "Crude Daggers (Dagas Rudimentarias)", cat: "Arma", buy: 45, sell: 0}, 
+            {name: "Crude Battleaxe (Hacha de Batalla Rudimentaria)", cat: "Arma", buy: 55, sell: 0}, 
+            {name: "Crude Mace (Maza Rudimentaria)", cat: "Arma", buy: 55, sell: 0},
+            {name: "Copper Sword (Espada de Cobre)", cat: "Arma", buy: 120, sell: 0}, 
+            {name: "Iron Sword (Espada de Hierro)", cat: "Arma", buy: 280, sell: 0}, 
+            {name: "Thorium Sword (Espada de Torio)", cat: "Arma", buy: 750, sell: 0},
+            {name: "Cobalt Sword (Espada de Cobalto)", cat: "Arma", buy: 1350, sell: 0}, 
+            {name: "Adamantite Sword (Espada de Adamantita)", cat: "Arma", buy: 2250, sell: 0}, 
+            {name: "Copper Battleaxe (Hacha de Batalla de Cobre)", cat: "Arma", buy: 180, sell: 0},
+            {name: "Iron Battleaxe (Hacha de Batalla de Hierro)", cat: "Arma", buy: 420, sell: 0}, 
+            {name: "Thorium Battleaxe (Hacha de Batalla de Torio)", cat: "Arma", buy: 1400, sell: 0}, 
+            {name: "Cobalt Battleaxe (Hacha de Batalla de Cobalto)", cat: "Arma", buy: 1800, sell: 0},
+            {name: "Adamantite Battleaxe (Hacha de Batalla de Adamantita)", cat: "Arma", buy: 3000, sell: 0}, 
+            {name: "Copper Daggers (Dagas de Cobre)", cat: "Arma", buy: 120, sell: 0}, 
+            {name: "Iron Daggers (Dagas de Hierro)", cat: "Arma", buy: 200, sell: 0},
+            {name: "Thorium Daggers (Dagas de Torio)", cat: "Arma", buy: 580, sell: 0}, 
+            {name: "Cobalt Daggers (Dagas de Cobalto)", cat: "Arma", buy: 780, sell: 0}, 
+            {name: "Adamantite Daggers (Dagas de Adamantita)", cat: "Arma", buy: 2000, sell: 0},
+            {name: "Copper Mace (Maza de Cobre)", cat: "Arma", buy: 180, sell: 0}, 
+            {name: "Iron Mace (Maza de Hierro)", cat: "Arma", buy: 420, sell: 0}, 
+            {name: "Thorium Mace (Maza de Torio)", cat: "Arma", buy: 1400, sell: 0},
+            {name: "Cobalt Mace (Maza de Cobalto)", cat: "Arma", buy: 1800, sell: 0}, 
+            {name: "Adamantite Mace (Maza de Adamantita)", cat: "Arma", buy: 3000, sell: 0}, 
+            {name: "Katana Iron (Katana de Hierro)", cat: "Arma", buy: 550, sell: 0},
+            {name: "Katana Thorium (Katana de Torio)", cat: "Arma", buy: 1600, sell: 0}, 
+            {name: "Katana Cobalt (Katana de Cobalto)", cat: "Arma", buy: 2720, sell: 0}, 
+            {name: "Katana Adamantite (Katana de Adamantita)", cat: "Arma", buy: 4500, sell: 0},
+
+
+
+            {name: "Crude Shortbow (Arco Corto Rudimentario)", cat: "Arma", buy: 300, sell: 0}, 
+            {name: "Iron Shortbow (Arco Corto de Hierro)", cat: "Arma", buy: 270, sell: 0}, 
+            {name: "Thorium Shortbow (Arco Corto de Torio)", cat: "Arma", buy: 750, sell: 0},
+            {name: "Cobalt Shortbow (Arco Corto de Cobalto)", cat: "Arma", buy: 1350, sell: 0}, 
+            {name: "Adamantite Shortbow (Arco Corto de Adamantita)", cat: "Arma", buy: 2200, sell: 0}, 
+            {name: "Copper Shortbow (Arco Corto de Cobre)", cat: "Arma", buy: 160, sell: 0},
+            {name: "Iron Hand Crossbow (Ballesta de Mano de Hierro)", cat: "Arma", buy: 300, sell: 0}, 
+            {name: "Ancient Steelhand Crossbow (Ballesta de Mano de Acero Antiguo)", cat: "Arma", buy: 1500, sell: 0},
+            {name: "Copper Longsword (Espadón de cobre)", cat: "Arma", buy: 165, sell: 0}, 
+            {name: "Iron Longsword (Espadón de hierro)", cat: "Arma", buy: 450, sell: 0},
+            {name: "Thorium Longsword (Espadón de torio)", cat: "Arma", buy: 1100, sell: 0}, 
+            {name: "Cobalt Longsword (Espadón de cobalto)", cat: "Arma", buy: 1460, sell: 0}, 
+            {name: "Adamantite Longsword (Espadón de adamantita)", cat: "Arma", buy: 2100, sell: 0},
+            {name: "Mithril Longsword (Espadón de mitril)", cat: "Arma", buy: 66000, sell: 0}, 
+            {name: "Onyxium Longsword (Espadón de onyxium)", cat: "Arma", buy: 422000, sell: 0}, 
+            {name: "Crude Spear (Lanza rudimentaria)", cat: "Arma", buy: 45, sell: 0},
+            {name: "Copper Spear (Lanza de cobre)", cat: "Arma", buy: 180, sell: 0},
+            {name: "Iron Spear (Lanza de hierro)", cat: "Arma", buy: 400, sell: 0}, 
+            {name: "Thorium Spear (Lanza de torio)", cat: "Arma", buy: 1050, sell: 0},
+            {name: "Cobalt Spear (Lanza de cobalto)", cat: "Arma", buy: 1300, sell: 0}, 
+            {name: "Admantite Spear (Lanza de adamantita)", cat: "Arma", buy: 2100, sell: 0}, 
+            {name: "Mithril Spear (Lanza de mitril)", cat: "Arma", buy: 66000, sell: 0},
+            {name: "Onyxium Spear (Lanza de onyxium)", cat: "Arma", buy: 305000, sell: 0}, 
+            {name: "Copper Staff (Bastón de cobre)", cat: "Arma", buy: 130, sell: 0}, 
+            {name: "Iron Staff (Bastón de hierro)", cat: "Arma", buy: 210, sell: 0},
+            {name: "Thorium Staff (Bastón de torio)", cat: "Arma", buy: 1000, sell: 0},
+            {name: "Cobalt Staff (Bastón de cobalto)", cat: "Arma", buy: 1500, sell: 0},
+            {name: "Adamantite Staff (Bastón de adamantita)", cat: "Arma", buy: 1900, sell: 0},
+            {name: "Mithril Staff (Bastón de mitril)", cat: "Arma", buy: 52500, sell: 0}, 
+            {name: "Onyxium Staff (Bastón de onyxium)", cat: "Arma", buy: 31500, sell: 0}, 
+            {name: "Knockback Crossbow (Ballesta de empuje)", cat: "Arma", buy: 600, sell: 0},
+            {name: "Automatic Crossbow (Ballesta automática)", cat: "Arma", buy: 1600, sell: 0}, 
+            {name: "Explosive Bow (Arco explosivo)", cat: "Arma", buy: 21500, sell: 0}, 
+            {name: "Mithril Shortbow (Arco corto de mitril)", cat: "Arma", buy: 66000, sell: 0},
+            {name: "Onyxium Shortbow (Arco corto de onyxium)", cat: "Arma", buy: 305000, sell: 0},
+            {name: "Mithril Sword (Espada de mitril)", cat: "Arma", buy: 39000, sell: 0},
+            {name: "Mithril Mace (Maza de mitril)", cat: "Arma", buy: 66000, sell: 0}, 
+            {name: "Mithril Battleaxe (Hacha de batalla de mitril)", cat: "Arma", buy: 65500, sell: 0}, 
+            {name: "Mithril Daggers (Dagas de mitril)", cat: "Arma", buy: 65500, sell: 0},
+            {name: "Onyxium Mace (Maza de onyxium)", cat: "Arma", buy: 305000, sell: 0}, 
+            {name: "Onyxium Battleaxe (Hacha de batalla de onyxium)", cat: "Arma", buy: 305000, sell: 0}, 
+            {name: "Onyxium Daggers (Dagas de onyxium)", cat: "Arma", buy: 598000, sell: 0},
+            {name: "Prisma Daggers (Dagas de prisma)", cat: "Arma", buy: 510000, sell: 0},
+            // {name: "Vine-twined Daggers (Dagas de enredaderas)", cat: "Arma", buy: 180, sell: 0},
+
+            // Armaduras
+
+            {name: "Copper Helm (Yelmo de Cobre)", cat: "Armadura", buy: 150, sell: 0}, 
+            {name: "Iron Helm (Yelmo de Hierro)", cat: "Armadura", buy: 420, sell: 0}, 
+            {name: "Thorium Helm (Yelmo de Torio)", cat: "Armadura", buy: 1200, sell: 0},
+            {name: "Cobalt Helm (Yelmo de Cobalto)", cat: "Armadura", buy: 1700, sell: 0}, 
+            {name: "Adamantite Helm (Yelmo de Adamantita)", cat: "Armadura", buy: 3050, sell: 0}, 
+            {name: "Copper Cuirass (Coraza de Cobre)", cat: "Armadura", buy: 280, sell: 0},
+            {name: "Iron Cuirass (Coraza de Hierro)", cat: "Armadura", buy: 700, sell: 0}, 
+            {name: "Thorium Cuirass (Coraza de Torio)", cat: "Armadura", buy: 2150, sell: 0}, 
+            {name: "Cobalt Cuirass (Coraza de Cobalto)", cat: "Armadura", buy: 2950, sell: 0},
+            {name: "Adamantite Cuirass (Coraza de Adamantita)", cat: "Armadura", buy: 5500, sell: 0}, 
+            {name: "Copper Gauntlets (Guanteletes de Cobre)", cat: "Armadura", buy: 120, sell: 0}, 
+            {name: "Iron Gauntlets (Guanteletes de Hierro)", cat: "Armadura", buy: 300, sell: 0},
+            {name: "Thorium Gauntlets (Guanteletes de Torio)", cat: "Armadura", buy: 950, sell: 0}, 
+            {name: "Cobalt Gauntlets (Guanteletes de Cobalto)", cat: "Armadura", buy: 1150, sell: 0}, 
+            {name: "Adamantite Gauntlets (Guanteletes de Adamantita)", cat: "Armadura", buy: 2350, sell: 0},
+            {name: "Copper Greaves (Grebas de Cobre)", cat: "Armadura", buy: 250, sell: 0}, 
+            {name: "Iron Greaves (Grebas de Hierro)", cat: "Armadura", buy: 650, sell: 0}, 
+            {name: "Thorium Greaves (Grebas de Torio)", cat: "Armadura", buy: 1650, sell: 0},
+            {name: "Cobalt Greaves (Grebas de Cobalto)", cat: "Armadura", buy: 2450, sell: 0}, 
+            {name: "Adamantite Greaves (Grebas de Adamantita)", cat: "Armadura", buy: 4300, sell: 0},
+
+
+
+            {name: "Archer Hood (Capucha de arquero)", cat: "Armadura", buy: 860, sell: 0},
+            {name: "Archer Tunic (Túnica de arquero)", cat: "Armadura", buy: 1300, sell: 0},
+            {name: "Archer Gloves (Guantes de arquero)", cat: "Armadura", buy: 750, sell: 0},
+            {name: "Archer Pants (Pantalones de arquero)", cat: "Armadura", buy: 1200, sell: 0},
+            {name: "Crude Diving Mask (Máscara de buceo rudimentaria)", cat: "Armadura", buy: 270, sell: 0},
+            {name: "Crude Diving Suit (Traje de buceo rudimentario)", cat: "Armadura", buy: 370, sell: 0},
+            {name: "Crude Diving Gloves (Guantes de buceo rudimentarios)", cat: "Armadura", buy: 185, sell: 0},
+            {name: "Crude Diving Flippers (Aletas de buceo rudimentarias)", cat: "Armadura", buy: 250, sell: 0},
+            {name: "Mithril Helm (Casco de mitril)", cat: "Armadura", buy: 79000, sell: 0},
+            {name: "Mithril Cuirass (Coraza de mitril)", cat: "Armadura", buy: 158000, sell: 0},
+            {name: "Mithril Greaves (Grebas de mitril)", cat: "Armadura", buy: 118100, sell: 0},
+            {name: "Mithril Gauntlets (Guanteletes de mitril)", cat: "Armadura", buy: 52500, sell: 0},
+            {name: "Onyxium Helm (Casco de onyxium)", cat: "Armadura", buy: 242000, sell: 0},
+            {name: "Onyxium Cuirass (Coraza de onyxium)", cat: "Armadura", buy: 363000, sell: 0},
+            {name: "Onyxium Greaves (Grebas de onyxium)", cat: "Armadura", buy: 243000, sell: 0},
+            {name: "Onyxium Gauntlets (Guanteletes de onyxium)", cat: "Armadura", buy: 182000, sell: 0},
+            {name: "Prisma Helm (Casco de prisma)", cat: "Armadura", buy: 256000, sell: 0},
+            {name: "Prisma Cuirass (Coraza de prisma)", cat: "Armadura", buy: 403000, sell: 0},
+            {name: "Prisma Greaves (Grebas de prisma)", cat: "Armadura", buy: 302000, sell: 0},
+            {name: "Prisma Gauntlets (Guanteletes de prisma)", cat: "Armadura", buy: 205000, sell: 0},
+
+            // Botas
+
+            {name: "Froggy Boots (Botas de ranita)", cat: "Armadura", buy: 3000, sell: 0},
+            {name: "Mega Speed Boots (Botas de mega velocidad)", cat: "Armadura", buy: 20000, sell: 0},
+            {name: "Void Boots (Botas del vacío)", cat: "Armadura", buy: 15000, sell: 0},
+
+
+            // Escudos 
+
+            {name: "Copper Shield (Escudo de Cobre)", cat: "Escudo", buy: 80, sell: 0},
+            {name: "Iron Shield (Escudo de Hierro)", cat: "Escudo", buy: 250, sell: 0}, 
+            {name: "Cobalt Shield (Escudo de Cobalto)", cat: "Escudo", buy: 950, sell: 0}, 
+            {name: "Thorium Shield (Escudo de Torio)", cat: "Escudo", buy: 550, sell: 0},
+            {name: "Adamantite Shield (Escudo de Adamantita)", cat: "Escudo", buy: 1750, sell: 0},
+            {name: "Mithril Shield (Escudo de mitril)", cat: "Escudo", buy: 65000, sell: 0},
+            {name: "Onyxium Shield (Escudo de onyxium)", cat: "Escudo", buy: 302000, sell: 0},
+
+            // Arcano
+
+            {name: "Teleporter x2 (Teletransportador)", cat: "Arcano", buy: 500, sell: 250}, 
+            {name: "Ancient gateway (Portal Antiguo)", cat: "Arcano", buy: 1500, sell: 750}, 
+            {name: "Fragment: Orbis - Dragonspire weald", cat: "Arcano", buy: 3200, sell: 1600},
+            {name: "Fragment: Orbis - The dread wade", cat: "Arcano", buy: 3300, sell: 1650}, 
+            {name: "Fragment: Orbis - Windrider valley", cat: "Arcano", buy: 1000, sell: 500},
+            {name: "Healing Totem (Tótem de Curación)", cat: "Arcano", buy: 8000, sell: 4000}, 
+            {name: "Slowing Totem (Tótem de Ralentización)", cat: "Arcano", buy: 3150, sell: 1575}, 
+            {name: "Flame Crystal Staff (Bastón de Cristal de Llama)", cat: "Arcano", buy: 0, sell: 0},
+            {name: "Ice crystal staff (Bastón de Cristal de Hielo)", cat: "Arcano", buy: 0, sell: 0},
+
+            // Mejoras y Consumibles
+
+            {name: "Antidote (Antídoto)", cat: "Mejoras y Consumibles", buy: 120, sell: 60}, 
+            {name: "Lesser Health Potion x6 (Poción de Salud Menor)", cat: "Mejoras y Consumibles", buy: 2500, sell: 1250}, 
+            {name: "Lesser Stamina Potion x6 (Poción de Aguante Menor)", cat: "Mejoras y Consumibles", buy: 2500, sell: 1250},
+            {name: "Lesser Energy Potion x6 (Poción de Energía Menor)", cat: "Mejoras y Consumibles", buy: 2500, sell: 1250}, 
+            {name: "Greater Health Potion x6 (Poción de Salud Mayor)", cat: "Mejoras y Consumibles", buy: 5000, sell: 2500},
+            {name: "Greater Stamina Potion x6 (Poción de Aguante Mayor)", cat: "Mejoras y Consumibles", buy: 5000, sell: 2500}, 
+            {name: "Greater Energy Potion x6 (Poción de Energía Mayor)", cat: "Mejoras y Consumibles", buy: 5000, sell: 2500},
+            {name: "Unlock Backpack (Desbloquear mochila)", cat: "Mejoras y Consumibles", buy: 540, sell: 0},
+            {name: "Backpack Upgrade I (Mejora de mochila I)", cat: "Mejoras y Consumibles", buy: 3700, sell: 0}, 
+            {name: "Backpack Upgrade II (Mejora de mochila II)", cat: "Mejoras y Consumibles", buy: 4800, sell: 0}, 
+            {name: "Endgame Backpack Upgrade I (Mejora mochila final I)", cat: "Mejoras y Consumibles", buy: 5000, sell: 0},
+            {name: "Endgame Backpack Upgrade II (Mejora mochila final II)", cat: "Mejoras y Consumibles", buy: 31000, sell: 0},
+            {name: "Endgame Backpack Upgrade III (Mejora mochila final III)", cat: "Mejoras y Consumibles", buy: 40000, sell: 0}, 
+            {name: "Small Potion of Mana (Poción de maná pequeña)", cat: "Mejoras y Consumibles", buy: 160, sell: 0}, 
+            {name: "Potion of Mana (Poción de maná)", cat: "Mejoras y Consumibles", buy: 300, sell: 0},
+            {name: "Large Potion of Mana (Poción de maná grande)", cat: "Mejoras y Consumibles", buy: 500, sell: 0},
+            {name: "Small Potion of Mana Regen (Poción regen. maná peq.)", cat: "Mejoras y Consumibles", buy: 160, sell: 0}, 
+            {name: "Potion of Mana Regen (Poción regen. maná)", cat: "Mejoras y Consumibles", buy: 300, sell: 0}, 
+            {name: "Large Potion of Mana Regen (Poción regen. maná grande)", cat: "Mejoras y Consumibles", buy: 500, sell: 0},
+            {name: "Popberry Bomb (Bomba de bayas explosivas)", cat: "Mejoras y Consumibles", buy: 400, sell: 0},
+            {name: "Coin Punch (Bolsa de monedas)", cat: "Mejoras y Consumibles", buy: 100, sell: 0},
+        ];
+        
+        fullList.forEach(i => db.ref('items').push(i));
+        alert("¡Lista completa de objetos cargada con traducciones!");
+    }
+
+    // Fin Editado por Willy
+
+    function toggleCode(idSpan) {
+        const el = document.getElementById(idSpan);
+        if (el.textContent === "••••••") { el.textContent = el.dataset.real; } else { el.textContent = "••••••"; }
+    }
+    function renderPerfil(u) {
+        if(!u) return;
+        const r = getVisualRango(u);
+        document.getElementById('render-perfil').innerHTML = `
+            <div style="display:flex; flex-wrap:wrap; gap:30px;">
+                <div class="card" style="flex:1; text-align:center; min-width:300px;">
+                    <img src="${u.foto || 'https://via.placeholder.com/150/000/daa520?text=SIN+FOTO'}" class="foto-perfil">
+                    <input type="file" id="up-foto" style="display:none" onchange="subirFoto(this)">
+                    <button class="btn" style="margin-top:20px; font-size:0.8em; width:auto;" onclick="document.getElementById('up-foto').click()">Subir Retrato</button>
+                    <h2 style="border:none; margin:20px 0 5px 0; color:#fff;">${u.nombre}</h2>
+                    <div style="display:flex; gap:5px; justify-content:center; align-items:center; margin-bottom:10px;">
+                        <input type="text" id="edit-raza" value="${u.raza}" placeholder="Raza" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #3e2723; color:#ccc; padding:5px;">
+                        <span style="color:#5d4037;">|</span>
+                        <input type="text" id="edit-faccion" value="${u.faccion}" placeholder="Facción" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #3e2723; color:#ccc; padding:5px;">
+                    </div>
+                    <button onclick="updateProfile()" style="background:none; border:1px solid #daa520; color:#daa520; cursor:pointer; padding:2px 10px; font-size:0.8em; margin-bottom:10px;">💾 Guardar Cambios</button>
+                    <div style="margin-top:20px;">
+                        <span style="color:#777; font-size:0.8em;">CÓDIGO DE ACCESO</span>
+                        <div class="codigo-oculto"><span id="prof-code" data-real="${u.codigo}">••••••</span><button class="btn-ojo" onclick="toggleCode('prof-code')">👁️</button></div>
+                    </div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:20px; min-width:300px;">
+                    <div class="card" style="flex:1; text-align:center;">
+                        <h3>Rango Actual</h3>
+                        <div><span class="rango-badge ${r.c}" style="font-size:2em;">${r.n}</span>${getExtraTag(u) ? `<br>${getExtraTag(u)}` : ''}</div>
+                        <div style="margin-top:15px; font-weight:bold; color:#daa520; font-size:1.5em;">${u.puntos} PTS</div>
+                    </div>
+                    <div class="card" style="flex:1; border-left: 5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
+                        <h3>Estado de Misión</h3>
+                        ${u.misionActiva !== 'Ninguna' ? `<p style="color:#2ecc71; font-weight:bold; font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva.toUpperCase()}</span></p>` : `<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function updateProfile() {
+        const r = document.getElementById('edit-raza').value.trim();
+        const f = document.getElementById('edit-faccion').value.trim();
+        if(r && f) {
+            db.ref('usuarios/'+usuarioActual).update({ raza: r, faccion: f });
+            alert("Perfil actualizado.");
+        } else {
+            alert("Raza y Facción no pueden estar vacíos.");
+        }
+    }
+
+    function renderRanking(usuarios) {
+        if (!usuarios) {
+             document.getElementById('lista-ranking').innerHTML = "<p>No hay aventureros registrados.</p>";
+             return;
+        }
+
+        const allUsers = Object.values(usuarios);
+        
+        // --- 1. Filtrar Regentes (Maestros) y usar sus fotos reales ---
+        const regentesData = MAESTROS.map(m => {
+            const userObj = allUsers.find(u => u.nombre === m);
+            return { name: m, foto: userObj ? userObj.foto : null };
+        });
+
+        // --- 2. Filtrar Mortales (Excluir Admin y Maestros) ---
+        const mortales = allUsers.filter(u => !isAdmin(u.nombre) && !MAESTROS.includes(u.nombre)).sort((a,b) => b.puntos - a.puntos);
+        
+        document.getElementById('lista-regentes').innerHTML = regentesData.map(m => `
+            <div class="regente-card">
+                <img src="${m.foto || 'https://via.placeholder.com/100'}" class="foto-mini">
+                <h3 style="color:#daa520; margin:10px 0 5px 0;">${m.name}</h3>
+                <span class="rango-badge bg-maestro">Maestro</span>
+            </div>
+        `).join('');
+
+        document.getElementById('lista-ranking').innerHTML = mortales.map((u, i) => {
+            const r = getVisualRango(u);
+            let claseTop = i===0 ? "top-1" : i===1 ? "top-2" : i===2 ? "top-3" : "";
+            let trofeo = i===0 ? "👑" : i===1 ? "🥈" : i===2 ? "🥉" : "#"+(i+1);
+            return `<div class="rank-card ${claseTop}"><div class="rank-num">${trofeo}</div><img src="${u.foto||'https://via.placeholder.com/50'}" class="foto-mini"><div style="flex:1;"><div style="font-weight:bold; font-size:1.5em; color:#fff;">${u.nombre} ${getExtraTag(u)}</div><div style="font-size:1em; color:#aaa;">${u.raza} - ${u.faccion}</div></div><div style="text-align:right;"><span class="rango-badge ${r.c}">${r.n}</span><div style="font-size:1.3em; font-weight:bold; margin-top:5px; color:#daa520;">${u.puntos} pts</div></div></div>`;
+        }).join('');
+    }
+
+    function renderMisiones(lista) {
+        const cont = document.getElementById('lista-misiones');
+        cont.innerHTML = lista.length ? "" : "<p style='color:#888;'>El tablón está vacío.</p>";
+        const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
+        cont.innerHTML = entries.map(([key, m]) => {
+            if(!m) return ""; if(typeof m!=='object') m=key;
+            return `<div class="pergamino">
+                <h3>${m.nombre}</h3>
+                <p style="font-size:0.8em; color:#5d4037;"><b>Dificultad:</b> ${m.dificultad.toUpperCase()}</p>
+                <p style="font-size:0.9em; color:#3e2723;"><b>Requisitos:</b> ${m.requisitos || 'Ninguno'}</p>
+                <p style="font-style:italic;">"${m.desc}"</p>
+                <p><b>Premio:</b> ${m.premios}</p>
+                ${isAdmin(usuarioActual) ? `<div style="position:absolute; top:10px; right:10px;"><button onclick="prepararEdicionMision('${key}')" style="background:none; border:none; cursor:pointer; font-size:1.2em;">✏️</button><button onclick="borrarMision('${key}')" style="background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button></div>`:''}
+            </div>`;
+        }).join('');
+    }
+
+    // --- SISTEMA EDITAR MISIONES ---
+    function prepararEdicionMision(key) {
+        db.ref('misiones/'+key).once('value', snap => {
+            const m = snap.val();
+            document.getElementById('m-nom').value = m.nombre;
+            document.getElementById('m-dif').value = m.dificultad;
+            document.getElementById('m-req').value = m.requisitos;
+            document.getElementById('m-desc').value = m.desc;
+            document.getElementById('m-prem').value = m.premios;
+            misionEditandoId = key;
+            document.getElementById('btn-publicar-mision').innerText = "💾 Guardar Cambios";
+            document.getElementById('btn-publicar-mision').style.background = "#2ecc71";
+            document.getElementById('btn-cancelar-edicion').style.display = "block";
+            navegar('admin');
+        });
+    }
+
+    function cancelarEdicionMision() {
+        misionEditandoId = null;
+        document.getElementById('m-nom').value = ""; document.getElementById('m-req').value = "";
+        document.getElementById('m-desc').value = ""; document.getElementById('m-prem').value = "";
+        document.getElementById('btn-publicar-mision').innerText = "Publicar";
+        document.getElementById('btn-publicar-mision').style.background = "linear-gradient(to bottom, #daa520, #b8860b)";
+        document.getElementById('btn-cancelar-edicion').style.display = "none";
+    }
+
+    function crearMision() {
+        const m = {
+            nombre: document.getElementById('m-nom').value, dificultad: document.getElementById('m-dif').value,
+            requisitos: document.getElementById('m-req').value, desc: document.getElementById('m-desc').value, premios: document.getElementById('m-prem').value
+        };
+        if(!m.nombre) return alert("Falta título");
+        if (misionEditandoId) {
+            db.ref('misiones/'+misionEditandoId).update(m); alert("Actualizada"); cancelarEdicionMision();
+        } else {
+            db.ref('misiones').push(m); alert("Publicada");
+        }
+    }
+    function borrarMision(key) { if(confirm("¿Borrar?")) db.ref('misiones/'+key).remove(); }
+
+    // --- SISTEMA ANUNCIOS ---
+    function renderAnuncios(lista) {
+        const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
+        document.getElementById('lista-anuncios').innerHTML = entries.reverse().map(([key, a]) => {
+             if(!a) return ""; if(typeof a!=='object') a=key;
+             return `<div class="card" style="border-left: 5px solid #3498db; position:relative;">
+                <h3 style="color:#fff;">📢 ${a.titulo}</h3><p style="color:#ccc;">${a.msg}</p>
+                ${isAdmin(usuarioActual) ? `<button onclick="borrarAnuncio('${key}')" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button>` : ''}
+            </div>`;
+        }).join('');
+    }
+    function crearAnuncio() { const a={titulo:document.getElementById('a-tit').value, msg:document.getElementById('a-msg').value}; if(a.titulo){db.ref('anuncios').push(a); alert("Publicado");} }
+    function borrarAnuncio(key) { if(confirm("¿Borrar?")) db.ref('anuncios/'+key).remove(); }
+
+    // --- SISTEMA TORNEOS ---
+    function prepararEdicionTorneo(key) {
+        db.ref('torneos/'+key).once('value', snap => {
+            const t = snap.val();
+            document.getElementById('t-nom').value = t.nombre; document.getElementById('t-fac').value = t.faccion;
+            document.getElementById('t-lug').value = t.lugar; document.getElementById('t-desc').value = t.desc;
+            document.getElementById('t-prem').value = t.premios;
+            torneoEditandoId = key; torneoFotoActual = t.foto || "";
+            document.getElementById('btn-publicar-torneo').innerText = "💾 Guardar Torneo";
+            document.getElementById('btn-publicar-torneo').style.background = "#2ecc71";
+            document.getElementById('btn-cancelar-edicion-torneo').style.display = "block";
+            navegar('admin');
+        });
+    }
+    function cancelarEdicionTorneo() {
+        torneoEditandoId = null; torneoFotoActual = "";
+        document.getElementById('t-nom').value = ""; document.getElementById('t-fac').value = "";
+        document.getElementById('t-lug').value = ""; document.getElementById('t-desc').value = "";
+        document.getElementById('t-prem').value = ""; document.getElementById('t-foto-file').value = "";
+        document.getElementById('btn-publicar-torneo').innerText = "Publicar Torneo";
+        document.getElementById('btn-publicar-torneo').style.background = "#c0392b";
+        document.getElementById('btn-cancelar-edicion-torneo').style.display = "none";
+    }
+    function crearTorneo() {
+        const file = document.getElementById('t-foto-file').files[0];
+        const guardarEnDB = (fotoBase64) => {
+            const t = {
+                nombre: document.getElementById('t-nom').value, faccion: document.getElementById('t-fac').value,
+                lugar: document.getElementById('t-lug').value, foto: fotoBase64, 
+                desc: document.getElementById('t-desc').value, premios: document.getElementById('t-prem').value
+            };
+            if(!t.nombre) return alert("Falta nombre");
+            if(torneoEditandoId) {
+                if(!file && torneoFotoActual) t.foto = torneoFotoActual;
+                db.ref('torneos/'+torneoEditandoId).update(t); alert("Actualizado"); cancelarEdicionTorneo();
+            } else {
+                db.ref('torneos').push(t); alert("Organizado");
+                document.getElementById('t-nom').value=""; document.getElementById('t-desc').value="";
+                navegar('torneos');
+            }
+        };
+        if(file){ const reader=new FileReader(); reader.onload=e=>guardarEnDB(e.target.result); reader.readAsDataURL(file); } else guardarEnDB("");
+    }
+    function renderTorneos(lista) {
+        const cont = document.getElementById('lista-torneos');
+        cont.innerHTML = lista.length ? "" : "<p style='color:#c0392b;'>No hay combates.</p>";
+        const entries = Array.isArray(lista)&&lista.length>0&&Array.isArray(lista[0])?lista:Object.entries(lista);
+        cont.innerHTML = entries.map(([key, t]) => {
+            if(!t)return""; if(typeof t!=='object') t=key;
+            const img = t.foto&&t.foto.length>10?t.foto:'https://via.placeholder.com/400x300/1a0f0f/c0392b?text=TORNEO';
+            return `<div class="torneo-card"><img src="${img}" class="torneo-img"><div class="torneo-info"><h3>${t.nombre}</h3><p>🚩 ${t.faccion}</p><p>📍 ${t.lugar}</p><p><i>${t.desc}</i></p><div style="background:#400; padding:10px;">🏆 ${t.premios}</div>${isAdmin(usuarioActual)?`<div style="margin-top:10px;"><button onclick="prepararEdicionTorneo('${key}')">✏️ Editar</button> <button onclick="borrarTorneo('${key}')">🗑️ Borrar</button></div>`:''}</div></div>`;
+        }).join('');
+    }
+    function borrarTorneo(key) { if(confirm("¿Borrar?")) db.ref('torneos/'+key).remove(); }
+
+    function borrarUser(nom) { if(confirm("¿Eliminar cuenta web?")) db.ref('usuarios/'+nom).remove(); }
+    function subirFoto(input) { if(input.files[0]) { const reader = new FileReader(); reader.onload = e => db.ref('usuarios/'+usuarioActual).update({ foto: e.target.result }); reader.readAsDataURL(input.files[0]); } }
+    function generarCodigo() { const c = 'HYT-' + Math.random().toString(36).substr(2, 4).toUpperCase(); document.getElementById('ui-codigos').innerHTML += `<div>✅ ${c}</div>`; }
+    
+    // --- ACTUALIZACIÓN PANEL ADMIN: TABLA DE CUENTAS WEB ---
+    function renderAdmin(usuarios) {
+        const tbody = document.getElementById('tabla-usuarios-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = "";
+        
+        Object.entries(usuarios).forEach(([key, u]) => {
+            if (isAdmin(u.nombre)) return; // Ocultar cuenta admin
+            const r = getVisualRango(u); 
+            tbody.innerHTML += `<tr>
+                <td><img src="${u.foto||'https://via.placeholder.com/30'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #daa520;"></td>
+                <td style="font-weight:bold; color:#fff;">${u.nombre} ${getExtraTag(u)}</td>
+                <td style="color:#b0a090; font-size:0.9em;">${u.raza || '-'}</td>
+                <td style="color:#b0a090; font-size:0.9em;">${u.faccion || '-'}</td>
+                <td><span id="code-${u.nombre}" data-real="${u.codigo}" style="font-family:monospace; color:#aaa;">••••••</span><button class="btn-ojo" onclick="toggleCode('code-${u.nombre}')">👁️</button></td>
+                <td><span class="rango-badge ${r.c}">${r.n}</span></td>
+                <td>${u.puntos}</td>
+                <td>
+                    <button onclick="abrirEditarAventurero('${key}')" style="background:#f39c12; color:#fff; border:none; border-radius:3px; padding:8px;">✏️</button>
+                    <button onclick="borrarUser('${key}')" style="background:#c0392b; color:#fff; border:none; border-radius:3px; padding:8px;">🗑️</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+</script>
+</body>
+</html>
