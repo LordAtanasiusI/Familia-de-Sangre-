@@ -37,7 +37,7 @@
         h1 { 
             margin: 0; font-size: 3em; color: #b30000; 
             text-transform: uppercase; letter-spacing: 4px; 
-            text-shadow: 3px 3px 0 #000, 0 0 15px rgba(218, 165, 32, 0.6); 
+            text-shadow: 3px 3px 0 #000, 0 0 15px rgba(180, 0, 0, 0.6); 
         }
 
         /* NAVEGACIÓN */
@@ -47,12 +47,12 @@
             border-bottom: 3px solid #5a0000; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         nav button { 
-            background: #1c0000; color: #c9a0a0; border: none; border-right: 1px solid #3e2723;
+            background: #1c0000; color: #c9a0a0; border: none; border-right: 1px solid #1f0000;
             padding: 15px 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px;
             cursor: pointer; transition: all 0.3s; flex-grow: 1; max-width: 160px;
         }
         nav button:hover, nav button.activo { 
-            background: #5a0000; color: #ffffff; text-shadow: 0 0 8px #daa520; border-bottom: 4px solid #b30000;
+            background: #5a0000; color: #ffffff; text-shadow: 0 0 8px #cc0000; border-bottom: 4px solid #b30000;
         }
 
         /* CONTENEDOR */
@@ -65,7 +65,7 @@
         /* TARJETAS */
         .card { 
             background: #1a0004; 
-            background-image: linear-gradient(to bottom right, #2b2018, #1a120e);
+            background-image: linear-gradient(to bottom right, #0d0000, #0d0000);
             border: 2px solid #5a0000; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             padding: 30px; margin-bottom: 30px; 
@@ -76,11 +76,11 @@
         h3 { color: #ff4d4d; margin-top: 0; font-size: 1.4em; }
 
         /* DECORACIÓN */
-        .ornament { text-align: center; color: #5d4037; font-size: 1.5em; margin: 20px 0; letter-spacing: 5px; }
+        .ornament { text-align: center; color: #1a0000; font-size: 1.5em; margin: 20px 0; letter-spacing: 5px; }
         .hero-banner {
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://hytale.com/static/images/media/screenshots/4.jpg');
             background-size: cover; background-position: center;
-            border: 2px solid #daa520; border-radius: 5px; padding: 40px; margin-bottom: 30px;
+            border: 2px solid #cc0000; border-radius: 5px; padding: 40px; margin-bottom: 30px;
             box-shadow: inset 0 0 50px #000;
         }
 
@@ -89,14 +89,14 @@
 
         /* PERGAMINOS */
         .pergamino { 
-            background-color: #d7cbb5; background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
-            color: #2c1e12; padding: 25px; border: 6px solid #8b5a2b; border-radius: 3px;
+            background-color: #1a0000; background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
+            color: #f2dede; padding: 25px; border: 6px solid #6b0000; border-radius: 3px;
             box-shadow: 8px 8px 15px rgba(0,0,0,0.6); text-align: left; position: relative; transition: transform 0.2s;
         }
         .pergamino:hover { transform: translateY(-3px); }
-        .pergamino h3 { color: #5d4037; border-bottom: 2px solid #8d6e63; padding-bottom: 10px; font-weight: 800; }
-        .pergamino-gremio { background-color: #e1bee7; border-color: #8e44ad; }
-        .pergamino-gremio h3 { color: #4a148c; border-color: #9b59b6; }
+        .pergamino h3 { color: #ff4d4d; border-bottom: 2px solid #5a0000; padding-bottom: 10px; font-weight: 800; }
+        .pergamino-gremio { background-color: #1a0020; border-color: #8e44ad; }
+        .pergamino-gremio h3 { color: #ae80d6; border-color: #9b59b6; }
 
         /* TORNEOS */
         .torneo-card {
@@ -110,11 +110,11 @@
 
         /* ESTILOS MERCADO */
         .item-card {
-            background: #231a14; border: 1px solid #5d4037; border-radius: 5px; padding: 15px;
+            background: #100000; border: 1px solid #1a0000; border-radius: 5px; padding: 15px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
             transition: 0.2s;
         }
-        .item-card:hover { border-color: #daa520; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(218, 165, 32, 0.1); }
+        .item-card:hover { border-color: #cc0000; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(180, 0, 0, 0.1); }
 
         /* Editado por Willy */
 
@@ -137,15 +137,15 @@
         /* Fin Editado por Willy */
 
 
-        .price-tag { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 10px; font-size: 0.9em; border-top: 1px solid #3e2723; padding-top: 10px; }
+        .price-tag { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 10px; font-size: 0.9em; border-top: 1px solid #1f0000; padding-top: 10px; }
         .price-sell-label { color: #e74c3c; font-weight: bold; } 
         .price-buy-label { color: #2ecc71; font-weight: bold; } 
         
         /* MONEDAS */
         .curr-num { color: #ffffff; font-weight: 900; } 
-        #treasury-balance .curr-num, #stock-balance .curr-num { color: #2d2d2d; }
+        #treasury-balance .curr-num, #stock-balance .curr-num { color: #ff8080; }
         .curr-c { color: #d35400; font-weight: bold; } .curr-p { color: #bdc3c7; font-weight: bold; }
-        .curr-o { color: #f1c40f; font-weight: bold; } .curr-pl { color: #00d2d3; font-weight: bold; text-shadow: 0 0 5px rgba(0, 210, 211, 0.5); }
+        .curr-o { color: #cc0000; font-weight: bold; } .curr-pl { color: #00d2d3; font-weight: bold; text-shadow: 0 0 5px rgba(0, 210, 211, 0.5); }
 
         .search-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .search-bar input, .search-bar select { margin-bottom: 0; }
@@ -154,51 +154,51 @@
         .ranking-wrapper { display: flex; gap: 30px; flex-wrap: wrap; }
         .regentes-col { flex: 1; min-width: 300px; max-width: 400px; }
         .fama-col { flex: 2; min-width: 300px; }
-        .rank-card { display: flex; align-items: center; gap: 25px; padding: 25px; background: #2b2018; border-bottom: 1px solid #4e342e; transition: 0.2s; }
-        .rank-card:hover { background: #35281e; transform: scale(1.01); }
-        .top-1 { border-left: 8px solid #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.15), transparent); }
+        .rank-card { display: flex; align-items: center; gap: 25px; padding: 25px; background: #0d0000; border-bottom: 1px solid #2a0000; transition: 0.2s; }
+        .rank-card:hover { background: #140000; transform: scale(1.01); }
+        .top-1 { border-left: 8px solid #e00000; background: linear-gradient(90deg, rgba(255,215,0,0.15), transparent); }
         .top-2 { border-left: 8px solid #c0c0c0; background: linear-gradient(90deg, rgba(192,192,192,0.15), transparent); }
         .top-3 { border-left: 8px solid #cd7f32; background: linear-gradient(90deg, rgba(205,127,50,0.15), transparent); }
         .regente-card {
             display: flex; flex-direction: column; align-items: center; text-align: center;
-            background: #1a0f0f; border: 2px solid #daa520; margin-bottom: 20px; padding: 20px;
-            box-shadow: 0 0 20px rgba(218, 165, 32, 0.2); position: relative;
+            background: #1a0f0f; border: 2px solid #cc0000; margin-bottom: 20px; padding: 20px;
+            box-shadow: 0 0 20px rgba(180, 0, 0, 0.2); position: relative;
         }
         .regente-card::before { content: '👑'; font-size: 2em; position: absolute; top: 10px; left: 10px; }
         
         /* BADGES */
         .rango-badge { padding: 4px 10px; border-radius: 3px; font-size: 0.8em; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
-        .bg-bronce { background: #cd7f32; } .bg-plata { background: #7f8c8d; } .bg-oro { background: #f1c40f; color:#3e2723; }
+        .bg-bronce { background: #cd7f32; } .bg-plata { background: #7f8c8d; } .bg-oro { background: #cc0000; color:#1f0000; }
         .bg-platino { background: #00cec9; color:#000; } .bg-mithril { background: #9b59b6; } .bg-mitico { background: #8e44ad; } 
         .bg-heroe { background: #c0392b; border: 1px solid red; } .bg-registro { background: #555; }
-        .bg-maestro { background: #42200b; color: #daa520; border: 1px solid #daa520; }
+        .bg-maestro { background: #1a0000; color: #cc0000; border: 1px solid #cc0000; }
         
         /* ROLES */
         .badge-lider { background: #0d2b36; color: #4dd0e1; border: 1px solid #4dd0e1; margin-left: 8px; vertical-align: text-bottom; }
         .badge-oficial { background: #3e0d0d; color: #e74c3c; border: 1px solid #e74c3c; margin-left: 8px; vertical-align: text-bottom; }
         .badge-ministro { background: #0d3e18; color: #2ecc71; border: 1px solid #2ecc71; margin-left: 8px; vertical-align: text-bottom; }
 
-        .rank-num { font-size: 2.5em; font-weight: 900; width: 60px; text-align: center; color: #5d4037; }
-        .foto-perfil { width: 140px; height: 140px; object-fit: cover; border: 4px solid #daa520; display: block; margin: 0 auto; background: #000; }
-        .foto-mini { width: 80px; height: 80px; object-fit: cover; border: 3px solid #5d4037; border-radius: 50%; }
+        .rank-num { font-size: 2.5em; font-weight: 900; width: 60px; text-align: center; color: #1a0000; }
+        .foto-perfil { width: 140px; height: 140px; object-fit: cover; border: 4px solid #cc0000; display: block; margin: 0 auto; background: #000; }
+        .foto-mini { width: 80px; height: 80px; object-fit: cover; border: 3px solid #1a0000; border-radius: 50%; }
 
         /* LOGS & TABLES */
         .log-entry { padding: 12px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 0.9em; align-items: center; }
         .log-in { color: #2ecc71; font-weight: bold; } .log-out { color: #e74c3c; font-weight: bold; } 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a120e; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #3e2723; }
-        th { color: #daa520; font-size: 0.9em; text-transform: uppercase; background: #231a14; }
-        tr:hover { background: #2b2018; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #0d0000; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #1f0000; }
+        th { color: #cc0000; font-size: 0.9em; text-transform: uppercase; background: #100000; }
+        tr:hover { background: #0d0000; }
 
         /* CONTROLES */
         input, select, textarea { background: #0f0003; border: 1px solid #5a0000; color: #fff; padding: 12px; width: 95%; margin-bottom: 15px; border-radius: 4px; font-size: 1em; }
-        input[type="file"] { padding: 10px; background: #1e130c; }
+        input[type="file"] { padding: 10px; background: #0d0000; }
         .btn { background: linear-gradient(to bottom, #8b0000, #5a0000); color: #fff; border: 1px solid #3d0000; padding: 12px 25px; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px; width: 100%; }
         .btn:hover { filter: brightness(1.1); }
         .coin-inputs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 15px; }
         .in-coin { flex: 1; min-width: 60px; text-align: center; background: #1a0f0f; }
 
-        .codigo-oculto { background: #1a120e; padding: 10px 15px; border-radius: 4px; border: 2px dashed #5d4037; font-family: monospace; letter-spacing: 3px; color: #2ecc71; font-weight: bold; display: inline-flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; }
+        .codigo-oculto { background: #0d0000; padding: 10px 15px; border-radius: 4px; border: 2px dashed #1a0000; font-family: monospace; letter-spacing: 3px; color: #2ecc71; font-weight: bold; display: inline-flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; }
         .btn-ojo { background: none; border: none; cursor: pointer; font-size: 1.2em; margin-left: 10px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -207,11 +207,11 @@
 <body>
 
 <div id="pantalla-login">
-    <div class="card" style="width: 400px; text-align: center; border: 3px solid #daa520; padding: 40px;">
-        <h2 style="margin:0 0 20px 0; color:#daa520;">🩸 El Padre Carmesí te observa</h2>
+    <div class="card" style="width: 400px; text-align: center; border: 3px solid #cc0000; padding: 40px;">
+        <h2 style="margin:0 0 20px 0; color:#cc0000;">🩸 El Padre Carmesí te observa</h2>
         <input type="text" id="reg-nombre" placeholder="Nombre de Vampiro">
         <input type="password" id="reg-codigo" placeholder="Código de Acceso">
-        <div id="bloque-registro" style="display:none; background:#1a120e; padding:15px; margin-top:15px; border-radius:4px;">
+        <div id="bloque-registro" style="display:none; background:#0d0000; padding:15px; margin-top:15px; border-radius:4px;">
             <p style="color:#2ecc71; font-weight:bold; margin-top:0;">¡Nuevo hijo detectado!</p>
             <input type="text" id="reg-raza" placeholder="Clan">
             <input type="text" id="reg-faccion" placeholder="Progenitor">
@@ -223,7 +223,7 @@
 <div id="contenido-web" style="display:none;">
     <header>
         <h1>🩸 Familia de Sangre</h1>
-        <p style="color:#d2b48c; font-size: 1.1em; letter-spacing: 1px; font-style:italic;">"La Sangre de nuestro Progenitor es Nuestra Sangre."</p>
+        <p style="color:#c8a0a0; font-size: 1.1em; letter-spacing: 1px; font-style:italic;">"La Sangre de nuestro Progenitor es Nuestra Sangre."</p>
     </header>
 
     <nav>
@@ -235,7 +235,7 @@
         <button onclick="navegar('precios')" id="btn-precios">Precios</button>
         <button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
         <button onclick="navegar('ranking')" id="btn-ranking">Ranking</button>
-        <button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none; color:#ffd700; border-color:#daa520;">🏛️ Cuentas</button> 
+        <button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none; color:#e00000; border-color:#cc0000;">🏛️ Cuentas</button> 
         <button onclick="navegar('registro')" id="btn-registro" style="display:none; color:#2ecc71; border-color:#27ae60;">📝 Registro</button>
         <button onclick="navegar('seguimiento')" id="btn-seguimiento" style="display:none; color:#3498db; border-color:#2980b9;">🔍 Seguimiento</button>
         <button onclick="navegar('admin')" id="btn-admin" style="display:none; color:#e74c3c; border-right:none;">⚙️ Admin</button>
@@ -245,10 +245,10 @@
     <div class="container">
         
         <section id="sec-inicio" class="active">
-            <div class="card" style="text-align: center; padding: 0; overflow: hidden; border: 4px solid #4e342e;">
+            <div class="card" style="text-align: center; padding: 0; overflow: hidden; border: 4px solid #2a0000;">
                 <div class="hero-banner">
                     <div style="width: 80px; height: 80px; margin: 0 auto 20px auto; background: url('https://cdn-icons-png.flaticon.com/512/3050/3050525.png') no-repeat center/contain; opacity: 0.8;"></div>
-                    <h2 style="font-size: 3.5em; border: none; text-transform: uppercase; color: #daa520; text-shadow: 2px 2px 10px #000; margin-bottom: 10px;">La Familia te recibe Vástago</h2>
+                    <h2 style="font-size: 3.5em; border: none; text-transform: uppercase; color: #cc0000; text-shadow: 2px 2px 10px #000; margin-bottom: 10px;">La Familia te recibe Vástago</h2>
                     <p style="font-size: 1.5em; color: #fff; font-weight: 300;">Desde las sombras eternas, La Familia domina la noche.</p>
                 </div>
                 <div style="padding: 20px 40px 60px 40px;">
@@ -271,7 +271,7 @@
 
         <section id="sec-precios">
             <h2>💰 Mercado Oficial</h2>
-            <div class="card" style="border-top: 4px solid #daa520;">
+            <div class="card" style="border-top: 4px solid #cc0000;">
                 <div class="search-bar">
                     <input type="text" id="search-item" onkeyup="renderMercado()" placeholder="🔍 Buscar objeto..." style="flex:2;">
                     <select id="filter-cat" onchange="renderMercado()" style="flex:1;">
@@ -296,12 +296,12 @@
         </section>
 
         <section id="sec-cuentas">
-            <h2 style="color:#ffd700; border-bottom: 2px solid #ffd700;">🏛️ Tesorería y Almacén</h2>
+            <h2 style="color:#e00000; border-bottom: 2px solid #e00000;">🏛️ Tesorería y Almacén</h2>
             
             <div style="display:flex; gap:20px; flex-wrap:wrap;">
                 <div class="card" style="flex:1; text-align:center;">
                     <h3 style="color:#aaa;">Saldo Disponible</h3>
-                    <div id="treasury-balance" style="font-size:2em; font-family:monospace; margin-top:15px; border: 2px solid #daa520; padding:15px; background:#8b795e; border-radius:5px;">Cargando...</div>
+                    <div id="treasury-balance" style="font-size:2em; font-family:monospace; margin-top:15px; border: 2px solid #cc0000; padding:15px; background:#1a0000; border-radius:5px;">Cargando...</div>
                 </div>
                 <div class="card" style="flex:1;">
                     <h3>💸 Operaciones Caja</h3>
@@ -322,9 +322,9 @@
             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
                 <div class="card" style="flex:1; border: 2px solid #2ecc71;">
                     <h3 style="color:#2ecc71;">📦 Banco de Stock</h3>
-                    <div style="background:#d7cbb5; padding:15px; border-radius:5px; text-align:center; margin-bottom:15px;">
+                    <div style="background:#1a0000; padding:15px; border-radius:5px; text-align:center; margin-bottom:15px;">
                         <span style="color:#555; font-weight:bold; font-size:0.9em;">VALOR TOTAL DEL INVENTARIO</span><br>
-                        <div id="stock-balance" style="font-size:1.5em; font-family:monospace; color:#2d2d2d;">0C</div>
+                        <div id="stock-balance" style="font-size:1.5em; font-family:monospace; color:#ff8080;">0C</div>
                     </div>
                     <input type="text" id="stock-search" placeholder="🔍 Buscar objeto..." onkeyup="actualizarSelectStock(this.value)" style="margin-bottom: 5px;">
                     <div style="display:flex; gap:5px; margin-bottom:10px;">
@@ -397,8 +397,8 @@
                 </div>
             </div>
             <div id="modal-editar-aventurero" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2001; justify-content:center; align-items:center;">
-                <div class="card" style="width:400px; border:2px solid #f39c12;">
-                    <h3 style="color:#f39c12;">✏️ Editar Datos</h3>
+                <div class="card" style="width:400px; border:2px solid #cc4400;">
+                    <h3 style="color:#cc4400;">✏️ Editar Datos</h3>
                     <input type="hidden" id="edit-av-key">
                     <input type="text" id="edit-av-nombre" placeholder="Nombre">
                     <input type="text" id="edit-av-raza" placeholder="Raza">
@@ -421,7 +421,7 @@
         <section id="sec-ranking">
             <h2>🏆 Salón de la Fama</h2>
             <div class="ranking-wrapper">
-                <div class="regentes-col"><h3 style="color:#daa520; text-align:center;">👑 Regentes</h3><div id="lista-regentes"></div></div>
+                <div class="regentes-col"><h3 style="color:#cc0000; text-align:center;">👑 Regentes</h3><div id="lista-regentes"></div></div>
                 <div class="fama-col"><h3 style="color:#e0d0b0; text-align:center;">⚔️ Aventureros</h3><div class="card" style="padding:0; overflow:hidden;"><div id="lista-ranking"></div></div></div>
             </div>
         </section>
@@ -470,8 +470,8 @@
                              <button class="btn" onclick="cancelarEdicionTorneo()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion-torneo">Cancelar</button>
                         </div>
                     </div>
-                    <div class="card" style="border: 2px solid #daa520;">
-                        <h3 style="color:#daa520;">📦 Gestión de Precios</h3>
+                    <div class="card" style="border: 2px solid #cc0000;">
+                        <h3 style="color:#cc0000;">📦 Gestión de Precios</h3>
                         <input type="text" id="it-nom" placeholder="Nombre del Objeto">
                         <select id="it-cat">
                             <option value="Arma">Arma</option><option value="Armadura">Armadura</option>
@@ -483,9 +483,9 @@
                             <input type="number" id="it-compra" placeholder="Precio Compra">
                             <input type="number" id="it-venta" placeholder="Precio Venta">
                         </div>
-                        <button class="btn" onclick="crearItem()" style="background:#8b6914;">Añadir al Mercado</button>
+                        <button class="btn" onclick="crearItem()" style="background:#7a0000;">Añadir al Mercado</button>
                         <h4 style="margin-top:20px; color:#aaa;">Editar Catálogo Actual</h4>
-                        <input type="text" id="search-admin-item" onkeyup="renderAdminMercado()" placeholder="🔍 Buscar para editar..." style="background:#1a0f0f; border:1px solid #5d4037;">
+                        <input type="text" id="search-admin-item" onkeyup="renderAdminMercado()" placeholder="🔍 Buscar para editar..." style="background:#1a0f0f; border:1px solid #1a0000;">
                         <button class="btn" onclick="deleteAllItems()" style="background:#c0392b; border-color:#922b21; margin-top:10px; font-size:0.9em;">⚠️ BORRAR TODO EL CATÁLOGO</button>
                         <button class="btn" onclick="cargarCatalogoBase()" style="background:#3498db; border-color:#2980b9; margin-top:10px; font-size:0.9em;">📦 Cargar Lista Completa</button>
                         <div id="lista-admin-mercado" style="max-height:300px; overflow-y:auto; margin-top:10px;"></div>
@@ -1177,12 +1177,12 @@
                 tbody.innerHTML += `<tr style="border-bottom:1px solid #333;">
                         <td style="padding:10px; color:#fff; font-weight:bold;">${userName}<br><span style="font-size:0.8em; color:#aaa;">${av.raza || "?"} | ${av.faccion || "?"}</span><br>${getExtraTag(av)}</td>
                         <td style="padding:10px;"><span class="rango-badge ${rango.c}">${rango.n}</span><br>${editPuntos}</td>
-                        <td style="padding:10px; color:${av.misionActual?'#f1c40f':'#555'}">${misionNombre}</td>
+                        <td style="padding:10px; color:${av.misionActual?'#cc0000':'#555'}">${misionNombre}</td>
                         <td style="padding:10px; font-size:0.9em;">Completadas: ${historialCount}</td>
                         <td style="padding:10px;">
                             ${btnCompletar} 
                             <button onclick="abrirAsignarMision('${key}')" style="background:#3498db; border:none; color:white; padding:5px; cursor:pointer;">📜 Asignar</button> 
-                            <button onclick="abrirEditarAventurero('${key}')" style="background:#f39c12; border:none; color:white; padding:5px; cursor:pointer;">✏️ Datos</button>
+                            <button onclick="abrirEditarAventurero('${key}')" style="background:#cc4400; border:none; color:white; padding:5px; cursor:pointer;">✏️ Datos</button>
                             <button onclick="resetearHistorial('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer;">🔄 Reset</button>
                             <button onclick="borrarUser('${key}')" style="background:#c0392b; border:none; color:white; padding:5px; cursor:pointer;">🗑️</button>
                         </td>
@@ -1700,16 +1700,16 @@
         document.getElementById('render-perfil').innerHTML = `
             <div style="display:flex; flex-wrap:wrap; gap:30px;">
                 <div class="card" style="flex:1; text-align:center; min-width:300px;">
-                    <img src="${u.foto || 'https://via.placeholder.com/150/000/daa520?text=SIN+FOTO'}" class="foto-perfil">
+                    <img src="${u.foto || 'https://via.placeholder.com/150/000/cc0000?text=SIN+FOTO'}" class="foto-perfil">
                     <input type="file" id="up-foto" style="display:none" onchange="subirFoto(this)">
                     <button class="btn" style="margin-top:20px; font-size:0.8em; width:auto;" onclick="document.getElementById('up-foto').click()">Subir Retrato</button>
                     <h2 style="border:none; margin:20px 0 5px 0; color:#fff;">${u.nombre}</h2>
                     <div style="display:flex; gap:5px; justify-content:center; align-items:center; margin-bottom:10px;">
-                        <input type="text" id="edit-raza" value="${u.raza}" placeholder="Raza" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #3e2723; color:#ccc; padding:5px;">
-                        <span style="color:#5d4037;">|</span>
-                        <input type="text" id="edit-faccion" value="${u.faccion}" placeholder="Facción" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #3e2723; color:#ccc; padding:5px;">
+                        <input type="text" id="edit-raza" value="${u.raza}" placeholder="Raza" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #1f0000; color:#ccc; padding:5px;">
+                        <span style="color:#1a0000;">|</span>
+                        <input type="text" id="edit-faccion" value="${u.faccion}" placeholder="Facción" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #1f0000; color:#ccc; padding:5px;">
                     </div>
-                    <button onclick="updateProfile()" style="background:none; border:1px solid #daa520; color:#daa520; cursor:pointer; padding:2px 10px; font-size:0.8em; margin-bottom:10px;">💾 Guardar Cambios</button>
+                    <button onclick="updateProfile()" style="background:none; border:1px solid #cc0000; color:#cc0000; cursor:pointer; padding:2px 10px; font-size:0.8em; margin-bottom:10px;">💾 Guardar Cambios</button>
                     <div style="margin-top:20px;">
                         <span style="color:#777; font-size:0.8em;">CÓDIGO DE ACCESO</span>
                         <div class="codigo-oculto"><span id="prof-code" data-real="${u.codigo}">••••••</span><button class="btn-ojo" onclick="toggleCode('prof-code')">👁️</button></div>
@@ -1719,7 +1719,7 @@
                     <div class="card" style="flex:1; text-align:center;">
                         <h3>Rango Actual</h3>
                         <div><span class="rango-badge ${r.c}" style="font-size:2em;">${r.n}</span>${getExtraTag(u) ? `<br>${getExtraTag(u)}` : ''}</div>
-                        <div style="margin-top:15px; font-weight:bold; color:#daa520; font-size:1.5em;">${u.puntos} PTS</div>
+                        <div style="margin-top:15px; font-weight:bold; color:#cc0000; font-size:1.5em;">${u.puntos} PTS</div>
                     </div>
                     <div class="card" style="flex:1; border-left: 5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
                         <h3>Estado de Misión</h3>
@@ -1760,7 +1760,7 @@
         document.getElementById('lista-regentes').innerHTML = regentesData.map(m => `
             <div class="regente-card">
                 <img src="${m.foto || 'https://via.placeholder.com/100'}" class="foto-mini">
-                <h3 style="color:#daa520; margin:10px 0 5px 0;">${m.name}</h3>
+                <h3 style="color:#cc0000; margin:10px 0 5px 0;">${m.name}</h3>
                 <span class="rango-badge bg-maestro">Maestro</span>
             </div>
         `).join('');
@@ -1769,7 +1769,7 @@
             const r = getVisualRango(u);
             let claseTop = i===0 ? "top-1" : i===1 ? "top-2" : i===2 ? "top-3" : "";
             let trofeo = i===0 ? "👑" : i===1 ? "🥈" : i===2 ? "🥉" : "#"+(i+1);
-            return `<div class="rank-card ${claseTop}"><div class="rank-num">${trofeo}</div><img src="${u.foto||'https://via.placeholder.com/50'}" class="foto-mini"><div style="flex:1;"><div style="font-weight:bold; font-size:1.5em; color:#fff;">${u.nombre} ${getExtraTag(u)}</div><div style="font-size:1em; color:#aaa;">${u.raza} - ${u.faccion}</div></div><div style="text-align:right;"><span class="rango-badge ${r.c}">${r.n}</span><div style="font-size:1.3em; font-weight:bold; margin-top:5px; color:#daa520;">${u.puntos} pts</div></div></div>`;
+            return `<div class="rank-card ${claseTop}"><div class="rank-num">${trofeo}</div><img src="${u.foto||'https://via.placeholder.com/50'}" class="foto-mini"><div style="flex:1;"><div style="font-weight:bold; font-size:1.5em; color:#fff;">${u.nombre} ${getExtraTag(u)}</div><div style="font-size:1em; color:#aaa;">${u.raza} - ${u.faccion}</div></div><div style="text-align:right;"><span class="rango-badge ${r.c}">${r.n}</span><div style="font-size:1.3em; font-weight:bold; margin-top:5px; color:#cc0000;">${u.puntos} pts</div></div></div>`;
         }).join('');
     }
 
@@ -1781,8 +1781,8 @@
             if(!m) return ""; if(typeof m!=='object') m=key;
             return `<div class="pergamino">
                 <h3>${m.nombre}</h3>
-                <p style="font-size:0.8em; color:#5d4037;"><b>Dificultad:</b> ${m.dificultad.toUpperCase()}</p>
-                <p style="font-size:0.9em; color:#3e2723;"><b>Requisitos:</b> ${m.requisitos || 'Ninguno'}</p>
+                <p style="font-size:0.8em; color:#1a0000;"><b>Dificultad:</b> ${m.dificultad.toUpperCase()}</p>
+                <p style="font-size:0.9em; color:#1f0000;"><b>Requisitos:</b> ${m.requisitos || 'Ninguno'}</p>
                 <p style="font-style:italic;">"${m.desc}"</p>
                 <p><b>Premio:</b> ${m.premios}</p>
                 ${isAdmin(usuarioActual) ? `<div style="position:absolute; top:10px; right:10px;"><button onclick="prepararEdicionMision('${key}')" style="background:none; border:none; cursor:pointer; font-size:1.2em;">✏️</button><button onclick="borrarMision('${key}')" style="background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button></div>`:''}
@@ -1812,7 +1812,7 @@
         document.getElementById('m-nom').value = ""; document.getElementById('m-req').value = "";
         document.getElementById('m-desc').value = ""; document.getElementById('m-prem').value = "";
         document.getElementById('btn-publicar-mision').innerText = "Publicar";
-        document.getElementById('btn-publicar-mision').style.background = "linear-gradient(to bottom, #daa520, #b8860b)";
+        document.getElementById('btn-publicar-mision').style.background = "linear-gradient(to bottom, #cc0000, #b8860b)";
         document.getElementById('btn-cancelar-edicion').style.display = "none";
     }
 
@@ -1914,7 +1914,7 @@
             if (isAdmin(u.nombre)) return; // Ocultar cuenta admin
             const r = getVisualRango(u); 
             tbody.innerHTML += `<tr>
-                <td><img src="${u.foto||'https://via.placeholder.com/30'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #daa520;"></td>
+                <td><img src="${u.foto||'https://via.placeholder.com/30'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #cc0000;"></td>
                 <td style="font-weight:bold; color:#fff;">${u.nombre} ${getExtraTag(u)}</td>
                 <td style="color:#b0a090; font-size:0.9em;">${u.raza || '-'}</td>
                 <td style="color:#b0a090; font-size:0.9em;">${u.faccion || '-'}</td>
@@ -1922,7 +1922,7 @@
                 <td><span class="rango-badge ${r.c}">${r.n}</span></td>
                 <td>${u.puntos}</td>
                 <td>
-                    <button onclick="abrirEditarAventurero('${key}')" style="background:#f39c12; color:#fff; border:none; border-radius:3px; padding:8px;">✏️</button>
+                    <button onclick="abrirEditarAventurero('${key}')" style="background:#cc4400; color:#fff; border:none; border-radius:3px; padding:8px;">✏️</button>
                     <button onclick="borrarUser('${key}')" style="background:#c0392b; color:#fff; border:none; border-radius:3px; padding:8px;">🗑️</button>
                 </td>
             </tr>`;
