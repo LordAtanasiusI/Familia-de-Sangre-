@@ -168,9 +168,14 @@
         
         /* BADGES */
         .rango-badge { padding: 4px 10px; border-radius: 3px; font-size: 0.8em; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
-        .bg-bronce { background: #cd7f32; } .bg-plata { background: #7f8c8d; } .bg-oro { background: #cc0000; color:#1f0000; }
-        .bg-platino { background: #00cec9; color:#000; } .bg-mithril { background: #9b59b6; } .bg-mitico { background: #8e44ad; } 
-        .bg-heroe { background: #c0392b; border: 1px solid red; } .bg-registro { background: #555; }
+        .bg-vastago    { background: #2a2a2a; color: #bbb; }
+        .bg-neofito    { background: #5a1a00; color: #ffaa80; }
+        .bg-mordedor   { background: #6b0000; color: #ffcccc; }
+        .bg-chupassangre { background: #8b0000; color: #fff; }
+        .bg-sanguinario { background: #a00030; color: #ffddee; }
+        .bg-sangrepura  { background: #6a0080; color: #f0c0ff; }
+        .bg-sangrenoble { background: #3a0060; color: #dda0ff; border: 1px solid #9b59b6; }
+        .bg-sangrereal  { background: #1a0000; color: #ff4444; border: 2px solid #cc0000; text-shadow: 0 0 6px #ff0000; }
         .bg-maestro { background: #1a0000; color: #cc0000; border: 1px solid #cc0000; }
         
         /* ROLES */
@@ -261,7 +266,7 @@
     <nav>
         <button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
         <button onclick="navegar('perfil')" id="btn-perfil">Mi Sangre</button>
-        <button onclick="navegar('biblioteca')" id="btn-biblioteca">📚 Biblioteca</button>
+        <button onclick="navegar('biblioteca')" id="btn-biblioteca" style="display:none; color:#e00000; border-color:#cc0000;">📚 Biblioteca</button>
         <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#ae80d6; border-color:#8e44ad;">M. Gremio</button>
         <button onclick="navegar('torneos')" id="btn-torneos">Torneos</button>
         <button onclick="navegar('precios')" id="btn-precios">Precios</button>
@@ -293,7 +298,7 @@
 
         <section id="sec-perfil"><h2>🧛 Expediente Personal</h2><div id="render-perfil" style="min-height: 200px;"></div></section>
         <section id="sec-biblioteca">
-            <h2>📚 Biblioteca de Sangre</h2>
+            <h2>📚 Biblioteca Roja</h2>
             <div class="card" style="border-top: 4px solid #8b0000; margin-bottom: 20px;">
                 <div class="search-bar">
                     <input type="text" id="search-libro" onkeyup="renderBiblioteca()" placeholder="🔍 Buscar tomo..." style="flex:2;">
@@ -451,9 +456,9 @@
                     <label style="color:#aaa; font-size:0.8em; margin-top:10px; display:block;">Cargo / Etiqueta:</label>
                     <select id="edit-av-etiqueta">
                         <option value="">Ninguno</option>
-                        <option value="Líder de Facción">Líder de Facción</option>
-                        <option value="Oficial de Facción">Oficial de Facción</option>
-                        <option value="Ministro de Facción">Ministro de Facción</option>
+                        <option value="Señor de Sangre">Señor de Sangre</option>
+                        <option value="Heraldo Sangriento">Heraldo Sangriento</option>
+                        <option value="Custodio de la Sangre">Custodio de la Sangre</option>
                     </select>
                     <div style="display:flex; gap:10px; margin-top:20px;">
                         <button class="btn" onclick="guardarEdicionAventurero()" style="background:#27ae60;">Guardar</button>
@@ -467,7 +472,7 @@
             <h2>🏆 Salón de la Fama</h2>
             <div class="ranking-wrapper">
                 <div class="regentes-col"><h3 style="color:#cc0000; text-align:center;">👑 Regentes</h3><div id="lista-regentes"></div></div>
-                <div class="fama-col"><h3 style="color:#e0d0b0; text-align:center;">⚔️ Aventureros</h3><div class="card" style="padding:0; overflow:hidden;"><div id="lista-ranking"></div></div></div>
+                <div class="fama-col"><h3 style="color:#e0d0b0; text-align:center;">🩸 Linaje</h3><div class="card" style="padding:0; overflow:hidden;"><div id="lista-ranking"></div></div></div>
             </div>
         </section>
 
@@ -548,7 +553,7 @@
             <div class="card" style="overflow-x:auto;">
                 <h3>👥 Gestión de Cuentas (Todos los Usuarios)</h3>
                 <table style="width:100%; text-align:left; border-collapse:collapse;">
-                    <thead><tr><th>Avatar</th><th>Nombre</th><th>Raza</th><th>Facción</th><th>Código</th><th>Rango</th><th>Pts</th><th>Acciones</th></tr></thead>
+                    <thead><tr><th>Avatar</th><th>Nombre</th><th>Raza</th><th>Facción</th><th>Código</th><th>Rango</th><th>PA%</th><th>Acciones</th></tr></thead>
                     <tbody id="tabla-usuarios-body"></tbody>
                 </table>
             </div>
@@ -914,29 +919,40 @@
     const isAdmin = (name) => ADMINS.some(a => a.user === name);
 
     const MAESTROS = ["Piiman"];
-    const ROLES_ESPECIALES = ["Líder de Facción", "Oficial de Facción", "Ministro de Facción"];
+    const ROLES_ESPECIALES = ["Señor de Sangre", "Heraldo Sangriento", "Custodio de la Sangre"];
 
+    // PA = Pureza de Sangre (%). Guardado en BD como décimas: 10 = 1% PA
+    // Umbrales: Vástago 0%, Neófito 5%, Mordedor 15%, Chupa-Sangre 30%, Sanguinario 55%, Sangre Pura 100%, Sangre Noble 150%, Sangre Real 200%
     const RANGOS = [
-        {n:"Heroe", p:3000, c:"bg-heroe"}, {n:"Mitico", p:1500, c:"bg-mitico"}, 
-        {n:"Mithril", p:950, c:"bg-mithril"}, {n:"Platino", p:650, c:"bg-platino"},
-        {n:"Oro", p:350, c:"bg-oro"}, {n:"Plata", p:200, c:"bg-plata"},
-        {n:"Bronce", p:100, c:"bg-bronce"}, {n:"Registro", p:0, c:"bg-registro"}
+        {n:"Sangre Real",    pa:200, p:2000, c:"bg-sangrereal"},
+        {n:"Sangre Noble",   pa:150, p:1500, c:"bg-sangrenoble"},
+        {n:"Sangre Pura",    pa:100, p:1000, c:"bg-sangrepura"},
+        {n:"Sanguinario",    pa:55,  p:550,  c:"bg-sanguinario"},
+        {n:"Chupa-Sangre",   pa:30,  p:300,  c:"bg-chupassangre"},
+        {n:"Mordedor",       pa:15,  p:150,  c:"bg-mordedor"},
+        {n:"Neófito",        pa:5,   p:50,   c:"bg-neofito"},
+        {n:"Vástago",        pa:0,   p:0,    c:"bg-vastago"}
     ];
-    const NIVEL_NUM = { "Registro":0, "Bronce":1, "Plata":2, "Oro":3, "Platino":4, "Mithril":5, "Mitico":6, "Heroe":7 };
+    const NIVEL_NUM = { "Vástago":0, "Neófito":1, "Mordedor":2, "Chupa-Sangre":3, "Sanguinario":4, "Sangre Pura":5, "Sangre Noble":6, "Sangre Real":7 };
     const DIFICULTAD_NIVEL = { "facil": 0, "media": 2, "dificil": 4, "epica": 5 };
 
     function getRango(pts) { return RANGOS.find(r => pts >= r.p) || RANGOS[RANGOS.length-1]; }
+    // Devuelve PA% formateado con 1 decimal
+    function getPADisplay(pts) {
+        const pa = (pts / 10).toFixed(1);
+        return pa + '% PA';
+    }
     function getVisualRango(u) {
-        if (MAESTROS.includes(u.nombre)) return { n: "Maestro de Gremio", c: "bg-maestro" };
+        if (MAESTROS.includes(u.nombre)) return { n: "Conde Carmesí", c: "bg-maestro" };
         return getRango(u.puntos || 0);
     }
     
     // --- ETIQUETAS NUEVAS ---
     function getExtraTag(u) {
         if (!u.etiqueta) return "";
-        if (u.etiqueta === "Líder de Facción") return '<span class="rango-badge badge-lider">🎖️ Líder</span>';
-        if (u.etiqueta === "Oficial de Facción") return '<span class="rango-badge badge-oficial">🎖️ Oficial</span>';
-        if (u.etiqueta === "Ministro de Facción") return '<span class="rango-badge badge-ministro">🎖️ Ministro</span>';
+        if (u.etiqueta === "Señor de Sangre") return '<span class="rango-badge badge-lider">🩸 Señor de Sangre</span>';
+        if (u.etiqueta === "Heraldo Sangriento") return '<span class="rango-badge badge-oficial">⚔️ Heraldo Sangriento</span>';
+        if (u.etiqueta === "Custodio de la Sangre") return '<span class="rango-badge badge-ministro">🛡️ Custodio de la Sangre</span>';
         return "";
     }
 
@@ -1001,7 +1017,7 @@
                     const r = document.getElementById('reg-raza').value;
                     const f = document.getElementById('reg-faccion').value;
                     if(r && f) {
-                        db.ref('usuarios/'+nom).set({ nombre:nom, codigo:cod, raza:r, faccion:f, puntos:0, rango:"Registro", foto:"", misionActiva:"Ninguna", dificActiva:"" });
+                        db.ref('usuarios/'+nom).set({ nombre:nom, codigo:cod, raza:r, faccion:f, puntos:0, rango:"Vástago", foto:"", misionActiva:"Ninguna", dificActiva:"" });
                         setSesion(nom);
                     }
                 }
@@ -1024,6 +1040,7 @@
             document.getElementById('btn-cuentas').style.display='block';
             document.getElementById('btn-registro').style.display='block';
             document.getElementById('btn-seguimiento').style.display='block';
+            document.getElementById('btn-biblioteca').style.display='block';
         }
         
         // --- BASE DE DATOS UNIFICADA (usuarios = todos) ---
@@ -1185,7 +1202,7 @@
                 const nuevoAventurero = {
                     nombre: nom, raza: raz, faccion: fac, 
                     codigo: newCode, // <--- CÓDIGO DE ACCESO
-                    puntos: 0, rango:"Registro",
+                    puntos: 0, rango:"Vástago",
                     misionActiva: "Ninguna", misionActual: null, historialMisiones: [] 
                 };
                 db.ref('usuarios/'+nom).set(nuevoAventurero);
@@ -1222,7 +1239,7 @@
                 const historialCount = av.historialMisiones ? Object.keys(av.historialMisiones).length : 0;
                 
                 const btnCompletar = av.misionActual ? `<button onclick="finalizarMisionInterna('${key}')" style="background:#2ecc71; border:none; color:white; padding:5px; cursor:pointer; margin-right:5px;">✅ Completar</button>` : '';
-                const editPuntos = `<div style="display:flex; align-items:center; gap:5px;">${av.puntos || 0} <button onclick="editarPuntosInterno('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer; font-size:0.8em;">✏️</button></div>`;
+                const editPuntos = `<div style="display:flex; align-items:center; gap:5px;">${getPADisplay(av.puntos || 0)} <button onclick="editarPuntosInterno('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer; font-size:0.8em;">✏️</button></div>`;
 
                 tbody.innerHTML += `<tr style="border-bottom:1px solid #333;">
                         <td style="padding:10px; color:#fff; font-weight:bold;">${userName}<br><span style="font-size:0.8em; color:#aaa;">${av.raza || "?"} | ${av.faccion || "?"}</span><br>${getExtraTag(av)}</td>
@@ -1287,7 +1304,9 @@
     }
 
     function editarPuntosInterno(key) {
-        const nuevos = prompt("Introduce nuevos puntos:");
+        const av = USUARIOS_CACHE[key];
+        const paActual = getPADisplay(av.puntos || 0);
+        const nuevos = prompt(`Introduce la nueva Pureza de Sangre en décimas\n(10 = 1% PA, 1000 = 100% PA)\nActual: ${paActual}`);
         if(nuevos !== null) db.ref('usuarios/'+key).update({ puntos: parseInt(nuevos)||0 });
     }
     
@@ -1315,7 +1334,7 @@
         const nivelMision = DIFICULTAD_NIVEL[mision.dificultad];
         
         if (nivelMision > nivelAv) {
-            if(!confirm(`⚠️ ALERTA DE RANGO ⚠️\n\nEl aventurero es rango ${rangoAv.n.toUpperCase()} y la misión es ${mision.dificultad.toUpperCase()}.\nPodría ser mortal.\n\n¿Quieres asignarla de todos modos?`)) return;
+            if(!confirm(`⚠️ ALERTA DE SANGRE ⚠️\n\nEl vástago tiene rango ${rangoAv.n} y la misión es ${mision.dificultad.toUpperCase()}.\nSu sangre podría no ser suficiente.\n\n¿Asignar de todos modos?`)) return;
         }
 
         if (historial.includes(mision.nombre)) {
@@ -1344,7 +1363,7 @@
             let rw = av.misionActual.dificultad==="facil"?15 : av.misionActual.dificultad==="media"?35 : av.misionActual.dificultad==="dificil"?80 : 200;
             const nuevosPuntos = (av.puntos||0) + rw;
             db.ref('usuarios/'+key).update({ misionActual: null, misionActiva: "Ninguna", puntos: nuevosPuntos });
-            alert(`¡Misión completada! Se han sumado ${rw} puntos.`);
+            alert(`¡Misión completada! +${(rw/10).toFixed(1)}% de Pureza de Sangre ganada.`);
         }
     }
 
@@ -1769,10 +1788,10 @@
                     <div class="card" style="flex:1; text-align:center;">
                         <h3>Rango Actual</h3>
                         <div><span class="rango-badge ${r.c}" style="font-size:2em;">${r.n}</span>${getExtraTag(u) ? `<br>${getExtraTag(u)}` : ''}</div>
-                        <div style="margin-top:15px; font-weight:bold; color:#cc0000; font-size:1.5em;">${u.puntos} PTS</div>
+                        <div style="margin-top:15px; font-weight:bold; color:#cc0000; font-size:1.5em;">${getPADisplay(u.puntos)}</div>
                     </div>
                     <div class="card" style="flex:1; border-left: 5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
-                        <h3>Estado de Misión</h3>
+                        <h3>Estado de Sangre</h3>
                         ${u.misionActiva !== 'Ninguna' ? `<p style="color:#2ecc71; font-weight:bold; font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva.toUpperCase()}</span></p>` : `<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
                     </div>
                 </div>
@@ -1811,7 +1830,7 @@
             <div class="regente-card">
                 <img src="${m.foto || 'https://via.placeholder.com/100'}" class="foto-mini">
                 <h3 style="color:#cc0000; margin:10px 0 5px 0;">${m.name}</h3>
-                <span class="rango-badge bg-maestro">Maestro</span>
+                <span class="rango-badge bg-maestro">Conde Carmesí</span>
             </div>
         `).join('');
 
@@ -1819,7 +1838,7 @@
             const r = getVisualRango(u);
             let claseTop = i===0 ? "top-1" : i===1 ? "top-2" : i===2 ? "top-3" : "";
             let trofeo = i===0 ? "👑" : i===1 ? "🥈" : i===2 ? "🥉" : "#"+(i+1);
-            return `<div class="rank-card ${claseTop}"><div class="rank-num">${trofeo}</div><img src="${u.foto||'https://via.placeholder.com/50'}" class="foto-mini"><div style="flex:1;"><div style="font-weight:bold; font-size:1.5em; color:#fff;">${u.nombre} ${getExtraTag(u)}</div><div style="font-size:1em; color:#aaa;">${u.raza} - ${u.faccion}</div></div><div style="text-align:right;"><span class="rango-badge ${r.c}">${r.n}</span><div style="font-size:1.3em; font-weight:bold; margin-top:5px; color:#cc0000;">${u.puntos} pts</div></div></div>`;
+            return `<div class="rank-card ${claseTop}"><div class="rank-num">${trofeo}</div><img src="${u.foto||'https://via.placeholder.com/50'}" class="foto-mini"><div style="flex:1;"><div style="font-weight:bold; font-size:1.5em; color:#fff;">${u.nombre} ${getExtraTag(u)}</div><div style="font-size:1em; color:#aaa;">${u.raza} - ${u.faccion}</div></div><div style="text-align:right;"><span class="rango-badge ${r.c}">${r.n}</span><div style="font-size:1.3em; font-weight:bold; margin-top:5px; color:#cc0000;">${getPADisplay(u.puntos)}</div></div></div>`;
         }).join('');
     }
 
@@ -1854,12 +1873,12 @@
                 : 'https://via.placeholder.com/300x160/0a0000/8b0000?text=📚';
 
             let boton = '';
-            if (!reservado) {
-                boton = `<button class="btn-reservar" onclick="reservarLibro('${key}')">🩸 Reservar</button>`;
-            } else if (esMio) {
-                boton = `<button class="btn-devolver" onclick="devolverLibro('${key}')">↩️ Devolver</button>`;
-            } else if (isAdmin(usuarioActual)) {
-                boton = `<button class="btn-devolver" onclick="devolverLibro('${key}')">↩️ Liberar (Admin)</button>`;
+            if (isAdmin(usuarioActual)) {
+                if (!reservado) {
+                    boton = `<button class="btn-reservar" onclick="reservarLibro('${key}')">🩸 Reservar</button>`;
+                } else {
+                    boton = `<button class="btn-devolver" onclick="devolverLibro('${key}')">↩️ Liberar (Admin)</button>`;
+                }
             }
 
             return `<div class="libro-card ${reservado ? 'reservado' : ''}">
@@ -1927,7 +1946,7 @@
                 cancelarEdicionLibro();
             } else {
                 db.ref('biblioteca').push(lib);
-                alert('Tomo añadido a la Biblioteca de Sangre.');
+                alert('Tomo añadido a la Biblioteca Roja.');
                 document.getElementById('lib-tit').value = '';
                 document.getElementById('lib-aut').value = '';
                 document.getElementById('lib-desc').value = '';
@@ -2056,7 +2075,7 @@
                 <td style="color:#b0a090; font-size:0.9em;">${u.faccion || '-'}</td>
                 <td><span id="code-${u.nombre}" data-real="${u.codigo}" style="font-family:monospace; color:#aaa;">••••••</span><button class="btn-ojo" onclick="toggleCode('code-${u.nombre}')">👁️</button></td>
                 <td><span class="rango-badge ${r.c}">${r.n}</span></td>
-                <td>${u.puntos}</td>
+                <td>${getPADisplay(u.puntos)}</td>
                 <td>
                     <button onclick="abrirEditarAventurero('${key}')" style="background:#cc4400; color:#fff; border:none; border-radius:3px; padding:8px;">✏️</button>
                     <button onclick="borrarUser('${key}')" style="background:#c0392b; color:#fff; border:none; border-radius:3px; padding:8px;">🗑️</button>
