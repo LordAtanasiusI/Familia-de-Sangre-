@@ -201,6 +201,38 @@
         .codigo-oculto { background: #0d0000; padding: 10px 15px; border-radius: 4px; border: 2px dashed #1a0000; font-family: monospace; letter-spacing: 3px; color: #2ecc71; font-weight: bold; display: inline-flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; }
         .btn-ojo { background: none; border: none; cursor: pointer; font-size: 1.2em; margin-left: 10px; }
 
+        
+        /* BIBLIOTECA */
+        .libro-card {
+            background: linear-gradient(135deg, #1a0004, #0d0000);
+            border: 2px solid #5a0000;
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .libro-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(139,0,0,0.3); border-color: #8b0000; }
+        .libro-card.reservado { border-color: #333; opacity: 0.75; }
+        .libro-card .libro-portada {
+            width: 100%; height: 160px; object-fit: cover;
+            border-radius: 4px; border: 2px solid #3a0000;
+            background: #0a0000;
+        }
+        .libro-card .libro-titulo { color: #ff4d4d; font-size: 1.15em; font-weight: bold; margin: 0; }
+        .libro-card .libro-autor { color: #c8a0a0; font-size: 0.85em; font-style: italic; }
+        .libro-card .libro-desc { color: #e0c0c0; font-size: 0.9em; flex: 1; }
+        .libro-badge-disponible { background: #1a3a1a; color: #2ecc71; border: 1px solid #2ecc71; padding: 3px 10px; border-radius: 3px; font-size: 0.8em; font-weight: bold; display: inline-block; }
+        .libro-badge-reservado  { background: #3a0000; color: #e74c3c; border: 1px solid #e74c3c; padding: 3px 10px; border-radius: 3px; font-size: 0.8em; font-weight: bold; display: inline-block; }
+        .libro-reservado-por { color: #888; font-size: 0.8em; font-style: italic; margin-top: 2px; }
+        .btn-reservar { background: linear-gradient(to bottom, #8b0000, #5a0000); color: #fff; border: none; padding: 8px 0; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; transition: 0.2s; margin-top: auto; }
+        .btn-reservar:hover { filter: brightness(1.2); }
+        .btn-devolver { background: linear-gradient(to bottom, #1a3a1a, #0d260d); color: #2ecc71; border: 1px solid #2ecc71; padding: 8px 0; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; transition: 0.2s; margin-top: auto; }
+        .btn-devolver:hover { filter: brightness(1.2); }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -228,8 +260,8 @@
 
     <nav>
         <button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
-        <button onclick="navegar('perfil')" id="btn-perfil">Mi Linaje</button>
-        <button onclick="navegar('misiones')" id="btn-misiones">Misiones</button>
+        <button onclick="navegar('perfil')" id="btn-perfil">Mi Sangre</button>
+        <button onclick="navegar('biblioteca')" id="btn-biblioteca">📚 Biblioteca</button>
         <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#ae80d6; border-color:#8e44ad;">M. Gremio</button>
         <button onclick="navegar('torneos')" id="btn-torneos">Torneos</button>
         <button onclick="navegar('precios')" id="btn-precios">Precios</button>
@@ -260,7 +292,20 @@
         </section>
 
         <section id="sec-perfil"><h2>🧛 Expediente Personal</h2><div id="render-perfil" style="min-height: 200px;"></div></section>
-        <section id="sec-misiones"><h2>⚔️ Contratos Disponibles</h2><div id="lista-misiones" class="grid-layout"></div></section>
+        <section id="sec-biblioteca">
+            <h2>📚 Biblioteca de Sangre</h2>
+            <div class="card" style="border-top: 4px solid #8b0000; margin-bottom: 20px;">
+                <div class="search-bar">
+                    <input type="text" id="search-libro" onkeyup="renderBiblioteca()" placeholder="🔍 Buscar tomo..." style="flex:2;">
+                    <select id="filter-libro-estado" onchange="renderBiblioteca()" style="flex:1;">
+                        <option value="all">📖 Todos los tomos</option>
+                        <option value="disponible">✅ Disponibles</option>
+                        <option value="reservado">🔒 Reservados</option>
+                    </select>
+                </div>
+            </div>
+            <div id="lista-biblioteca" class="grid-layout"></div>
+        </section>
         
         <section id="sec-misiones-gremio">
             <h2 style="color:#ae80d6; border-color:#8e44ad;">📜 Misiones de Facción / Gremio</h2>
@@ -430,17 +475,19 @@
             <h2 style="color:#e74c3c;">⚙️ Consola del Maestro</h2>
             <div style="display:flex; gap:20px; flex-wrap:wrap;">
                 
-                <div class="card" style="flex:1; min-width:300px;">
-                    <h3>📜 Nueva Misión / Edición</h3>
-                    <input type="text" id="m-nom" placeholder="Título">
-                    <select id="m-dif"><option value="facil">Fácil</option><option value="media">Media</option><option value="dificil">Difícil</option><option value="epica">Épica</option></select>
-                    <input type="text" id="m-req" placeholder="Requisitos">
-                    <textarea id="m-desc" placeholder="Descripción"></textarea>
-                    <input type="text" id="m-prem" placeholder="Recompensa">
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn" id="btn-publicar-mision" onclick="crearMision()">Publicar</button>
-                        <button class="btn" onclick="cancelarEdicionMision()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion">Cancelar</button>
+                <div class="card" style="flex:1; min-width:300px; border: 2px solid #8b0000;">
+                    <h3 style="color:#ff4d4d;">📚 Añadir / Editar Libro</h3>
+                    <input type="text" id="lib-tit" placeholder="Título del tomo">
+                    <input type="text" id="lib-aut" placeholder="Autor / Origen">
+                    <textarea id="lib-desc" placeholder="Descripción del contenido" style="height:80px;"></textarea>
+                    <label style="color:#aaa; font-size:0.8em; display:block; margin-bottom:5px;">Portada (opcional):</label>
+                    <input type="file" id="lib-foto-file" accept="image/*">
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="btn" id="btn-publicar-libro" onclick="crearLibro()">📖 Publicar Tomo</button>
+                        <button class="btn" onclick="cancelarEdicionLibro()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion-libro">✖ Cancelar</button>
                     </div>
+                    <h4 style="margin-top:20px; color:#aaa; border-top:1px solid #3a0000; padding-top:15px;">Tomos en la Biblioteca</h4>
+                    <div id="lista-admin-biblioteca" style="max-height:300px; overflow-y:auto; margin-top:10px;"></div>
                 </div>
 
                 <div style="flex:1; min-width:300px;">
@@ -528,6 +575,8 @@
     let ITEMS_CACHE = []; 
     let STOCK_CACHE = {}; 
     let TREASURY_BALANCE = 0;
+    let BIBLIOTECA_CACHE = [];
+    let libroEditandoId = null;
     
     // Variables para el sistema interno de seguimiento
     let USUARIOS_CACHE = {}; // Unificación de usuarios y expedientes
@@ -1008,9 +1057,10 @@
             if(isAdmin(usuarioActual)) renderSeguimiento();
         });
 
-        db.ref('misiones').on('value', snap => {
-            MISIONES_CACHE = snap.val() || {};
-            renderMisiones(snap.val() ? Object.entries(snap.val()) : []);
+        db.ref('biblioteca').on('value', snap => {
+            BIBLIOTECA_CACHE = snap.val() ? Object.entries(snap.val()) : [];
+            renderBiblioteca();
+            if(isAdmin(usuarioActual)) renderAdminBiblioteca();
         });
         // NUEVO LISTENER MISIONES GREMIO
         db.ref('misiones_gremio').on('value', snap => {
@@ -1773,62 +1823,148 @@
         }).join('');
     }
 
-    function renderMisiones(lista) {
-        const cont = document.getElementById('lista-misiones');
-        cont.innerHTML = lista.length ? "" : "<p style='color:#888;'>El tablón está vacío.</p>";
-        const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
-        cont.innerHTML = entries.map(([key, m]) => {
-            if(!m) return ""; if(typeof m!=='object') m=key;
-            return `<div class="pergamino">
-                <h3>${m.nombre}</h3>
-                <p style="font-size:0.8em; color:#1a0000;"><b>Dificultad:</b> ${m.dificultad.toUpperCase()}</p>
-                <p style="font-size:0.9em; color:#1f0000;"><b>Requisitos:</b> ${m.requisitos || 'Ninguno'}</p>
-                <p style="font-style:italic;">"${m.desc}"</p>
-                <p><b>Premio:</b> ${m.premios}</p>
-                ${isAdmin(usuarioActual) ? `<div style="position:absolute; top:10px; right:10px;"><button onclick="prepararEdicionMision('${key}')" style="background:none; border:none; cursor:pointer; font-size:1.2em;">✏️</button><button onclick="borrarMision('${key}')" style="background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button></div>`:''}
+    // ====================================================
+    // --- SISTEMA BIBLIOTECA ---
+    // ====================================================
+
+    function renderBiblioteca() {
+        const cont = document.getElementById('lista-biblioteca');
+        if (!cont) return;
+        const txt = (document.getElementById('search-libro')?.value || '').toLowerCase();
+        const estado = document.getElementById('filter-libro-estado')?.value || 'all';
+
+        let lista = BIBLIOTECA_CACHE.filter(([key, lib]) => {
+            if (!lib) return false;
+            const matchTxt = lib.titulo.toLowerCase().includes(txt) || (lib.autor || '').toLowerCase().includes(txt);
+            const isReservado = !!lib.reservadoPor;
+            const matchEstado = estado === 'all' || (estado === 'disponible' && !isReservado) || (estado === 'reservado' && isReservado);
+            return matchTxt && matchEstado;
+        });
+
+        if (!lista.length) {
+            cont.innerHTML = "<p style='color:#888; grid-column:1/-1;'>La biblioteca está vacía. El Maestro aún no ha depositado ningún tomo.</p>";
+            return;
+        }
+
+        cont.innerHTML = lista.map(([key, lib]) => {
+            const reservado = !!lib.reservadoPor;
+            const esMio = lib.reservadoPor === usuarioActual;
+            const portada = lib.foto && lib.foto.length > 10
+                ? lib.foto
+                : 'https://via.placeholder.com/300x160/0a0000/8b0000?text=📚';
+
+            let boton = '';
+            if (!reservado) {
+                boton = `<button class="btn-reservar" onclick="reservarLibro('${key}')">🩸 Reservar</button>`;
+            } else if (esMio) {
+                boton = `<button class="btn-devolver" onclick="devolverLibro('${key}')">↩️ Devolver</button>`;
+            } else if (isAdmin(usuarioActual)) {
+                boton = `<button class="btn-devolver" onclick="devolverLibro('${key}')">↩️ Liberar (Admin)</button>`;
+            }
+
+            return `<div class="libro-card ${reservado ? 'reservado' : ''}">
+                <img src="${portada}" class="libro-portada" alt="${lib.titulo}">
+                <p class="libro-titulo">📖 ${lib.titulo}</p>
+                ${lib.autor ? `<p class="libro-autor">✍️ ${lib.autor}</p>` : ''}
+                ${lib.desc ? `<p class="libro-desc">${lib.desc}</p>` : ''}
+                <div>
+                    <span class="${reservado ? 'libro-badge-reservado' : 'libro-badge-disponible'}">${reservado ? '🔒 Reservado' : '✅ Disponible'}</span>
+                    ${reservado ? `<p class="libro-reservado-por">Por: ${lib.reservadoPor}</p>` : ''}
+                </div>
+                ${boton}
+                ${isAdmin(usuarioActual) ? `<div style="display:flex; gap:5px; margin-top:5px;">
+                    <button onclick="prepararEdicionLibro('${key}')" style="flex:1; background:#cc4400; border:none; color:#fff; padding:6px; border-radius:3px; cursor:pointer; font-size:0.85em;">✏️ Editar</button>
+                    <button onclick="borrarLibro('${key}')" style="flex:1; background:#c0392b; border:none; color:#fff; padding:6px; border-radius:3px; cursor:pointer; font-size:0.85em;">🗑️ Borrar</button>
+                </div>` : ''}
             </div>`;
         }).join('');
     }
 
-    // --- SISTEMA EDITAR MISIONES ---
-    function prepararEdicionMision(key) {
-        db.ref('misiones/'+key).once('value', snap => {
-            const m = snap.val();
-            document.getElementById('m-nom').value = m.nombre;
-            document.getElementById('m-dif').value = m.dificultad;
-            document.getElementById('m-req').value = m.requisitos;
-            document.getElementById('m-desc').value = m.desc;
-            document.getElementById('m-prem').value = m.premios;
-            misionEditandoId = key;
-            document.getElementById('btn-publicar-mision').innerText = "💾 Guardar Cambios";
-            document.getElementById('btn-publicar-mision').style.background = "#2ecc71";
-            document.getElementById('btn-cancelar-edicion').style.display = "block";
-            navegar('admin');
-        });
+    function reservarLibro(key) {
+        if (!confirm('¿Reservar este tomo para ti?')) return;
+        db.ref('biblioteca/' + key).update({ reservadoPor: usuarioActual });
     }
 
-    function cancelarEdicionMision() {
-        misionEditandoId = null;
-        document.getElementById('m-nom').value = ""; document.getElementById('m-req').value = "";
-        document.getElementById('m-desc').value = ""; document.getElementById('m-prem').value = "";
-        document.getElementById('btn-publicar-mision').innerText = "Publicar";
-        document.getElementById('btn-publicar-mision').style.background = "linear-gradient(to bottom, #cc0000, #b8860b)";
-        document.getElementById('btn-cancelar-edicion').style.display = "none";
+    function devolverLibro(key) {
+        if (!confirm('¿Devolver este tomo a la biblioteca?')) return;
+        db.ref('biblioteca/' + key).update({ reservadoPor: null });
     }
 
-    function crearMision() {
-        const m = {
-            nombre: document.getElementById('m-nom').value, dificultad: document.getElementById('m-dif').value,
-            requisitos: document.getElementById('m-req').value, desc: document.getElementById('m-desc').value, premios: document.getElementById('m-prem').value
-        };
-        if(!m.nombre) return alert("Falta título");
-        if (misionEditandoId) {
-            db.ref('misiones/'+misionEditandoId).update(m); alert("Actualizada"); cancelarEdicionMision();
-        } else {
-            db.ref('misiones').push(m); alert("Publicada");
+    function renderAdminBiblioteca() {
+        const cont = document.getElementById('lista-admin-biblioteca');
+        if (!cont) return;
+        if (!BIBLIOTECA_CACHE.length) {
+            cont.innerHTML = "<p style='color:#888; font-size:0.9em;'>No hay tomos aún.</p>";
+            return;
         }
+        cont.innerHTML = BIBLIOTECA_CACHE.map(([key, lib]) => {
+            if (!lib) return '';
+            const reservado = lib.reservadoPor ? `🔒 <span style="color:#e74c3c;">${lib.reservadoPor}</span>` : '<span style="color:#2ecc71;">✅ Libre</span>';
+            return `<div style="background:#0d0000; padding:10px; border-bottom:1px solid #3a0000; font-size:0.9em;">
+                <span style="color:#ff4d4d; font-weight:bold;">${lib.titulo}</span>
+                <span style="color:#888; margin-left:8px;">${lib.autor || ''}</span>
+                <span style="float:right;">${reservado}</span>
+            </div>`;
+        }).join('');
     }
-    function borrarMision(key) { if(confirm("¿Borrar?")) db.ref('misiones/'+key).remove(); }
+
+    function crearLibro() {
+        const file = document.getElementById('lib-foto-file').files[0];
+        const guardar = (fotoBase64) => {
+            const lib = {
+                titulo: document.getElementById('lib-tit').value.trim(),
+                autor:  document.getElementById('lib-aut').value.trim(),
+                desc:   document.getElementById('lib-desc').value.trim(),
+                foto:   fotoBase64,
+                reservadoPor: null
+            };
+            if (!lib.titulo) return alert('El tomo necesita un título.');
+            if (libroEditandoId) {
+                if (!file && BIBLIOTECA_CACHE.find(([k]) => k === libroEditandoId)?.[1]?.foto)
+                    lib.foto = BIBLIOTECA_CACHE.find(([k]) => k === libroEditandoId)[1].foto;
+                db.ref('biblioteca/' + libroEditandoId).update(lib);
+                alert('Tomo actualizado.');
+                cancelarEdicionLibro();
+            } else {
+                db.ref('biblioteca').push(lib);
+                alert('Tomo añadido a la Biblioteca de Sangre.');
+                document.getElementById('lib-tit').value = '';
+                document.getElementById('lib-aut').value = '';
+                document.getElementById('lib-desc').value = '';
+                document.getElementById('lib-foto-file').value = '';
+            }
+        };
+        if (file) { const r = new FileReader(); r.onload = e => guardar(e.target.result); r.readAsDataURL(file); }
+        else guardar('');
+    }
+
+    function prepararEdicionLibro(key) {
+        const lib = BIBLIOTECA_CACHE.find(([k]) => k === key)?.[1];
+        if (!lib) return;
+        document.getElementById('lib-tit').value = lib.titulo;
+        document.getElementById('lib-aut').value = lib.autor || '';
+        document.getElementById('lib-desc').value = lib.desc || '';
+        libroEditandoId = key;
+        document.getElementById('btn-publicar-libro').innerText = '💾 Guardar Cambios';
+        document.getElementById('btn-publicar-libro').style.background = '#2ecc71';
+        document.getElementById('btn-cancelar-edicion-libro').style.display = 'block';
+        navegar('admin');
+    }
+
+    function cancelarEdicionLibro() {
+        libroEditandoId = null;
+        document.getElementById('lib-tit').value = '';
+        document.getElementById('lib-aut').value = '';
+        document.getElementById('lib-desc').value = '';
+        document.getElementById('lib-foto-file').value = '';
+        document.getElementById('btn-publicar-libro').innerText = '📖 Publicar Tomo';
+        document.getElementById('btn-publicar-libro').style.background = 'linear-gradient(to bottom, #8b0000, #5a0000)';
+        document.getElementById('btn-cancelar-edicion-libro').style.display = 'none';
+    }
+
+    function borrarLibro(key) {
+        if (confirm('¿Eliminar este tomo de la biblioteca?')) db.ref('biblioteca/' + key).remove();
+    }
 
     // --- SISTEMA ANUNCIOS ---
     function renderAnuncios(lista) {
