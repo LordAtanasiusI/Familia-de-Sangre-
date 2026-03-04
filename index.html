@@ -281,12 +281,11 @@
         <button onclick="navegar('inicio')" id="btn-inicio" class="activo">Cripta</button>
         <button onclick="navegar('perfil')" id="btn-perfil">Mi Sangre</button>
         <button onclick="navegar('biblioteca')" id="btn-biblioteca" style="display:none; color:#e00000; border-color:#cc0000;">📚 Biblioteca</button>
-        <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#ae80d6; border-color:#8e44ad;">M. Gremio</button>
+        <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#c0392b; border-color:#922b21;">🗡️ Asesinato</button>
         <button onclick="navegar('precios')" id="btn-precios">Precios</button>
         <button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
         <button onclick="navegar('ranking')" id="btn-ranking">🩸 Genealogía</button>
         <button onclick="navegar('cuentas')" id="btn-cuentas" style="display:none; color:#e00000; border-color:#cc0000;">🏛️ Cuentas</button> 
-        <button onclick="navegar('registro')" id="btn-registro" style="display:none; color:#2ecc71; border-color:#27ae60;">📝 Registro</button>
         <button onclick="navegar('seguimiento')" id="btn-seguimiento" style="display:none; color:#3498db; border-color:#2980b9;">🔍 Seguimiento</button>
         <button onclick="navegar('admin')" id="btn-admin" style="display:none; color:#e74c3c; border-right:none;">⚙️ Admin</button>
         <button onclick="cerrarSesion()" style="margin-left:auto; background:none; border:none; max-width:80px; color:#7f8c8d; font-size:0.8em;">Salir 🚪</button>
@@ -326,7 +325,7 @@
         </section>
         
         <section id="sec-misiones-gremio">
-            <h2 style="color:#ae80d6; border-color:#8e44ad;">📜 Misiones de Facción / Gremio</h2>
+            <h2 style="color:#c0392b; border-color:#922b21;">🗡️ Contratos de Asesinato</h2>
             <div id="lista-misiones-gremio" class="grid-layout"></div>
         </section>
 
@@ -413,18 +412,7 @@
             </div>
         </section>
 
-        <section id="sec-registro">
-            <h2 style="color:#2ecc71;">📝 Registro de Nuevos Aventureros</h2>
-            <div class="card" style="max-width:600px; margin:0 auto;">
-                <h3>Nuevo Ingreso</h3>
-                <p style="color:#aaa; font-size:0.9em; margin-bottom:20px;">Utiliza este formulario para dar de alta a jugadores. El sistema generará una clave automáticamente.</p>
-                <input type="text" id="int-nombre" placeholder="Nombre del Aventurero">
-                <input type="text" id="int-raza" placeholder="Raza">
-                <input type="text" id="int-faccion" placeholder="Facción">
-                <div id="cupo-conversion" style="background:#1a0000;border:1px solid #5a0000;padding:10px;border-radius:4px;margin-bottom:12px;font-size:.85em;color:#ffaaaa;min-height:36px;"></div>
-                <button class="btn" style="background:#2ecc71; border-color:#27ae60;" onclick="registrarAventureroInterno()">📂 Generar Alta y Clave</button>
-            </div>
-        </section>
+
 
         <section id="sec-seguimiento">
             <h2 style="color:#3498db;">🔍 Seguimiento de Actividad</h2>
@@ -516,13 +504,13 @@
 
                 <div style="flex:1; min-width:300px;">
                     <div class="card" style="border: 2px solid #8e44ad;">
-                        <h3 style="color:#ae80d6;">📜 Misiones de Gremio (Privadas)</h3>
-                        <p style="font-size:0.8em; color:#aaa;">Solo visibles por Admins, Líderes, Oficiales y Ministros.</p>
-                        <input type="text" id="mg-nom" placeholder="Título Misión Gremio">
+                        <h3 style="color:#c0392b;">🗡️ Contratos de Asesinato (Privados)</h3>
+                        <p style="font-size:0.8em; color:#aaa;">Solo visibles por el Progenitor, Ministros y Nobles con título.</p>
+                        <input type="text" id="mg-nom" placeholder="Objetivo / Contrato">
                         <input type="text" id="mg-req" placeholder="Requisitos">
                         <textarea id="mg-desc" placeholder="Descripción"></textarea>
                         <input type="text" id="mg-prem" placeholder="Recompensa">
-                        <button class="btn" onclick="crearMisionGremio()" style="background:#8e44ad; border-color:#6c3483;">Publicar Privada</button>
+                        <button class="btn" onclick="crearMisionGremio()" style="background:#c0392b; border-color:#922b21;">🗡️ Publicar Contrato</button>
                     </div>
                 </div>
 
@@ -959,7 +947,7 @@
         return pa + '% PA';
     }
     function getVisualRango(u) {
-        if (MAESTROS.includes(u.nombre)) return { n: "Monarca de Sangre", c: "bg-progenitor" };
+        if (MAESTROS.includes(u.nombre)) return { n: "Monarca de Sangre (Progenitor)", c: "bg-progenitor" };
         const tit = u.titulo || u.etiqueta || "";
         if (tit) { const t = getTituloData(tit); if (t) return { n:t.n, c:t.clase }; }
         return getRango(u.puntos || 0);
@@ -1056,7 +1044,6 @@
         if(isAdmin(usuarioActual)) {
             document.getElementById('btn-admin').style.display='block';
             document.getElementById('btn-cuentas').style.display='block';
-            document.getElementById('btn-registro').style.display='block';
             document.getElementById('btn-seguimiento').style.display='block';
             document.getElementById('btn-biblioteca').style.display='block';
         }
@@ -1072,8 +1059,7 @@
             if(esMinistroSangre && !isAdmin(usuarioActual)) {
                 document.getElementById('btn-admin').style.display='block';
                 document.getElementById('btn-cuentas').style.display='block';
-                document.getElementById('btn-registro').style.display='block';
-                document.getElementById('btn-seguimiento').style.display='block';
+                    document.getElementById('btn-seguimiento').style.display='block';
                 document.getElementById('btn-biblioteca').style.display='block';
             }
 
@@ -1328,7 +1314,7 @@
                             <button onclick="abrirAsignarMision('${key}')" style="background:#3498db; border:none; color:white; padding:5px; cursor:pointer;">📜 Asignar</button> 
                             <button onclick="abrirEditarAventurero('${key}')" style="background:#cc4400; border:none; color:white; padding:5px; cursor:pointer;">✏️ Datos</button>
                             <button onclick="resetearHistorial('${key}')" style="background:none; border:1px solid #777; color:#aaa; cursor:pointer;">🔄 Reset</button>
-                            <button onclick="borrarUser('${key}')" style="background:#c0392b; border:none; color:white; padding:5px; cursor:pointer;">🗑️</button>
+                            ${isAdmin(usuarioActual) ? `<button onclick="borrarUser('${key}')" style="background:#c0392b; border:none; color:white; padding:5px; cursor:pointer;">🗑️</button>` : ''}
                         </td>
                     </tr>`;
             }
@@ -1843,9 +1829,11 @@
     function renderPerfil(u) {
         if(!u) return;
         const r = getVisualRango(u);
-        // Lista de súbditos del usuario actual
         const subditos = Object.values(USUARIOS_CACHE).filter(s => s.convertidoPor === u.nombre);
         const maxSub = getMaxSubditos(u);
+        const tieneTitulo = !!(u.titulo || u.etiqueta);
+        const cupoRestante = isFinite(maxSub) ? maxSub - subditos.length : Infinity;
+
         const subdHtml = subditos.length > 0
             ? subditos.map(s => {
                 const rs = getVisualRango(s);
@@ -1859,43 +1847,79 @@
                 </div>`;
               }).join('')
             : `<p style="color:#555;font-style:italic;font-size:.9em;">Aún no has convertido a ningún súbdito.</p>`;
-        const cupoTexto = isFinite(maxSub)
-            ? `${subditos.length}/${maxSub} súbditos`
-            : `${subditos.length} súbditos`;
+        const cupoTexto = isFinite(maxSub) ? `${subditos.length}/${maxSub}` : `${subditos.length}`;
+
+        // Bloque formulario conversión (solo si tiene título y cupo)
+        const formConversion = tieneTitulo ? `
+            <div class="card" style="border-left:5px solid #2ecc71; margin-top:0;">
+                <h3 style="color:#2ecc71; margin-bottom:12px;">🩸 Convertir Nuevo Vástago
+                    <span style="font-size:.7em;color:${cupoRestante>0?'#2ecc71':'#c0392b'};">(${cupoTexto} súbditos)</span>
+                </h3>
+                ${cupoRestante > 0 ? `
+                <input type="text" id="perf-sub-nombre" placeholder="Nombre del Vástago" style="margin-bottom:8px;">
+                <input type="text" id="perf-sub-raza"   placeholder="Raza"     style="margin-bottom:8px;">
+                <input type="text" id="perf-sub-faccion" placeholder="Facción"  style="margin-bottom:8px;">
+                <button class="btn" style="background:#1a5e2a;border-color:#145221;" onclick="registrarSubditoDesdePerf()">🩸 Convertir</button>
+                ` : `<p style="color:#c0392b;font-size:.9em;">Has alcanzado tu límite de conversión.</p>`}
+            </div>` : '';
 
         document.getElementById('render-perfil').innerHTML = `
             <div style="display:flex; flex-wrap:wrap; gap:30px;">
+                <!-- COLUMNA IZQUIERDA -->
                 <div class="card" style="flex:1; text-align:center; min-width:300px;">
                     <img src="${u.foto || 'https://via.placeholder.com/150/000/cc0000?text=SIN+FOTO'}" class="foto-perfil">
                     <input type="file" id="up-foto" style="display:none" onchange="subirFoto(this)">
                     <button class="btn" style="margin-top:20px; font-size:0.8em; width:auto;" onclick="document.getElementById('up-foto').click()">Subir Retrato</button>
-                    <h2 style="border:none; margin:20px 0 5px 0; color:#fff;">${u.nombre}</h2>
-                    <div style="display:flex; gap:5px; justify-content:center; align-items:center; margin-bottom:10px;">
-                        <input type="text" id="edit-raza" value="${u.raza}" placeholder="Raza" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #1f0000; color:#ccc; padding:5px;">
-                        <span style="color:#1a0000;">|</span>
-                        <input type="text" id="edit-faccion" value="${u.faccion}" placeholder="Facción" style="width:40%; text-align:center; background:#1a0f0f; border:1px solid #1f0000; color:#ccc; padding:5px;">
+                    <h2 style="border:none; margin:20px 0 10px; color:#fff;">${u.nombre}</h2>
+
+                    <!-- Raza y Facción -->
+                    <div style="display:flex;gap:5px;justify-content:center;align-items:center;margin-bottom:6px;">
+                        <input type="text" id="edit-raza"    value="${u.raza}"    placeholder="Raza"    style="width:42%;text-align:center;background:#1a0f0f;border:1px solid #1f0000;color:#ccc;padding:5px;">
+                        <span style="color:#3a0000;">|</span>
+                        <input type="text" id="edit-faccion" value="${u.faccion}" placeholder="Facción" style="width:42%;text-align:center;background:#1a0f0f;border:1px solid #1f0000;color:#ccc;padding:5px;">
                     </div>
-                    <button onclick="updateProfile()" style="background:none; border:1px solid #cc0000; color:#cc0000; cursor:pointer; padding:2px 10px; font-size:0.8em; margin-bottom:10px;">💾 Guardar Cambios</button>
-                    <div style="margin-top:20px;">
-                        <span style="color:#777; font-size:0.8em;">CÓDIGO DE ACCESO</span>
+                    <button onclick="updateProfile()" style="background:none;border:1px solid #cc0000;color:#cc0000;cursor:pointer;padding:3px 12px;font-size:.8em;margin-bottom:16px;">💾 Guardar Raza/Facción</button>
+
+                    <!-- Cambiar nombre -->
+                    <div style="background:#100005;border:1px solid #3a0000;border-radius:4px;padding:12px;margin-bottom:10px;text-align:left;">
+                        <p style="color:#aaa;font-size:.78em;margin:0 0 6px;">✏️ Cambiar nombre de vampiro:</p>
+                        <input type="text" id="edit-nuevo-nombre" placeholder="Nuevo nombre" style="margin-bottom:6px;">
+                        <button onclick="cambiarNombreUsuario()" style="background:#3a0000;border:1px solid #8b0000;color:#ff8080;cursor:pointer;padding:4px 12px;font-size:.8em;border-radius:3px;width:100%;">Cambiar Nombre</button>
+                    </div>
+
+                    <!-- Cambiar contraseña -->
+                    <div style="background:#100005;border:1px solid #3a0000;border-radius:4px;padding:12px;margin-bottom:16px;text-align:left;">
+                        <p style="color:#aaa;font-size:.78em;margin:0 0 6px;">🔑 Cambiar contraseña:</p>
+                        <input type="password" id="edit-pass-actual"  placeholder="Contraseña actual"  style="margin-bottom:6px;">
+                        <input type="password" id="edit-pass-nueva"   placeholder="Nueva contraseña"   style="margin-bottom:6px;">
+                        <input type="password" id="edit-pass-repite"  placeholder="Repetir contraseña" style="margin-bottom:6px;">
+                        <button onclick="cambiarContrasena()" style="background:#3a0000;border:1px solid #8b0000;color:#ff8080;cursor:pointer;padding:4px 12px;font-size:.8em;border-radius:3px;width:100%;">Cambiar Contraseña</button>
+                    </div>
+
+                    <!-- Código de acceso -->
+                    <div>
+                        <span style="color:#777;font-size:.8em;">CÓDIGO DE ACCESO</span>
                         <div class="codigo-oculto"><span id="prof-code" data-real="${u.codigo}">••••••</span><button class="btn-ojo" onclick="toggleCode('prof-code')">👁️</button></div>
                     </div>
                 </div>
-                <div style="flex:1; display:flex; flex-direction:column; gap:20px; min-width:300px;">
-                    <div class="card" style="flex:1; text-align:center;">
+
+                <!-- COLUMNA DERECHA -->
+                <div style="flex:1;display:flex;flex-direction:column;gap:20px;min-width:300px;">
+                    <div class="card" style="text-align:center;">
                         <h3>Rango Actual</h3>
-                        <div><span class="rango-badge ${r.c}" style="font-size:2em;">${r.n}</span>${getExtraTag(u) ? `<br>${getExtraTag(u)}` : ''}</div>
-                        <div style="margin-top:15px; font-weight:bold; color:#cc0000; font-size:1.5em;">${getPADisplay(u.puntos)}</div>
+                        <div><span class="rango-badge ${r.c}" style="font-size:2em;">${r.n}</span>${getExtraTag(u)?`<br>${getExtraTag(u)}`:''}</div>
+                        <div style="margin-top:15px;font-weight:bold;color:#cc0000;font-size:1.5em;">${getPADisplay(u.puntos)}</div>
                     </div>
-                    <div class="card" style="flex:1; border-left: 5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
+                    <div class="card" style="border-left:5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
                         <h3>Estado de Sangre</h3>
-                        ${u.misionActiva !== 'Ninguna' ? `<p style="color:#2ecc71; font-weight:bold; font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva.toUpperCase()}</span></p>` : `<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
+                        ${u.misionActiva!=='Ninguna'?`<p style="color:#2ecc71;font-weight:bold;font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva?u.dificActiva.toUpperCase():''}</span></p>`:`<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
                     </div>
-                    ${maxSub > 0 || subditos.length > 0 ? `
+                    ${tieneTitulo || subditos.length > 0 ? `
                     <div class="card" style="border-left:5px solid #8b0000;">
-                        <h3 style="margin-bottom:8px;">🩸 Linaje Convertido <span style="font-size:.75em;color:#888;">(${cupoTexto})</span></h3>
-                        <div style="max-height:250px;overflow-y:auto;">${subdHtml}</div>
+                        <h3 style="margin-bottom:8px;">🩸 Linaje Convertido <span style="font-size:.75em;color:#888;">(${cupoTexto} súbditos)</span></h3>
+                        <div style="max-height:220px;overflow-y:auto;margin-bottom:10px;">${subdHtml}</div>
                     </div>` : ''}
+                    ${formConversion}
                 </div>
             </div>`;
     }
@@ -1927,7 +1951,7 @@
                     ${titulo}
                     <div style="margin-top:12px;">
                         <span class="rango-badge ${esMaestro?'bg-progenitor':'bg-ministrosang'}" style="font-size:1.1em;">
-                            ${esMaestro?'🩸 Monarca de Sangre':'👁️ Ministro de Sangre'}
+                            ${esMaestro?'🩸 Monarca de Sangre (Progenitor)':'👁️ Ministro de Sangre'}
                         </span>
                     </div>
                     <p style="color:#666;font-size:.8em;margin-top:12px;">Acceso completo a la Cripta.</p>
@@ -1950,6 +1974,70 @@
             };
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+
+    // ── CONVERTIR SÚBDITO DESDE EL PERFIL ───────────────────────────
+    function registrarSubditoDesdePerf() {
+        const nom = document.getElementById('perf-sub-nombre').value.trim();
+        const raz = document.getElementById('perf-sub-raza').value.trim();
+        const fac = document.getElementById('perf-sub-faccion').value.trim();
+        if(!nom || !raz || !fac) return alert("Rellena nombre, raza y facción.");
+        const yo = USUARIOS_CACHE[usuarioActual];
+        if(!yo || !puedeConvertir(yo)) return alert("⛔ Has alcanzado tu límite de conversión.");
+        const newCode = generarCodigoAleatorio();
+        db.ref('usuarios/'+nom).once('value', snap => {
+            if(snap.exists()) return alert("Ya existe un vampiro con ese nombre.");
+            db.ref('usuarios/'+nom).set({
+                nombre: nom, raza: raz, faccion: fac,
+                codigo: newCode,
+                puntos: 0, rango: "Vástago",
+                convertidoPor: usuarioActual,
+                misionActiva: "Ninguna", misionActual: null, historialMisiones: []
+            });
+            alert(\`🩸 VÁSTAGO CONVERTIDO\n\nNOMBRE: \${nom}\nCÓDIGO DE ACCESO: \${newCode}\n\nGuarda bien esta clave.\`);
+            document.getElementById('perf-sub-nombre').value = '';
+            document.getElementById('perf-sub-raza').value   = '';
+            document.getElementById('perf-sub-faccion').value = '';
+        });
+    }
+
+    // ── CAMBIAR NOMBRE DE USUARIO ────────────────────────────────────
+    function cambiarNombreUsuario() {
+        const nuevoNom = document.getElementById('edit-nuevo-nombre').value.trim();
+        if(!nuevoNom) return alert("Escribe el nuevo nombre.");
+        if(nuevoNom === usuarioActual) return alert("Es el mismo nombre.");
+        db.ref('usuarios/'+nuevoNom).once('value', snap => {
+            if(snap.exists()) return alert("Ya existe un vampiro con ese nombre.");
+            // Leer datos actuales, copiarlos con nuevo nombre, borrar el antiguo
+            const yo = USUARIOS_CACHE[usuarioActual];
+            const datosNuevos = { ...yo, nombre: nuevoNom };
+            db.ref('usuarios/'+nuevoNom).set(datosNuevos).then(() => {
+                db.ref('usuarios/'+usuarioActual).remove();
+                // Actualizar sesión
+                localStorage.setItem('gremio_sesion', nuevoNom);
+                alert(\`✅ Nombre cambiado a "\${nuevoNom}". La página se recargará.\`);
+                location.reload();
+            });
+        });
+    }
+
+    // ── CAMBIAR CONTRASEÑA ───────────────────────────────────────────
+    function cambiarContrasena() {
+        const actual = document.getElementById('edit-pass-actual').value;
+        const nueva  = document.getElementById('edit-pass-nueva').value;
+        const repite = document.getElementById('edit-pass-repite').value;
+        if(!actual || !nueva || !repite) return alert("Rellena todos los campos de contraseña.");
+        if(nueva !== repite) return alert("Las contraseñas nuevas no coinciden.");
+        if(nueva.length < 4) return alert("La contraseña debe tener al menos 4 caracteres.");
+        const yo = USUARIOS_CACHE[usuarioActual];
+        if(!yo) return alert("Error: perfil no encontrado.");
+        if(yo.codigo !== actual) return alert("❌ La contraseña actual es incorrecta.");
+        db.ref('usuarios/'+usuarioActual).update({ codigo: nueva });
+        alert("✅ Contraseña cambiada correctamente.");
+        document.getElementById('edit-pass-actual').value = '';
+        document.getElementById('edit-pass-nueva').value  = '';
+        document.getElementById('edit-pass-repite').value = '';
     }
 
     function updateProfile() {
@@ -2022,7 +2110,7 @@
                 <div class="arbol-card es-progenitor">
                     <div style="font-size:2.2em;margin-bottom:6px;">🩸</div>
                     <div class="arbol-nombre">El Progenitor</div>
-                    <div class="arbol-rango"><span class="rango-badge bg-progenitor" style="font-size:.67em;">Monarca de Sangre</span></div>
+                    <div class="arbol-rango"><span class="rango-badge bg-progenitor" style="font-size:.67em;">Monarca de Sangre (Progenitor)</span></div>
                     <div class="arbol-cupo">∞ súbditos</div>
                 </div>
                 ${huerfanos.length ? `<div class="arbol-hijos">${huerfanos.map(h=>buildNodo(h,1)).join('')}</div>` : ''}
@@ -2214,7 +2302,7 @@
                 <td>${getPADisplay(u.puntos)}</td>
                 <td>
                     <button onclick="abrirEditarAventurero('${key}')" style="background:#cc4400; color:#fff; border:none; border-radius:3px; padding:8px;">✏️</button>
-                    <button onclick="borrarUser('${key}')" style="background:#c0392b; color:#fff; border:none; border-radius:3px; padding:8px;">🗑️</button>
+                    ${isAdmin(usuarioActual) ? `<button onclick="borrarUser('${key}')" style="background:#c0392b; color:#fff; border:none; border-radius:3px; padding:8px;">🗑️</button>` : ''}
                 </td>
             </tr>`;
         });
