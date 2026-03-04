@@ -252,10 +252,85 @@
         .btn-devolver { background: linear-gradient(to bottom, #1a3a1a, #0d260d); color: #2ecc71; border: 1px solid #2ecc71; padding: 8px 0; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; transition: 0.2s; margin-top: auto; }
         .btn-devolver:hover { filter: brightness(1.2); }
 
+
+    /* ══ VISTA PÚBLICA — TIENDA DE POCIONES ══ */
+    #pantalla-publica { display:none; flex-direction:column; min-height:100vh; background:#0a0f05; background-image:url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); color:#d4e8c2; font-family:'Georgia',serif; }
+    #pub-header { background:linear-gradient(to bottom,#0d1f0a,#162b10); border-bottom:4px solid #3a7d2c; padding:40px 20px; text-align:center; box-shadow:0 6px 20px rgba(0,0,0,.7); }
+    #pub-header h1 { margin:0; font-size:2.8em; color:#7fc45e; text-transform:uppercase; letter-spacing:4px; text-shadow:2px 2px 0 #000,0 0 14px rgba(100,200,60,.5); }
+    #pub-header p  { color:#a8c890; font-style:italic; font-size:1.1em; margin-top:8px; }
+    #pub-nav { background:#111e0d; display:flex; justify-content:center; gap:0; border-bottom:2px solid #2a5020; position:sticky; top:0; z-index:100; }
+    #pub-nav button { background:#141e10; color:#8fba70; border:none; border-right:1px solid #1e3018; padding:14px 22px; cursor:pointer; font-size:.95em; font-family:Georgia,serif; transition:.2s; }
+    #pub-nav button:hover, #pub-nav button.activo { background:#1d2e17; color:#b8e896; border-bottom:3px solid #5aaa3c; }
+    .pub-section { display:none; padding:30px 20px; max-width:1100px; margin:0 auto; }
+    .pub-section.active { display:block; animation:fadeIn .4s; }
+    .pub-card { background:linear-gradient(135deg,#0f1f0a,#091505); border:1px solid #2a5a1a; border-radius:6px; padding:22px; margin-bottom:18px; position:relative; }
+    .pub-anuncio { border-left:5px solid #4caf50; }
+    .pub-hero { background:linear-gradient(180deg,#0f2209,#06150303); border:2px solid #2a5020; border-radius:8px; padding:40px; text-align:center; margin-bottom:30px; }
+    .pub-hero h2 { font-size:2.5em; color:#7fc45e; margin:0 0 10px; text-transform:uppercase; }
+    .pub-hero p  { color:#9dbf85; font-size:1.15em; }
+    .pub-ornament { color:#4a8a30; font-size:1.4em; margin:12px 0; letter-spacing:6px; }
+    .pub-login-btn { background:linear-gradient(to bottom,#2a5a1a,#1a3a0e); color:#b8e896; border:1px solid #4a8a30; padding:12px 30px; font-size:1em; cursor:pointer; border-radius:4px; letter-spacing:1px; font-family:Georgia,serif; transition:.2s; margin-top:20px; }
+    .pub-login-btn:hover { filter:brightness(1.15); }
+    /* item cards reutilizadas con colores verdes */
+    #pub-lista-precios .item-card { border-color:#2a5a1a; }
+    #pub-lista-precios .item-card:hover { border-color:#5aaa3c; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+<div id="pantalla-publica">
+    <div id="pub-header">
+        <h1>🧪 La Botica Arcana</h1>
+        <p>"Pociones, elixires y remedios para toda necesidad"</p>
+    </div>
+    <nav id="pub-nav">
+        <button onclick="pubNavegar('pub-inicio')" id="pub-btn-inicio" class="activo">🏠 Inicio</button>
+        <button onclick="pubNavegar('pub-precios')" id="pub-btn-precios">⚗️ Catálogo</button>
+        <button onclick="pubNavegar('pub-anuncios')" id="pub-btn-anuncios">📜 Noticias</button>
+        <button onclick="mostrarLogin()" class="pub-login-btn" style="margin-left:auto; padding:8px 18px; font-size:.85em;">🔑 Acceso Miembros</button>
+    </nav>
+    <div style="max-width:1100px; margin:0 auto; padding:20px;">
+
+        <div id="pub-inicio" class="pub-section active">
+            <div class="pub-hero">
+                <div style="font-size:3em; margin-bottom:12px;">🧪</div>
+                <h2>Bienvenido a La Botica Arcana</h2>
+                <p>El establecimiento de confianza para aventureros, alquimistas y viajeros.<br>Explora nuestro catálogo de pociones y elixires de la más alta calidad.</p>
+                <div class="pub-ornament">⚗️ · 🌿 · 🍄 · 🌿 · ⚗️</div>
+                <p style="color:#7a9f65; font-size:.95em;">Consulta nuestro catálogo o accede como miembro para disfrutar de ofertas exclusivas.</p>
+                <button onclick="mostrarLogin()" class="pub-login-btn">🔑 Acceso para Miembros</button>
+            </div>
+            <div id="pub-lista-anuncios-inicio"></div>
+        </div>
+
+        <div id="pub-precios" class="pub-section">
+            <h2 style="color:#7fc45e; border-bottom:2px solid #2a5020; padding-bottom:10px;">⚗️ Catálogo de Pociones y Elixires</h2>
+            <div class="search-bar" style="margin-bottom:20px;">
+                <input type="text" id="pub-search-item" onkeyup="renderPubMercado()" placeholder="🔍 Buscar poción..." style="flex:2; background:#0a1505; border-color:#2a5020; color:#d4e8c2;">
+                <select id="pub-filter-cat" onchange="renderPubMercado()" style="flex:1; background:#0a1505; border-color:#2a5020; color:#d4e8c2;">
+                    <option value="all">📁 Todas las Categorías</option>
+                    <option value="Arma">⚔️ Armas</option>
+                    <option value="Armadura">🛡️ Armaduras</option>
+                    <option value="Material">🪵 Materiales</option>
+                    <option value="Pocion">🧪 Pociones</option>
+                    <option value="Alimentos">🍎 Alimentos</option>
+                    <option value="Herramienta">⛏️ Herramientas</option>
+                    <option value="Arcano">🔮 Arcano</option>
+                    <option value="Mejoras y Consumibles">📦 Mejoras y Consumibles</option>
+                </select>
+            </div>
+            <div id="pub-lista-precios" class="grid-layout"></div>
+        </div>
+
+        <div id="pub-anuncios" class="pub-section">
+            <h2 style="color:#7fc45e; border-bottom:2px solid #2a5020; padding-bottom:10px;">📜 Noticias de La Botica</h2>
+            <div id="pub-lista-anuncios"></div>
+        </div>
+
+    </div>
+</div>
 
 <div id="pantalla-login">
     <div class="card" style="width: 400px; text-align: center; border: 3px solid #cc0000; padding: 40px;">
@@ -268,6 +343,7 @@
             <input type="text" id="reg-faccion" placeholder="Progenitor">
         </div>
         <button class="btn" onclick="manejarLogin()" style="margin-top:20px;">Entrar a la Cripta</button>
+        <button onclick="entrarSinSesion()" style="background:none;border:none;color:#555;font-size:.85em;cursor:pointer;margin-top:12px;text-decoration:underline;width:100%;">Entrar como visitante (Tienda de Pociones)</button>
     </div>
 </div>
 
@@ -539,6 +615,12 @@
                         <h3>📢 Nuevo Anuncio</h3>
                         <input type="text" id="a-tit" placeholder="Título">
                         <textarea id="a-msg" placeholder="Mensaje"></textarea>
+                        <label style="color:#aaa;font-size:.8em;display:block;margin-bottom:6px;">🎯 Destino del anuncio:</label>
+                        <select id="a-destino" style="margin-bottom:12px;">
+                            <option value="ambas">📢 Ambas webs (Vampiros + Botica)</option>
+                            <option value="vampiros">🩸 Solo Familia de Sangre (miembros)</option>
+                            <option value="publica">🧪 Solo La Botica Arcana (visitantes)</option>
+                        </select>
                         <button class="btn" style="background:#3498db; border-color:#2980b9;" onclick="crearAnuncio()">Publicar</button>
                     </div>
                 </div>
@@ -569,7 +651,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let usuarioActual = localStorage.getItem('gremio_sesion'); 
+    let usuarioActual = localStorage.getItem('gremio_sesion');
+    let modoVisitante = false;
     let ITEMS_CACHE = []; 
     let STOCK_CACHE = {}; 
     let TREASURY_BALANCE = 0;
@@ -1003,6 +1086,86 @@
         if(btn) btn.classList.add('activo');
     }
 
+
+    // ══════════════════════════════════════════════════════════
+    // VISTA PÚBLICA — LA BOTICA ARCANA
+    // ══════════════════════════════════════════════════════════
+    function entrarSinSesion() {
+        modoVisitante = true;
+        document.getElementById('pantalla-login').style.display = 'none';
+        document.getElementById('pantalla-publica').style.display = 'flex';
+        document.getElementById('pantalla-publica').style.flexDirection = 'column';
+        // Cargar datos públicos
+        db.ref('items').on('value', snap => {
+            ITEMS_CACHE = snap.val() ? Object.entries(snap.val()).map(([k,v]) => ({id:k,...v})) : [];
+            renderPubMercado();
+        });
+        db.ref('anuncios').on('value', snap => {
+            const todos = snap.val() ? Object.entries(snap.val()) : [];
+            renderPubAnuncios(todos);
+        });
+    }
+
+    function mostrarLogin() {
+        document.getElementById('pantalla-publica').style.display = 'none';
+        document.getElementById('pantalla-login').style.display = 'flex';
+    }
+
+    function pubNavegar(id) {
+        document.querySelectorAll('.pub-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('#pub-nav button').forEach(b => b.classList.remove('activo'));
+        document.getElementById(id).classList.add('active');
+        const btn = document.getElementById('pub-btn-' + id.replace('pub-',''));
+        if(btn) btn.classList.add('activo');
+    }
+
+    function renderPubMercado() {
+        const cont = document.getElementById('pub-lista-precios');
+        if(!cont) return;
+        const txt = (document.getElementById('pub-search-item')?.value || '').toLowerCase();
+        const cat = document.getElementById('pub-filter-cat')?.value || 'all';
+        let lista = ITEMS_CACHE.filter(i => {
+            const matchTxt = i.name && i.name.toLowerCase().includes(txt);
+            const matchCat = cat === 'all' || i.cat === cat;
+            return matchTxt && matchCat;
+        });
+        if(!lista.length) { cont.innerHTML = "<p style='color:#5a8a40;grid-column:1/-1;'>No se encontraron artículos.</p>"; return; }
+        cont.innerHTML = lista.map(i => {
+            const icon = getItemIcon ? getItemIcon(i.name) : '';
+            return `<div class="item-card" style="border-color:#2a5a1a;">
+                ${icon ? `<img src="${icon}" class="item-icon" alt="${i.name}" onerror="this.style.display='none'">` : `<div class="item-icon" style="display:flex;align-items:center;justify-content:center;font-size:1.8em;">🧪</div>`}
+                <div class="item-name" style="color:#b8e896;">${i.name}</div>
+                <div class="item-cat" style="color:#6a9a50;">${i.cat||''}</div>
+                <div class="item-prices" style="margin-top:8px;">
+                    <span style="color:#5aaa3c;">⬆ ${i.buy||0}C</span>
+                    <span style="color:#3a7a2c; margin-left:10px;">⬇ ${i.sell||0}C</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderPubAnuncios(entries) {
+        // Filtrar solo anuncios para 'publica' o 'ambas'
+        const publicos = entries.filter(([k,a]) => a && (!a.destino || a.destino === 'publica' || a.destino === 'ambas'));
+        const html = publicos.length
+            ? [...publicos].reverse().map(([k,a]) => `
+                <div class="pub-card pub-anuncio">
+                    <h3 style="color:#b8e896;margin-top:0;">📢 ${a.titulo}</h3>
+                    <p style="color:#9dbf85;">${a.msg}</p>
+                </div>`).join('')
+            : '<p style="color:#5a7a45;font-style:italic;">No hay noticias recientes.</p>';
+        const contMain = document.getElementById('pub-lista-anuncios');
+        const contInicio = document.getElementById('pub-lista-anuncios-inicio');
+        if(contMain) contMain.innerHTML = html;
+        // En inicio mostrar los 3 últimos
+        if(contInicio) {
+            const recientes = publicos.slice(-3).reverse();
+            contInicio.innerHTML = recientes.length
+                ? recientes.map(([k,a]) => `<div class="pub-card pub-anuncio"><h3 style="color:#b8e896;margin-top:0;">📢 ${a.titulo}</h3><p style="color:#9dbf85;">${a.msg}</p></div>`).join('')
+                : '';
+        }
+    }
+
     function manejarLogin() {
         const nom = document.getElementById('reg-nombre').value.trim();
         const cod = document.getElementById('reg-codigo').value.trim();
@@ -1173,7 +1336,12 @@
         el.innerHTML = `🩸 <b>${tit}</b> — Convertidos: <b>${act}/${max}</b> — Cupo restante: <b>${rst}</b>`;
         el.style.borderColor = rst > 0 ? '#2ecc71' : '#c0392b';
     }
-    if(usuarioActual) entrar();
+    if(usuarioActual) {
+        entrar();
+    } else {
+        // Sin sesión guardada → mostrar vista pública directamente
+        entrarSinSesion();
+    }
 
     // --- FUNCIONES STOCK ---
     function actualizarSelectStock(filterText = "") {
@@ -2265,15 +2433,30 @@
     // --- SISTEMA ANUNCIOS ---
     function renderAnuncios(lista) {
         const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
-        document.getElementById('lista-anuncios').innerHTML = entries.reverse().map(([key, a]) => {
+        // Filtrar: mostrar los de destino 'vampiros' o 'ambas' (o sin destino = legado)
+        const filtrados = entries.filter(([k,a]) => a && (!a.destino || a.destino === 'vampiros' || a.destino === 'ambas'));
+        document.getElementById('lista-anuncios').innerHTML = [...filtrados].reverse().map(([key, a]) => {
              if(!a) return ""; if(typeof a!=='object') a=key;
+             const destinoBadge = a.destino === 'publica' ? '🧪' : a.destino === 'ambas' ? '📢' : '🩸';
              return `<div class="card" style="border-left: 5px solid #3498db; position:relative;">
-                <h3 style="color:#fff;">📢 ${a.titulo}</h3><p style="color:#ccc;">${a.msg}</p>
+                <h3 style="color:#fff;">${destinoBadge} ${a.titulo}</h3><p style="color:#ccc;">${a.msg}</p>
                 ${isAdmin(usuarioActual) ? `<button onclick="borrarAnuncio('${key}')" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button>` : ''}
             </div>`;
         }).join('');
     }
-    function crearAnuncio() { const a={titulo:document.getElementById('a-tit').value, msg:document.getElementById('a-msg').value}; if(a.titulo){db.ref('anuncios').push(a); alert("Publicado");} }
+    function crearAnuncio() {
+        const a = {
+            titulo:  document.getElementById('a-tit').value,
+            msg:     document.getElementById('a-msg').value,
+            destino: document.getElementById('a-destino').value
+        };
+        if(a.titulo) {
+            db.ref('anuncios').push(a);
+            alert('📢 Anuncio publicado en: ' + (a.destino==='ambas'?'Ambas webs':a.destino==='publica'?'La Botica Arcana':'Familia de Sangre'));
+            document.getElementById('a-tit').value = '';
+            document.getElementById('a-msg').value = '';
+        }
+    }
     function borrarAnuncio(key) { if(confirm("¿Borrar?")) db.ref('anuncios/'+key).remove(); }
 
 
