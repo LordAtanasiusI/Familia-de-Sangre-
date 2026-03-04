@@ -280,6 +280,28 @@
         .pub-perfil-foto { width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #8b0000; margin-bottom:12px; }
         .pub-perfil-cerrar { position:absolute; top:12px; right:14px; background:none; border:none; color:#888; font-size:1.4em; cursor:pointer; }
         .pub-perfil-cerrar:hover { color:#fff; }
+
+        /* ── MISIONES ENTRE SEÑOR Y SÚBDITO ── */
+        #modal-mis-señor { display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,.88); z-index:4000; justify-content:center; align-items:center; overflow-y:auto; }
+        .mis-modal-box { background:linear-gradient(135deg,#120004,#070000); border:2px solid #8b0000;
+            border-radius:10px; padding:28px; max-width:560px; width:92%; position:relative; max-height:90vh; overflow-y:auto; }
+        .mis-tab { display:flex; border-bottom:1px solid #3a0000; margin-bottom:18px; }
+        .mis-tab button { background:none; border:none; color:#888; padding:10px 18px; cursor:pointer;
+            font-family:Georgia,serif; font-size:.9em; border-bottom:3px solid transparent; }
+        .mis-tab button.activo { color:#cc0000; border-bottom-color:#cc0000; }
+        .mis-panel { display:none; } .mis-panel.activo { display:block; }
+        .mis-item { background:#0d0000; border:1px solid #2a0000; border-radius:5px; padding:12px;
+            margin-bottom:10px; position:relative; }
+        .mis-item h4 { margin:0 0 4px; color:#e74c3c; font-size:.95em; }
+        .mis-item p  { margin:2px 0; color:#aaa; font-size:.82em; }
+        .mis-dif { display:inline-block; font-size:.72em; padding:2px 8px; border-radius:3px; margin-bottom:4px; }
+        .mis-dif-facil   { background:#1a3a1a; color:#2ecc71; }
+        .mis-dif-media   { background:#2a2a00; color:#f1c40f; }
+        .mis-dif-dificil { background:#3a0000; color:#e74c3c; }
+        .mis-dif-epica   { background:#1a0033; color:#9b59b6; }
+        .mis-estado-activa { color:#2ecc71; font-size:.78em; font-weight:bold; }
+        .mis-estado-libre  { color:#555;    font-size:.78em; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -642,6 +664,43 @@
             </div>
         </section>
 
+    <!-- MODAL MISIONES SEÑOR→SÚBDITO -->
+    <div id="modal-mis-señor">
+        <div class="mis-modal-box">
+            <button onclick="cerrarMisModal()" style="position:absolute;top:10px;right:14px;background:none;border:none;color:#888;font-size:1.4em;cursor:pointer;">✖</button>
+            <h3 style="margin:0 0 4px;color:#e74c3c;">📜 Gestión de Misiones</h3>
+            <p id="mis-modal-subtitulo" style="color:#777;font-size:.82em;margin:0 0 14px;"></p>
+            <div class="mis-tab">
+                <button id="mis-tab-asignar" class="activo" onclick="misCambiarTab('asignar')">⚔️ Asignar</button>
+                <button id="mis-tab-crear"             onclick="misCambiarTab('crear')">➕ Crear</button>
+                <button id="mis-tab-historial"         onclick="misCambiarTab('historial')">📋 Historial</button>
+            </div>
+            <!-- PANEL ASIGNAR -->
+            <div id="mis-panel-asignar" class="mis-panel activo">
+                <p style="color:#aaa;font-size:.85em;margin-bottom:10px;">Misiones disponibles en tu linaje:</p>
+                <div id="mis-lista-asignar"></div>
+            </div>
+            <!-- PANEL CREAR -->
+            <div id="mis-panel-crear" class="mis-panel">
+                <input type="text"     id="mis-nuevo-titulo"    placeholder="Título de la misión" style="margin-bottom:8px;">
+                <textarea              id="mis-nuevo-obj"       placeholder="Objetivos (qué debe hacer)" style="height:70px;margin-bottom:8px;"></textarea>
+                <textarea              id="mis-nuevo-desc"      placeholder="Descripción / contexto" style="height:60px;margin-bottom:8px;"></textarea>
+                <input type="text"     id="mis-nuevo-recompensa" placeholder="Recompensa (PA, ítems, etc.)" style="margin-bottom:8px;">
+                <select                id="mis-nuevo-dif"       style="margin-bottom:12px;">
+                    <option value="facil">🟢 Fácil</option>
+                    <option value="media">🟡 Media</option>
+                    <option value="dificil">🔴 Difícil</option>
+                    <option value="epica">🟣 Épica</option>
+                </select>
+                <button class="btn" onclick="misCrearMision()" style="background:#8b0000;border-color:#5a0000;">📜 Crear Misión</button>
+            </div>
+            <!-- PANEL HISTORIAL -->
+            <div id="mis-panel-historial" class="mis-panel">
+                <div id="mis-lista-historial"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PERFIL PÚBLICO -->
     <div id="modal-perfil-publico">
         <div class="pub-perfil-card">
@@ -681,7 +740,8 @@
     let USUARIOS_CACHE = {}; // Unificación de usuarios y expedientes
     let MISIONES_CACHE = {};
     let selectedAdventurerKey = null;
-    let misionEditandoId = null; 
+    let misionEditandoId = null;
+    let misSubditoKey = null; // Súbdito seleccionado en modal misiones señor
 
 // Editado por Willy
 
@@ -2023,13 +2083,14 @@
         const subdHtml = subditos.length > 0
             ? subditos.map(s => {
                 const rs = getVisualRango(s);
-                return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a0000;cursor:pointer;" onclick="verPerfilPublico('${s.nombre}')">
-                    <img src="${s.foto||'https://via.placeholder.com/36/050000/880000'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;">
-                    <div style="flex:1;">
+                return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #2a0000;">
+                    <img src="${s.foto||'https://via.placeholder.com/36/050000/880000'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;cursor:pointer;" onclick="verPerfilPublico('${s.nombre}')">
+                    <div style="flex:1;cursor:pointer;" onclick="verPerfilPublico('${s.nombre}')">
                         <div style="color:#fff;font-weight:bold;font-size:.9em;">${s.nombre}</div>
                         <div style="font-size:.75em;color:#aaa;">${s.raza||'?'} · ${s.faccion||'?'}</div>
                     </div>
-                    <span class="rango-badge ${rs.c}" style="font-size:.65em;">${rs.n}</span>
+                    <span class="rango-badge ${rs.c}" style="font-size:.65em;margin-right:4px;">${rs.n}</span>
+                    <button onclick="abrirMisModal('${s.nombre}')" title="Gestionar misiones" style="background:#5a0000;border:none;color:#ff8080;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:.8em;">📜</button>
                 </div>`;
               }).join('')
             : `<p style="color:#555;font-style:italic;font-size:.9em;">Aún no has convertido a ningún súbdito.</p>`;
@@ -2098,7 +2159,7 @@
                     </div>
                     <div class="card" style="border-left:5px solid ${u.misionActiva!=='Ninguna'?'#2ecc71':'#7f8c8d'};">
                         <h3>Estado de Sangre</h3>
-                        ${u.misionActiva!=='Ninguna'?`<p style="color:#2ecc71;font-weight:bold;font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva?u.dificActiva.toUpperCase():''}</span></p>`:`<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
+                        ${u.misionActiva!=='Ninguna'?`<p style="color:#2ecc71;font-weight:bold;font-size:1.3em;">${u.misionActiva}</p><p style="font-size:.85em;">Dificultad: <span style="color:#fff;">${u.dificActiva?u.dificActiva.toUpperCase():''}</span>${u.misionActual&&u.misionActual.asignadaPor?` · Asignada por: <span style="color:#cc8080;">${u.misionActual.asignadaPor}</span>`:''}</p>${u.misionActual&&u.misionActual.premio?`<p style="font-size:.82em;color:#f39c12;">🏆 ${u.misionActual.premio}</p>`:''}`:`<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
                     </div>
                     ${tieneTitulo || subditos.length > 0 ? `
                     <div class="card" style="border-left:5px solid #8b0000;">
@@ -2118,20 +2179,26 @@
         const colorBorde = esMaestro ? '#cc0000' : '#7700cc';
 
         // Reutilizar renderPerfil pasando el objeto u, pero primero añadimos badge admin al nombre
-        const subditos = Object.values(data).filter(s => s.convertidoPor === nombre);
+        // Para el Monarca de Sangre incluir también los registrados con "PROGENITOR"
+        const esMaestroFiltro = MAESTROS.includes(nombre);
+        const subditos = Object.values(data).filter(s =>
+            s.convertidoPor === nombre ||
+            (esMaestroFiltro && s.convertidoPor === 'PROGENITOR')
+        );
         const maxSub = Infinity;
         const cupoTexto = `${subditos.length}`;
 
         const subdHtml = subditos.length > 0
             ? subditos.map(s => {
                 const rs = getVisualRango(s);
-                return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a0000;">
-                    <img src="${s.foto||'https://via.placeholder.com/36'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;" onclick="verPerfilPublico('${s.nombre}')" style="cursor:pointer;">
+                return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #2a0000;">
+                    <img src="${s.foto||'https://via.placeholder.com/36'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;cursor:pointer;" onclick="verPerfilPublico('${s.nombre}')">
                     <div style="flex:1;cursor:pointer;" onclick="verPerfilPublico('${s.nombre}')">
                         <div style="color:#fff;font-weight:bold;font-size:.9em;">${s.nombre}</div>
                         <div style="font-size:.75em;color:#aaa;">${s.raza||'?'} · ${s.faccion||'?'}</div>
                     </div>
-                    <span class="rango-badge ${rs.c}" style="font-size:.65em;">${rs.n}</span>
+                    <span class="rango-badge ${rs.c}" style="font-size:.65em;margin-right:4px;">${rs.n}</span>
+                    <button onclick="abrirMisModal('${s.nombre}')" title="Gestionar misiones" style="background:#5a0000;border:none;color:#ff8080;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:.8em;">📜</button>
                 </div>`;
               }).join('')
             : `<p style="color:#555;font-style:italic;font-size:.9em;">Sin súbditos registrados.</p>`;
@@ -2350,7 +2417,11 @@
 
         // Redefinir buildNodo para que Piiman incluya también a los huérfanos como hijos
         function buildNodoFinal(u, depth) {
-            const r    = getVisualRango(u);
+            // Rango por puntos (siempre), título nobiliario por separado
+            const rPuntos  = MAESTROS.includes(u.nombre)
+                ? { n: 'Monarca de Sangre (Progenitor)', c: 'bg-progenitor' }
+                : getRango(u.puntos || 0);
+            const tituloTag  = getExtraTag(u); // badge del título nobiliario si tiene
             const foto = u.foto || 'https://via.placeholder.com/58/050000/880000?text=%F0%9F%A9%B8';
             const esProgenitor = MAESTROS.includes(u.nombre);
             const hijosDirectos = todos.filter(h => h.convertidoPor === u.nombre && h.nombre !== PROGENITOR_NOMBRE);
@@ -2358,7 +2429,6 @@
             const hijos         = [...new Map([...hijosDirectos, ...hijosExtra].map(h => [h.nombre, h])).values()];
             const max           = getMaxSubditos(u);
             const numH          = hijos.length;
-            const tituloHtml    = getExtraTag(u) ? `<div style="margin-top:4px;">${getExtraTag(u)}</div>` : '';
             const cupoHtml      = isFinite(max)
                 ? `<div class="arbol-cupo">${numH}/${max} súbditos</div>`
                 : `<div class="arbol-cupo">∞ súbditos</div>`;
@@ -2370,8 +2440,8 @@
                     <div class="arbol-card ${esProgenitor?'es-progenitor':''}" onclick="verPerfilPublico('${u.nombre}')" style="cursor:pointer;">
                         <img src="${foto}" class="arbol-foto" alt="${u.nombre}">
                         <div class="arbol-nombre">${u.nombre}</div>
-                        ${tituloHtml}
-                        <div class="arbol-rango"><span class="rango-badge ${r.c}" style="font-size:.67em;">${r.n}</span></div>
+                        ${tituloTag ? `<div style="margin-top:3px;">${tituloTag}</div>` : ''}
+                        <div class="arbol-rango"><span class="rango-badge ${rPuntos.c}" style="font-size:.67em;">${rPuntos.n}</span></div>
                         <div class="arbol-pa">${getPADisplay(u.puntos||0)}</div>
                         ${cupoHtml}
                     </div>
@@ -2572,6 +2642,146 @@
         return iconMap[nombre] || null;
     }
 
+
+
+    // ══════════════════════════════════════════════════════════
+    // SISTEMA DE MISIONES SEÑOR → SÚBDITO
+    // ══════════════════════════════════════════════════════════
+    function abrirMisModal(subditoKey) {
+        misSubditoKey = subditoKey;
+        const sub = USUARIOS_CACHE[subditoKey];
+        if (!sub) return;
+        document.getElementById('mis-modal-subtitulo').textContent =
+            `Súbdito: ${sub.nombre} · ${sub.raza||'?'} · ${sub.faccion||'?'}`;
+        misCambiarTab('asignar');
+        misRenderAsignar(sub);
+        misRenderHistorial(sub);
+        document.getElementById('modal-mis-señor').style.display = 'flex';
+    }
+    function cerrarMisModal() {
+        document.getElementById('modal-mis-señor').style.display = 'none';
+        misSubditoKey = null;
+    }
+    function misCambiarTab(tab) {
+        ['asignar','crear','historial'].forEach(t => {
+            document.getElementById('mis-tab-'+t).classList.toggle('activo', t===tab);
+            document.getElementById('mis-panel-'+t).classList.toggle('activo', t===tab);
+        });
+        if (tab === 'historial' && misSubditoKey) {
+            misRenderHistorial(USUARIOS_CACHE[misSubditoKey]);
+        }
+    }
+
+    function misRenderAsignar(sub) {
+        const cont = document.getElementById('mis-lista-asignar');
+        // Misiones creadas por el usuario actual (señor)
+        db.ref('misiones_senor').orderByChild('creadaPor').equalTo(usuarioActual).once('value', snap => {
+            const todas = snap.val() ? Object.entries(snap.val()) : [];
+            if (!todas.length) {
+                cont.innerHTML = '<p style="color:#555;font-style:italic;font-size:.9em;">No tienes misiones creadas. Ve a ➕ Crear.</p>';
+                return;
+            }
+            const misionActual = sub.misionActual;
+            cont.innerHTML = todas.map(([mId, m]) => {
+                const difClass = 'mis-dif-' + m.dificultad;
+                const yaAsignada = misionActual && misionActual.id === mId;
+                const completadas = sub.historialMisiones ? Object.values(sub.historialMisiones) : [];
+                const yaHecha = completadas.includes(m.titulo);
+                return `<div class="mis-item">
+                    <h4>${m.titulo} ${yaAsignada ? '<span class="mis-estado-activa">⚡ ACTIVA</span>' : ''}</h4>
+                    <span class="mis-dif ${difClass}">${m.dificultad.toUpperCase()}</span>
+                    ${m.objetivos ? `<p>🎯 ${m.objetivos}</p>` : ''}
+                    ${m.descripcion ? `<p>📖 ${m.descripcion}</p>` : ''}
+                    ${m.recompensa ? `<p>🏆 ${m.recompensa}</p>` : ''}
+                    ${yaHecha ? '<p style="color:#f39c12;font-size:.78em;">⚠️ Ya completada anteriormente</p>' : ''}
+                    <div style="display:flex;gap:6px;margin-top:8px;">
+                        ${!yaAsignada
+                            ? `<button onclick="misAsignar('${mId}')" style="background:#8b0000;border:none;color:#fff;padding:5px 12px;border-radius:3px;cursor:pointer;font-size:.82em;">⚔️ Asignar</button>`
+                            : `<button onclick="misCompletar()" style="background:#145221;border:none;color:#2ecc71;padding:5px 12px;border-radius:3px;cursor:pointer;font-size:.82em;">✅ Completar</button>
+                               <button onclick="misRevocar()" style="background:#3a0000;border:none;color:#e74c3c;padding:5px 12px;border-radius:3px;cursor:pointer;font-size:.82em;">✖ Revocar</button>`}
+                        <button onclick="misBorrarMision('${mId}')" style="background:none;border:1px solid #3a0000;color:#777;padding:5px 10px;border-radius:3px;cursor:pointer;font-size:.78em;">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('');
+        });
+    }
+
+    function misAsignar(misionId) {
+        const sub = USUARIOS_CACHE[misSubditoKey];
+        if (!sub) return;
+        if (sub.misionActual) return alert('Este súbdito ya tiene una misión activa. Complétala o revócala primero.');
+        db.ref('misiones_senor/'+misionId).once('value', snap => {
+            const m = snap.val();
+            if (!m) return;
+            db.ref('usuarios/'+misSubditoKey).update({
+                misionActual: { id: misionId, nombre: m.titulo, dificultad: m.dificultad, premio: m.recompensa, asignadaPor: usuarioActual },
+                misionActiva: m.titulo,
+                dificActiva:  m.dificultad
+            });
+            alert(`⚔️ Misión "${m.titulo}" asignada a ${sub.nombre}.`);
+            cerrarMisModal();
+        });
+    }
+
+    function misCompletar() {
+        const sub = USUARIOS_CACHE[misSubditoKey];
+        if (!sub || !sub.misionActual) return;
+        if (!confirm(`¿Confirmar que ${sub.nombre} ha completado "${sub.misionActual.nombre}"?`)) return;
+        const rw = sub.misionActual.dificultad==='facil'?15 : sub.misionActual.dificultad==='media'?35 : sub.misionActual.dificultad==='dificil'?80 : 200;
+        const nuevosPuntos = (sub.puntos||0) + rw;
+        db.ref('usuarios/'+misSubditoKey+'/historialMisiones').push(sub.misionActual.nombre);
+        db.ref('usuarios/'+misSubditoKey).update({ misionActual: null, misionActiva: 'Ninguna', dificActiva: '', puntos: nuevosPuntos });
+        alert(`✅ ¡Completada! ${sub.nombre} gana +${(rw/10).toFixed(1)}% PA.`);
+        cerrarMisModal();
+    }
+
+    function misRevocar() {
+        const sub = USUARIOS_CACHE[misSubditoKey];
+        if (!sub || !sub.misionActual) return;
+        if (!confirm(`¿Revocar la misión "${sub.misionActual.nombre}" de ${sub.nombre}?`)) return;
+        db.ref('usuarios/'+misSubditoKey).update({ misionActual: null, misionActiva: 'Ninguna', dificActiva: '' });
+        alert('Misión revocada.');
+        cerrarMisModal();
+    }
+
+    function misCrearMision() {
+        const titulo     = document.getElementById('mis-nuevo-titulo').value.trim();
+        const objetivos  = document.getElementById('mis-nuevo-obj').value.trim();
+        const descripcion= document.getElementById('mis-nuevo-desc').value.trim();
+        const recompensa = document.getElementById('mis-nuevo-recompensa').value.trim();
+        const dificultad = document.getElementById('mis-nuevo-dif').value;
+        if (!titulo) return alert('El título es obligatorio.');
+        db.ref('misiones_senor').push({ titulo, objetivos, descripcion, recompensa, dificultad, creadaPor: usuarioActual });
+        alert(`📜 Misión "${titulo}" creada.`);
+        document.getElementById('mis-nuevo-titulo').value = '';
+        document.getElementById('mis-nuevo-obj').value = '';
+        document.getElementById('mis-nuevo-desc').value = '';
+        document.getElementById('mis-nuevo-recompensa').value = '';
+        misCambiarTab('asignar');
+        if (misSubditoKey) misRenderAsignar(USUARIOS_CACHE[misSubditoKey]);
+    }
+
+    function misBorrarMision(misionId) {
+        if (!confirm('¿Eliminar esta misión de tu catálogo?')) return;
+        db.ref('misiones_senor/'+misionId).remove();
+        if (misSubditoKey) misRenderAsignar(USUARIOS_CACHE[misSubditoKey]);
+    }
+
+    function misRenderHistorial(sub) {
+        const cont = document.getElementById('mis-lista-historial');
+        if (!cont) return;
+        const hist = sub.historialMisiones ? Object.values(sub.historialMisiones) : [];
+        if (!hist.length) {
+            cont.innerHTML = '<p style="color:#555;font-style:italic;font-size:.9em;">Sin misiones completadas.</p>';
+            return;
+        }
+        cont.innerHTML = [...hist].reverse().map((nombre, i) =>
+            `<div class="mis-item" style="padding:8px 12px;">
+                <span style="color:#2ecc71;margin-right:6px;">✅</span>
+                <span style="color:#ccc;font-size:.9em;">${nombre}</span>
+            </div>`
+        ).join('');
+    }
 
     // ── VER PERFIL PÚBLICO ──────────────────────────────────────────
     function verPerfilPublico(nombre) {
