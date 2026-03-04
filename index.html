@@ -191,6 +191,7 @@
         .bg-baronsang    { background:#180008; color:#ffaacc; border:1px solid #770033; }
         .bg-caballerosang{ background:#140005; color:#ffccdd; border:1px solid #550022; }
         .bg-escuderosang { background:#100003; color:#ffddee; border:1px solid #330011; }
+        .bg-ministrosang { background:#0a0020; color:#cc99ff; border:2px solid #7700cc; text-shadow:0 0 6px #9900ff; }
         /* ROLES (heredados) */
         .badge-lider   { background:#0d2b36; color:#4dd0e1; border:1px solid #4dd0e1; margin-left:8px; vertical-align:text-bottom; }
         .badge-oficial { background:#3e0d0d; color:#e74c3c; border:1px solid #e74c3c; margin-left:8px; vertical-align:text-bottom; }
@@ -281,7 +282,6 @@
         <button onclick="navegar('perfil')" id="btn-perfil">Mi Sangre</button>
         <button onclick="navegar('biblioteca')" id="btn-biblioteca" style="display:none; color:#e00000; border-color:#cc0000;">📚 Biblioteca</button>
         <button onclick="navegar('misiones-gremio')" id="btn-misiones-gremio" style="display:none; color:#ae80d6; border-color:#8e44ad;">M. Gremio</button>
-        <button onclick="navegar('torneos')" id="btn-torneos">Torneos</button>
         <button onclick="navegar('precios')" id="btn-precios">Precios</button>
         <button onclick="navegar('anuncios')" id="btn-anuncios">Edictos</button>
         <button onclick="navegar('ranking')" id="btn-ranking">🩸 Genealogía</button>
@@ -302,8 +302,8 @@
                     <p style="font-size: 1.5em; color: #fff; font-weight: 300;">Desde las sombras eternas, La Familia domina la noche.</p>
                 </div>
                 <div style="padding: 20px 40px 60px 40px;">
-                    <div class="ornament">⚜️ • ⚜️ • ⚜️</div>
-                    <p style="font-size: 1.2em; color:#ccc; margin-bottom: 40px;">El tablón está lleno de oportunidades. La gloria espera a los valientes.</p>
+                    <div class="ornament">🩸 · 🕸️ · 🦇 · 🕸️ · 🩸</div>
+                    <p style="font-size: 1.2em; color:#ccc; margin-bottom: 40px;">Las sombras susurran nuevos edictos. La sangre llama a sus hijos.</p>
                     <div id="lista-anuncios"></div>
                 </div>
             </div>
@@ -330,7 +330,6 @@
             <div id="lista-misiones-gremio" class="grid-layout"></div>
         </section>
 
-        <section id="sec-torneos"><h2 style="color:#e74c3c; border-color:#c0392b;">🩸 Arena de Combate</h2><div id="lista-torneos" class="grid-layout"></div></section>
 
         <section id="sec-precios">
             <h2>💰 Mercado Oficial</h2>
@@ -470,6 +469,7 @@
                     <label style="color:#aaa; font-size:0.8em; margin-top:10px; display:block;">🏰 Título Nobiliario:</label>
                     <select id="edit-av-titulo">
                         <option value="">— Sin título —</option>
+                        <option value="Ministro de Sangre">👁️ Ministro de Sangre (máx. 15 súbditos — permisos admin)</option>
                         <option value="Duque de Sangre">🏰 Duque de Sangre (máx. 10 súbditos)</option>
                         <option value="Marqués Sangriento">⚜️ Marqués Sangriento (máx. 8 súbditos)</option>
                         <option value="Conde Sangriento">🗡️ Conde Sangriento (máx. 6 súbditos)</option>
@@ -527,20 +527,6 @@
                 </div>
 
                 <div style="flex:1; min-width:300px;">
-                    <div class="card" style="border: 2px solid #c0392b;">
-                        <h3 style="color:#e74c3c;">⚔️ Organizar / Editar Torneo</h3>
-                        <input type="text" id="t-nom" placeholder="Nombre">
-                        <input type="text" id="t-fac" placeholder="Facción">
-                        <input type="text" id="t-lug" placeholder="Lugar">
-                        <label style="color:#aaa; font-size:0.8em;">Portada (Opcional si editas):</label>
-                        <input type="file" id="t-foto-file" accept="image/*">
-                        <textarea id="t-desc" placeholder="Descripción"></textarea>
-                        <textarea id="t-prem" placeholder="Premios (Lista)" style="height:80px; white-space:pre-wrap;"></textarea>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn" id="btn-publicar-torneo" style="background:#c0392b; border-color:#922b21;" onclick="crearTorneo()">Publicar Torneo</button>
-                             <button class="btn" onclick="cancelarEdicionTorneo()" style="background:#e74c3c; width:auto; display:none;" id="btn-cancelar-edicion-torneo">Cancelar</button>
-                        </div>
-                    </div>
                     <div class="card" style="border: 2px solid #cc0000;">
                         <h3 style="color:#cc0000;">📦 Gestión de Precios</h3>
                         <input type="text" id="it-nom" placeholder="Nombre del Objeto">
@@ -607,8 +593,6 @@
     let MISIONES_CACHE = {};
     let selectedAdventurerKey = null;
     let misionEditandoId = null; 
-    let torneoEditandoId = null;
-    let torneoFotoActual = "";
 
 // Editado por Willy
 
@@ -934,13 +918,14 @@
         { user: "ADMIN_2", pass: "9928125" },
         { user: "ADMIN_3", pass: "7741039" }
     ];
-    // Helper para saber si un usuario es admin
-    const isAdmin = (name) => ADMINS.some(a => a.user === name);
+    // Helper para saber si un usuario es admin (incluye Progenitor/Maestros)
+    function isAdmin(name) { return ADMINS.some(a => a.user === name) || (typeof MAESTROS !== "undefined" && MAESTROS.includes(name)); }
 
     const MAESTROS = ["Piiman"];
 
     // ── JERARQUÍA NOBILIARIA ─────────────────────────────────────────
     const TITULOS = [
+        { n:"Ministro de Sangre",   badge:"👁️", clase:"bg-ministrosang", maxSub:15, esAdmin:true },
         { n:"Duque de Sangre",      badge:"🏰", clase:"bg-duquesang",    maxSub:10 },
         { n:"Marqués Sangriento",   badge:"⚜️", clase:"bg-marquessang",  maxSub:8  },
         { n:"Conde Sangriento",     badge:"🗡️", clase:"bg-condesang",    maxSub:6  },
@@ -1081,13 +1066,26 @@
             const data = snap.val() || {};
             USUARIOS_CACHE = data;
 
+            // Verificar si es Ministro de Sangre y darle permisos admin
+            const yoData = data[usuarioActual];
+            const esMinistroSangre = yoData && (yoData.titulo === "Ministro de Sangre" || yoData.etiqueta === "Ministro de Sangre");
+            if(esMinistroSangre && !isAdmin(usuarioActual)) {
+                document.getElementById('btn-admin').style.display='block';
+                document.getElementById('btn-cuentas').style.display='block';
+                document.getElementById('btn-registro').style.display='block';
+                document.getElementById('btn-seguimiento').style.display='block';
+                document.getElementById('btn-biblioteca').style.display='block';
+            }
+
             // Renderizar Perfil o Admin
             if(isAdmin(usuarioActual)) {
-                renderAdmin(data); 
-                document.getElementById('render-perfil').innerHTML = "<div class='card' style='text-align:center'><h3>🛡️ Perfil de Administrador</h3><p>El maestro del gremio no tiene ficha de aventurero.</p></div>";
+                renderAdmin(data);
+                renderPerfilAdmin(usuarioActual, data);
+            } else if(esMinistroSangre) {
+                renderAdmin(data);
+                renderPerfilAdmin(usuarioActual, data);
             } else {
                 if(data[usuarioActual]) {
-                    // Check if user has special role to see Guild Missions
                     const myRole = data[usuarioActual].titulo || data[usuarioActual].etiqueta || "";
                     if(ROLES_ESPECIALES.includes(myRole)) {
                         document.getElementById('btn-misiones-gremio').style.display = "block";
@@ -1095,9 +1093,8 @@
                     renderPerfil(data[usuarioActual]);
                 }
             }
-            if(isAdmin(usuarioActual)) {
-                // Admins always see guild missions
-                 document.getElementById('btn-misiones-gremio').style.display = "block";
+            if(isAdmin(usuarioActual) || esMinistroSangre) {
+                document.getElementById('btn-misiones-gremio').style.display = "block";
             }
 
             // Renderizar Ranking (ahora usa la misma fuente unificada)
@@ -1120,7 +1117,6 @@
         });
 
         db.ref('anuncios').on('value', snap => renderAnuncios(snap.val() ? Object.values(snap.val()) : []));
-        db.ref('torneos').on('value', snap => renderTorneos(snap.val() ? Object.entries(snap.val()) : []));
         db.ref('items').on('value', snap => {
             const items = snap.val() ? Object.entries(snap.val()) : [];
             ITEMS_CACHE = items.map(([key, val]) => ({id: key, ...val}));
@@ -1847,6 +1843,26 @@
     function renderPerfil(u) {
         if(!u) return;
         const r = getVisualRango(u);
+        // Lista de súbditos del usuario actual
+        const subditos = Object.values(USUARIOS_CACHE).filter(s => s.convertidoPor === u.nombre);
+        const maxSub = getMaxSubditos(u);
+        const subdHtml = subditos.length > 0
+            ? subditos.map(s => {
+                const rs = getVisualRango(s);
+                return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a0000;">
+                    <img src="${s.foto||'https://via.placeholder.com/36/050000/880000'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;">
+                    <div style="flex:1;">
+                        <div style="color:#fff;font-weight:bold;font-size:.9em;">${s.nombre}</div>
+                        <div style="font-size:.75em;color:#aaa;">${s.raza||'?'} · ${s.faccion||'?'}</div>
+                    </div>
+                    <span class="rango-badge ${rs.c}" style="font-size:.65em;">${rs.n}</span>
+                </div>`;
+              }).join('')
+            : `<p style="color:#555;font-style:italic;font-size:.9em;">Aún no has convertido a ningún súbdito.</p>`;
+        const cupoTexto = isFinite(maxSub)
+            ? `${subditos.length}/${maxSub} súbditos`
+            : `${subditos.length} súbditos`;
+
         document.getElementById('render-perfil').innerHTML = `
             <div style="display:flex; flex-wrap:wrap; gap:30px;">
                 <div class="card" style="flex:1; text-align:center; min-width:300px;">
@@ -1875,8 +1891,65 @@
                         <h3>Estado de Sangre</h3>
                         ${u.misionActiva !== 'Ninguna' ? `<p style="color:#2ecc71; font-weight:bold; font-size:1.4em;">${u.misionActiva}</p><p>Dificultad: <span style="color:#fff;">${u.dificActiva.toUpperCase()}</span></p>` : `<p style="color:#7f8c8d;">Sin asignación actual.</p>`}
                     </div>
+                    ${maxSub > 0 || subditos.length > 0 ? `
+                    <div class="card" style="border-left:5px solid #8b0000;">
+                        <h3 style="margin-bottom:8px;">🩸 Linaje Convertido <span style="font-size:.75em;color:#888;">(${cupoTexto})</span></h3>
+                        <div style="max-height:250px;overflow-y:auto;">${subdHtml}</div>
+                    </div>` : ''}
                 </div>
             </div>`;
+    }
+
+    // Perfil especial para admins y Ministros de Sangre
+    function renderPerfilAdmin(nombre, data) {
+        const u = data[nombre]; // Puede ser null si es admin puro sin cuenta
+        const subditos = u ? Object.values(data).filter(s => s.convertidoPor === nombre) : [];
+        const fotoSrc = u && u.foto ? u.foto : 'https://via.placeholder.com/150/050000/cc0000?text=🩸';
+        const titulo = u ? (getExtraTag(u) || '') : '';
+        const subdHtml = subditos.length > 0
+            ? subditos.map(s => {
+                const rs = getVisualRango(s);
+                return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #2a0000;">
+                    <img src="${s.foto||'https://via.placeholder.com/36/050000/880000'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #8b0000;">
+                    <div style="flex:1;"><div style="color:#fff;font-weight:bold;font-size:.9em;">${s.nombre}</div><div style="font-size:.75em;color:#aaa;">${s.raza||'?'} · ${s.faccion||'?'}</div></div>
+                    <span class="rango-badge ${rs.c}" style="font-size:.65em;">${rs.n}</span>
+                </div>`;
+              }).join('')
+            : `<p style="color:#555;font-style:italic;font-size:.9em;">Sin súbditos registrados.</p>`;
+        const esMaestro = MAESTROS.includes(nombre);
+        document.getElementById('render-perfil').innerHTML = `
+            <div style="display:flex;flex-wrap:wrap;gap:30px;">
+                <div class="card" style="flex:1;text-align:center;min-width:280px;border:2px solid ${esMaestro?'#cc0000':'#7700cc'};">
+                    <img src="${fotoSrc}" class="foto-perfil" style="border-color:${esMaestro?'#cc0000':'#9900ff'};">
+                    ${u ? `<input type="file" id="up-foto" style="display:none" onchange="subirFotoAdmin(this)">
+                    <button class="btn" style="margin-top:15px;font-size:.8em;width:auto;" onclick="document.getElementById('up-foto').click()">Subir Retrato</button>` : ''}
+                    <h2 style="border:none;margin:15px 0 5px;color:#fff;">${nombre}</h2>
+                    ${titulo}
+                    <div style="margin-top:12px;">
+                        <span class="rango-badge ${esMaestro?'bg-progenitor':'bg-ministrosang'}" style="font-size:1.1em;">
+                            ${esMaestro?'🩸 Monarca de Sangre':'👁️ Ministro de Sangre'}
+                        </span>
+                    </div>
+                    <p style="color:#666;font-size:.8em;margin-top:12px;">Acceso completo a la Cripta.</p>
+                </div>
+                <div style="flex:1;min-width:280px;">
+                    <div class="card" style="border-left:5px solid ${esMaestro?'#cc0000':'#7700cc'};">
+                        <h3>🩸 Súbditos del Linaje <span style="font-size:.75em;color:#888;">(${subditos.length})</span></h3>
+                        <div style="max-height:320px;overflow-y:auto;">${subdHtml}</div>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function subirFotoAdmin(input) {
+        if(input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                // Guardar en el nodo del usuario si existe, sino crear entrada mínima
+                db.ref('usuarios/'+usuarioActual).update({ foto: e.target.result });
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function updateProfile() {
@@ -2115,60 +2188,7 @@
     function crearAnuncio() { const a={titulo:document.getElementById('a-tit').value, msg:document.getElementById('a-msg').value}; if(a.titulo){db.ref('anuncios').push(a); alert("Publicado");} }
     function borrarAnuncio(key) { if(confirm("¿Borrar?")) db.ref('anuncios/'+key).remove(); }
 
-    // --- SISTEMA TORNEOS ---
-    function prepararEdicionTorneo(key) {
-        db.ref('torneos/'+key).once('value', snap => {
-            const t = snap.val();
-            document.getElementById('t-nom').value = t.nombre; document.getElementById('t-fac').value = t.faccion;
-            document.getElementById('t-lug').value = t.lugar; document.getElementById('t-desc').value = t.desc;
-            document.getElementById('t-prem').value = t.premios;
-            torneoEditandoId = key; torneoFotoActual = t.foto || "";
-            document.getElementById('btn-publicar-torneo').innerText = "💾 Guardar Torneo";
-            document.getElementById('btn-publicar-torneo').style.background = "#2ecc71";
-            document.getElementById('btn-cancelar-edicion-torneo').style.display = "block";
-            navegar('admin');
-        });
-    }
-    function cancelarEdicionTorneo() {
-        torneoEditandoId = null; torneoFotoActual = "";
-        document.getElementById('t-nom').value = ""; document.getElementById('t-fac').value = "";
-        document.getElementById('t-lug').value = ""; document.getElementById('t-desc').value = "";
-        document.getElementById('t-prem').value = ""; document.getElementById('t-foto-file').value = "";
-        document.getElementById('btn-publicar-torneo').innerText = "Publicar Torneo";
-        document.getElementById('btn-publicar-torneo').style.background = "#c0392b";
-        document.getElementById('btn-cancelar-edicion-torneo').style.display = "none";
-    }
-    function crearTorneo() {
-        const file = document.getElementById('t-foto-file').files[0];
-        const guardarEnDB = (fotoBase64) => {
-            const t = {
-                nombre: document.getElementById('t-nom').value, faccion: document.getElementById('t-fac').value,
-                lugar: document.getElementById('t-lug').value, foto: fotoBase64, 
-                desc: document.getElementById('t-desc').value, premios: document.getElementById('t-prem').value
-            };
-            if(!t.nombre) return alert("Falta nombre");
-            if(torneoEditandoId) {
-                if(!file && torneoFotoActual) t.foto = torneoFotoActual;
-                db.ref('torneos/'+torneoEditandoId).update(t); alert("Actualizado"); cancelarEdicionTorneo();
-            } else {
-                db.ref('torneos').push(t); alert("Organizado");
-                document.getElementById('t-nom').value=""; document.getElementById('t-desc').value="";
-                navegar('torneos');
-            }
-        };
-        if(file){ const reader=new FileReader(); reader.onload=e=>guardarEnDB(e.target.result); reader.readAsDataURL(file); } else guardarEnDB("");
-    }
-    function renderTorneos(lista) {
-        const cont = document.getElementById('lista-torneos');
-        cont.innerHTML = lista.length ? "" : "<p style='color:#c0392b;'>No hay combates.</p>";
-        const entries = Array.isArray(lista)&&lista.length>0&&Array.isArray(lista[0])?lista:Object.entries(lista);
-        cont.innerHTML = entries.map(([key, t]) => {
-            if(!t)return""; if(typeof t!=='object') t=key;
-            const img = t.foto&&t.foto.length>10?t.foto:'https://via.placeholder.com/400x300/1a0f0f/c0392b?text=TORNEO';
-            return `<div class="torneo-card"><img src="${img}" class="torneo-img"><div class="torneo-info"><h3>${t.nombre}</h3><p>🚩 ${t.faccion}</p><p>📍 ${t.lugar}</p><p><i>${t.desc}</i></p><div style="background:#400; padding:10px;">🏆 ${t.premios}</div>${isAdmin(usuarioActual)?`<div style="margin-top:10px;"><button onclick="prepararEdicionTorneo('${key}')">✏️ Editar</button> <button onclick="borrarTorneo('${key}')">🗑️ Borrar</button></div>`:''}</div></div>`;
-        }).join('');
-    }
-    function borrarTorneo(key) { if(confirm("¿Borrar?")) db.ref('torneos/'+key).remove(); }
+
 
     function borrarUser(nom) { if(confirm("¿Eliminar cuenta web?")) db.ref('usuarios/'+nom).remove(); }
     function subirFoto(input) { if(input.files[0]) { const reader = new FileReader(); reader.onload = e => db.ref('usuarios/'+usuarioActual).update({ foto: e.target.result }); reader.readAsDataURL(input.files[0]); } }
