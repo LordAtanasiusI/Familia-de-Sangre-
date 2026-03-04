@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Familia de Sangre| Hytale Spain</title>
     
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
         /* --- ESTÉTICA VAMPIRICA --- */
@@ -637,6 +635,8 @@
     </div>
 </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 <script>
     const firebaseConfig = {
   apiKey: "AIzaSyDlbKboF9zfIoZbteNVsf_9O6mFw3tXC1A",
@@ -2163,7 +2163,7 @@
                 convertidoPor: usuarioActual,
                 misionActiva: "Ninguna", misionActual: null, historialMisiones: []
             });
-            alert(\`🩸 VÁSTAGO CONVERTIDO\n\nNOMBRE: \${nom}\nCÓDIGO DE ACCESO: \${newCode}\n\nGuarda bien esta clave.\`);
+            alert(`🩸 VÁSTAGO CONVERTIDO\n\nNOMBRE: \${nom}\nCÓDIGO DE ACCESO: \${newCode}\n\nGuarda bien esta clave.`);
             document.getElementById('perf-sub-nombre').value = '';
             document.getElementById('perf-sub-raza').value   = '';
             document.getElementById('perf-sub-faccion').value = '';
@@ -2184,7 +2184,7 @@
                 db.ref('usuarios/'+usuarioActual).remove();
                 // Actualizar sesión
                 localStorage.setItem('gremio_sesion', nuevoNom);
-                alert(\`✅ Nombre cambiado a "\${nuevoNom}". La página se recargará.\`);
+                alert(`✅ Nombre cambiado a "\${nuevoNom}". La página se recargará.`);
                 location.reload();
             });
         });
