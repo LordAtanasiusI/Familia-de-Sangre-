@@ -381,7 +381,8 @@
                 </div>
                 <div style="padding: 20px 40px 60px 40px;">
                     <div class="ornament">🩸 · 🕸️ · 🦇 · 🕸️ · 🩸</div>
-                    <p style="font-size: 1.2em; color:#ccc; margin-bottom: 40px;">Las sombras susurran nuevos edictos. La sangre llama a sus hijos.</p>
+                    <p style="font-size: 1.2em; color:#ccc; margin-bottom: 20px;">Las sombras susurran nuevos edictos. La sangre llama a sus hijos.</p>
+                    <div id="lista-anuncios-cripta"></div>
                 </div>
             </div>
         </section>
@@ -2325,36 +2326,61 @@
                 </div>`;
         }
 
-        const progenitores = todos.filter(u => MAESTROS.includes(u.nombre));
-        const huerfanos    = todos.filter(u =>
-            !MAESTROS.includes(u.nombre) &&
-            (!u.convertidoPor || u.convertidoPor === "PROGENITOR" ||
+        // Garantizar que Piiman siempre aparece como raíz.
+        // Si tiene cuenta en Firebase la usamos; si no, creamos un nodo sintético.
+        const PROGENITOR_NOMBRE = MAESTROS[0]; // "Piiman"
+        let piiman = todos.find(u => u.nombre === PROGENITOR_NOMBRE);
+        if (!piiman) {
+            // Nodo sintético: solo nombre y foto vacía
+            piiman = { nombre: PROGENITOR_NOMBRE, puntos: 0, foto: '', titulo: '', etiqueta: '' };
+        }
+
+        // Huérfanos: usuarios cuyo padre no existe en la lista (o es PROGENITOR directo)
+        const huerfanos = todos.filter(u =>
+            u.nombre !== PROGENITOR_NOMBRE &&
+            (!u.convertidoPor || u.convertidoPor === 'PROGENITOR' ||
              !todos.find(p => p.nombre === u.convertidoPor))
         );
 
-        let html = '';
-        if (progenitores.length) {
-            html = progenitores.map(p => buildNodo(p, 0)).join('');
-            if (huerfanos.length) {
-                html += `<div style="margin-top:40px;text-align:center;color:#444;font-size:.82em;width:100%;">
-                    — Vástagos sin linaje registrado —
-                    <div class="arbol-hijos" style="margin-top:10px;border-top:none;">
-                        ${huerfanos.map(h => buildNodo(h, 1)).join('')}
-                    </div></div>`;
-            }
-        } else {
-            // Raíz artificial si el Progenitor no tiene cuenta registrada
-            html = `<div class="arbol-nodo arbol-nodo-root">
-                <div class="arbol-card es-progenitor">
-                    <div style="font-size:2.2em;margin-bottom:6px;">🩸</div>
-                    <div class="arbol-nombre">El Progenitor</div>
-                    <div class="arbol-rango"><span class="rango-badge bg-progenitor" style="font-size:.67em;">Monarca de Sangre (Progenitor)</span></div>
-                    <div class="arbol-cupo">∞ súbditos</div>
-                </div>
-                ${huerfanos.length ? `<div class="arbol-hijos">${huerfanos.map(h=>buildNodo(h,1)).join('')}</div>` : ''}
-            </div>`;
+        // Los huérfanos se tratan como hijos directos de Piiman en el árbol
+        // (así siempre quedan conectados a la raíz)
+        const piimanConHuerfanos = { ...piiman,
+            _hijosExtra: huerfanos.map(h => h.nombre)
+        };
+
+        // Redefinir buildNodo para que Piiman incluya también a los huérfanos como hijos
+        function buildNodoFinal(u, depth) {
+            const r    = getVisualRango(u);
+            const foto = u.foto || 'https://via.placeholder.com/58/050000/880000?text=%F0%9F%A9%B8';
+            const esProgenitor = MAESTROS.includes(u.nombre);
+            const hijosDirectos = todos.filter(h => h.convertidoPor === u.nombre && h.nombre !== PROGENITOR_NOMBRE);
+            const hijosExtra    = esProgenitor ? huerfanos.filter(h => !todos.find(p => p.convertidoPor === h.nombre && p.nombre === u.nombre)) : [];
+            const hijos         = [...new Map([...hijosDirectos, ...hijosExtra].map(h => [h.nombre, h])).values()];
+            const max           = getMaxSubditos(u);
+            const numH          = hijos.length;
+            const tituloHtml    = getExtraTag(u) ? `<div style="margin-top:4px;">${getExtraTag(u)}</div>` : '';
+            const cupoHtml      = isFinite(max)
+                ? `<div class="arbol-cupo">${numH}/${max} súbditos</div>`
+                : `<div class="arbol-cupo">∞ súbditos</div>`;
+            const hijosHtml     = hijos.length
+                ? `<div class="arbol-hijos">${hijos.map(h => buildNodoFinal(h, depth+1)).join('')}</div>`
+                : '';
+            return `
+                <div class="arbol-nodo ${depth===0?'arbol-nodo-root':''}">
+                    <div class="arbol-card ${esProgenitor?'es-progenitor':''}" onclick="verPerfilPublico('${u.nombre}')" style="cursor:pointer;">
+                        <img src="${foto}" class="arbol-foto" alt="${u.nombre}">
+                        <div class="arbol-nombre">${u.nombre}</div>
+                        ${tituloHtml}
+                        <div class="arbol-rango"><span class="rango-badge ${r.c}" style="font-size:.67em;">${r.n}</span></div>
+                        <div class="arbol-pa">${getPADisplay(u.puntos||0)}</div>
+                        ${cupoHtml}
+                    </div>
+                    ${hijosHtml}
+                </div>`;
         }
-        cont.innerHTML = html || "<p style='color:#555;text-align:center;padding:40px;'>El linaje aún no tiene miembros.</p>";
+
+        const html = buildNodoFinal(piiman, 0);
+        cont.innerHTML = html;
     }
 
     // ====================================================
@@ -2585,16 +2611,47 @@
     // --- SISTEMA ANUNCIOS ---
     function renderAnuncios(lista) {
         const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
-        // Filtrar: mostrar los de destino 'vampiros' o 'ambas' (o sin destino = legado)
-        const filtrados = entries.filter(([k,a]) => a && (!a.destino || a.destino === 'vampiros' || a.destino === 'ambas'));
-        document.getElementById('lista-anuncios').innerHTML = [...filtrados].reverse().map(([key, a]) => {
-             if(!a) return ""; if(typeof a!=='object') a=key;
-             const destinoBadge = a.destino === 'publica' ? '🧪' : a.destino === 'ambas' ? '📢' : '🩸';
-             return `<div class="card" style="border-left: 5px solid #3498db; position:relative;">
-                <h3 style="color:#fff;">${destinoBadge} ${a.titulo}</h3><p style="color:#ccc;">${a.msg}</p>
-                ${isAdmin(usuarioActual) ? `<button onclick="borrarAnuncio('${key}')" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer; font-size:1.2em;">✖</button>` : ''}
+
+        // Para admins: ver TODOS los anuncios (incluyendo los de la botica) para poder gestionarlos
+        // Para usuarios normales: solo vampiros + ambas
+        const filtrados = isAdmin(usuarioActual)
+            ? [...entries].filter(([k,a]) => a)
+            : entries.filter(([k,a]) => a && (!a.destino || a.destino === 'vampiros' || a.destino === 'ambas'));
+
+        const html = [...filtrados].reverse().map(([key, a]) => {
+            if(!a) return ""; if(typeof a!=='object') return "";
+            const destinoBadge = a.destino === 'publica' ? '🧪 Botica' : a.destino === 'ambas' ? '📢 Ambas' : '🩸 Familia';
+            const badgeColor   = a.destino === 'publica' ? '#2a5a1a' : a.destino === 'ambas' ? '#1a3a5a' : '#3498db';
+            const esBotica     = a.destino === 'publica';
+            // Usuarios normales no ven los de solo-botica (ya filtrado arriba), pero por seguridad:
+            if (!isAdmin(usuarioActual) && esBotica) return '';
+            return `<div class="card" style="border-left:5px solid ${badgeColor}; position:relative; ${esBotica && isAdmin(usuarioActual) ? 'opacity:.75;' : ''}">
+                <h3 style="color:#fff; padding-right:30px;">${a.titulo}
+                    <span style="font-size:.6em; background:${badgeColor}; color:#fff; padding:2px 7px; border-radius:3px; margin-left:8px; vertical-align:middle;">${destinoBadge}</span>
+                </h3>
+                <p style="color:#ccc;">${a.msg}</p>
+                ${isAdmin(usuarioActual) ? `<button onclick="borrarAnuncio('${key}')" style="position:absolute; top:10px; right:10px; background:none; border:none; color:red; cursor:pointer; font-size:1.2em;" title="Borrar">✖</button>` : ''}
             </div>`;
         }).join('');
+
+        // Rellenar sección Edictos
+        const contEdictos = document.getElementById('lista-anuncios');
+        if (contEdictos) contEdictos.innerHTML = html || "<p style='color:#555;'>No hay edictos publicados.</p>";
+
+        // Rellenar resumen en Cripta (últimos 3, solo los de vampiros/ambas)
+        const contCripta = document.getElementById('lista-anuncios-cripta');
+        if (contCripta) {
+            const paraFamilia = entries.filter(([k,a]) => a && (!a.destino || a.destino === 'vampiros' || a.destino === 'ambas'));
+            const recientes = [...paraFamilia].reverse().slice(0, 3);
+            contCripta.innerHTML = recientes.length
+                ? recientes.map(([key, a]) => `
+                    <div class="card" style="border-left:4px solid #3498db; margin-bottom:12px; padding:14px 16px; position:relative;">
+                        <h3 style="color:#fff; font-size:1em; margin:0 0 4px; padding-right:24px;">${a.titulo}</h3>
+                        <p style="color:#bbb; font-size:.9em; margin:0;">${a.msg}</p>
+                        ${isAdmin(usuarioActual) ? `<button onclick="borrarAnuncio('${key}')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#c0392b;cursor:pointer;font-size:1em;" title="Borrar">✖</button>` : ''}
+                    </div>`).join('')
+                : '';
+        }
     }
     function crearAnuncio() {
         const a = {
