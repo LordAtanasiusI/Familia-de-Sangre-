@@ -2430,6 +2430,52 @@
         if (confirm('¿Eliminar este tomo de la biblioteca?')) db.ref('biblioteca/' + key).remove();
     }
 
+
+    // ── MISIONES GREMIO / CONTRATOS DE ASESINATO ────────────────────
+    function renderMisionesGremio(lista) {
+        const cont = document.getElementById('lista-misiones-gremio');
+        if (!cont) return;
+        if (!lista || lista.length === 0) {
+            cont.innerHTML = "<p style='color:#c0392b; grid-column:1/-1;'>No hay contratos activos.</p>";
+            return;
+        }
+        cont.innerHTML = lista.map(([key, m]) => {
+            if (!m) return '';
+            return `<div class="card" style="border-left:5px solid #c0392b; position:relative;">
+                <h3 style="color:#e74c3c; margin-top:0;">🗡️ ${m.nombre||m.titulo||'Contrato'}</h3>
+                ${m.req ? `<p style="color:#aaa; font-size:.85em;">📋 Requisitos: ${m.req}</p>` : ''}
+                ${m.desc ? `<p style="color:#ccc;">${m.desc}</p>` : ''}
+                ${m.prem||m.recompensa ? `<p style="color:#e67e22; font-weight:bold;">🏆 ${m.prem||m.recompensa}</p>` : ''}
+                ${isAdmin(usuarioActual) ? `<button onclick="borrarMisionGremio('${key}')" style="position:absolute;top:10px;right:10px;background:none;border:none;color:red;cursor:pointer;font-size:1.2em;">✖</button>` : ''}
+            </div>`;
+        }).join('');
+    }
+
+    function crearMisionGremio() {
+        const m = {
+            titulo: document.getElementById('mg-nom').value,
+            req:    document.getElementById('mg-req').value,
+            desc:   document.getElementById('mg-desc').value,
+            prem:   document.getElementById('mg-prem').value
+        };
+        if (!m.titulo) return alert('Escribe un objetivo/contrato.');
+        db.ref('misiones_gremio').push(m);
+        alert('🗡️ Contrato publicado.');
+        document.getElementById('mg-nom').value = '';
+        document.getElementById('mg-req').value = '';
+        document.getElementById('mg-desc').value = '';
+        document.getElementById('mg-prem').value = '';
+    }
+
+    function borrarMisionGremio(key) {
+        if (confirm('¿Eliminar este contrato?')) db.ref('misiones_gremio/' + key).remove();
+    }
+
+    // Helper para icono de item (usado en renderPubMercado)
+    function getItemIcon(nombre) {
+        return iconMap[nombre] || null;
+    }
+
     // --- SISTEMA ANUNCIOS ---
     function renderAnuncios(lista) {
         const entries = Array.isArray(lista) && lista.length > 0 && Array.isArray(lista[0]) ? lista : Object.entries(lista);
